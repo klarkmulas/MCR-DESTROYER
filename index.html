@@ -157,7 +157,7 @@ function attack(){
  if(!started||attacking)return;attacking=true;attackT=0;hitDone=false
 }
 function hit(){
- player.getWorldDirection(fwd);fwd.y=0;fwd.normalize();let origin=player.position.clone().add(new THREE.Vector3(0,1,.0));let best=null,score=99;
+ fwd.set(0,0,-1).applyQuaternion(player.quaternion);fwd.y=0;fwd.normalize();let origin=player.position.clone().add(new THREE.Vector3(0,1,.0));let best=null,score=99;
  destruct.forEach(d=>{if(d.dead||!d.o.visible)return;let p=d.o.getWorldPosition(tmp);let delta=p.clone().sub(origin);let dd=delta.length();if(dd>2.5)return;delta.normalize();let face=fwd.dot(delta);if(face<.08)return;let s=dd-face*.75;if(s<score){score=s;best=d}});
  if(best)applyHit(best,fwd)
 }
