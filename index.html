@@ -765,7 +765,7 @@ function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
  editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&cameraMode==='third';fpView.visible=started&&!on&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;show('EDITOR SALA ATTIVO');}
- else{editDragging=false;setTopView(false);selectEdit(null);fpView.visible=started;show('EDITOR CHIUSO');}
+ else{editDragging=false;setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
 function applyMonitorPreset(d,preset){
  if(!d||d.type!=='monitor'||!d.o.userData.screen)return;d.screenPreset=Number(preset)%texVariants.length;d.screenData=null;d.o.userData.intactMap=texVariants[d.screenPreset];d.o.userData.screen.material.map=d.o.userData.intactMap;d.o.userData.screen.material.needsUpdate=true;
