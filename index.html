@@ -2,10 +2,10 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>MCR DESTROYER</title>
 <style>
-*{box-sizing:border-box}html,body,#game{margin:0;width:100%;height:100%;overflow:hidden;background:#020406;color:#eef6ff;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}canvas{display:block}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body,#game{margin:0;width:100%;height:100%;overflow:hidden;background:#020406;color:#eef6ff;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;overscroll-behavior:none}body{touch-action:none}canvas{display:block;touch-action:none}
 .overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(27,70,120,.38),rgba(2,5,9,.96) 60%);padding:24px}.hidden{display:none!important}
 .panel{width:min(700px,94vw);padding:34px;border:1px solid rgba(103,174,255,.25);border-radius:22px;background:linear-gradient(180deg,rgba(13,22,34,.94),rgba(5,9,14,.94));box-shadow:0 30px 90px #0009;text-align:center}
 .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:800;color:#68b8ff}.panel h1{font-size:clamp(42px,8vw,82px);line-height:.9;letter-spacing:-.06em;margin:8px 0}.panel h1 span{color:#4ab6ff;text-shadow:0 0 30px #3aa4ff66}.panel p{color:#a6b8cc;line-height:1.5}
@@ -17,24 +17,76 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.7}#cross:before,#cross:after{content:"";position:absolute;background:#fff;border-radius:2px}#cross:before{width:14px;height:2px;left:2px;top:8px}#cross:after{width:2px;height:14px;left:8px;top:2px}
 #reset{pointer-events:auto;margin-top:6px;padding:7px 10px;border-radius:8px;color:#fff;background:#ffffff10;border:1px solid #ffffff1a;font-weight:800;font-size:10px}
 #help{position:fixed;z-index:40;left:16px;bottom:16px;padding:12px 14px;border-radius:12px;background:#07101ae8;border:1px solid #77baff33;color:#b1c1d3;font-size:12px;line-height:1.55}
-#touch{position:fixed;inset:0;z-index:30;pointer-events:none}.joy{position:absolute;left:24px;bottom:25px;width:116px;height:116px;border-radius:50%;border:1px solid #ffffff25;background:#ffffff10;pointer-events:auto;touch-action:none}.knob{position:absolute;left:34px;top:34px;width:48px;height:48px;border-radius:50%;background:#5dbdff99}.touchbtns{position:absolute;right:20px;bottom:22px;display:flex;gap:12px;align-items:flex-end;pointer-events:auto}.touchbtns button{width:72px;height:72px;border-radius:50%;background:#ffffff16;border:1px solid #ffffff25;color:white;font-weight:900}.touchbtns .hit{width:90px;height:90px;background:#ff546333}
+#touch{position:fixed;inset:0;z-index:30;pointer-events:none;touch-action:none}
+.joy{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));width:126px;height:126px;border-radius:50%;border:1px solid #ffffff30;background:#07101a70;box-shadow:0 12px 35px #0007;backdrop-filter:blur(5px);pointer-events:auto;touch-action:none;z-index:3}
+.knob{position:absolute;left:37px;top:37px;width:52px;height:52px;border-radius:50%;background:#5dbdff99;border:1px solid #bce9ff55;box-shadow:0 0 24px #4ab6ff44;will-change:transform}
+.touchbtns{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));display:flex;gap:13px;align-items:flex-end;pointer-events:auto;touch-action:none;z-index:5}
+.touchbtns button{width:78px;height:78px;border-radius:50%;background:#07101ad9;border:1px solid #ffffff30;color:white;font-weight:1000;letter-spacing:.04em;box-shadow:0 12px 30px #0007;touch-action:manipulation}
+.touchbtns .hit{width:98px;height:98px;background:linear-gradient(160deg,#ff655f55,#d5192f77);border-color:#ff929955;box-shadow:0 0 25px #ff405044,0 12px 30px #0007}
+#lookzone{position:absolute;right:0;top:0;width:58%;height:100%;pointer-events:auto;touch-action:none;z-index:1}
+#rotateHint{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:70;width:min(520px,92vw);padding:16px;border-radius:16px;background:#07101af2;border:1px solid #78bdff44;box-shadow:0 18px 55px #000a;backdrop-filter:blur(10px)}
+#rotateHint b{display:block;font-size:14px;margin-bottom:4px}#rotateHint p{margin:0;color:#a9bed1;font-size:12px;line-height:1.4}#rotateHint .rotateActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}#rotateHint button{padding:10px;border-radius:10px;background:#176bb0;color:#fff;font-weight:900;border:1px solid #ffffff16}#rotateHint button.secondary{background:#142433}
 #editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}#editorBtn.active{background:#176bb0;border-color:#91d1ff}#adminBtn{position:fixed;z-index:45;left:18px;bottom:18px;padding:9px 12px;border-radius:10px;background:#07101acc;border:1px solid #ffffff20;color:#93abc2;font-size:10px;font-weight:900;letter-spacing:.08em}#adminStatus{position:fixed;z-index:45;left:18px;bottom:58px;padding:7px 10px;border-radius:9px;background:#07101ad9;border:1px solid #ffffff16;color:#89d4a4;font-size:10px;font-weight:800}#adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
 #roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
-@media(max-width:700px){.controls{grid-template-columns:repeat(2,1fr)}.panel{padding:24px 18px}.left{left:9px;top:9px;min-width:145px}.right{right:9px;top:9px;min-width:175px}.big{font-size:22px}#combo{top:83px;font-size:18px}#cross{display:none}}
-#start.posterStart{padding:0;background:#02050a;display:grid;place-items:center}
-#start .posterWrap{position:relative;height:min(96vh,980px);aspect-ratio:9/16;max-width:96vw}
-#start .posterImg{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 24px 60px #000a)}
-#start .posterPlay{position:absolute;left:23%;right:23%;bottom:14%;height:10%;border-radius:18px;background:transparent;border:2px solid transparent;cursor:pointer;z-index:2}
-#start .posterPlay:hover,#start .posterPlay:focus-visible{border-color:#58c9ff;box-shadow:0 0 28px #2da9ff99,inset 0 0 22px #2da9ff33;outline:none}
-@media(max-width:700px){#start .posterWrap{height:min(92vh,860px)}#start .posterPlay{left:20%;right:20%;bottom:13.5%;height:10.5%}}</style>
+@media(max-width:700px){
+ .controls{grid-template-columns:repeat(2,1fr)}.panel{padding:22px 16px}.left{left:8px;top:8px;min-width:142px}.right{right:8px;top:8px;min-width:160px;max-width:45vw}.glass{padding:9px 11px}.big{font-size:21px}.sub{font-size:9px}.label{font-size:8px}#combo{top:72px;font-size:16px}#cross{display:block;transform:translate(-50%,-50%) scale(.78)}
+ #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
+ #roomEditor{left:8px;right:8px;top:8px;bottom:8px;width:auto}
+}
+@media(orientation:landscape) and (max-height:560px){
+ .left,.right{top:7px}.left{left:7px}.right{right:7px}.glass{padding:7px 10px}.big{font-size:18px}.label{font-size:7px}.sub{font-size:8px}#combo{top:54px}
+ .joy{width:108px;height:108px;left:max(14px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom))}.knob{left:31px;top:31px;width:46px;height:46px}
+ .touchbtns{right:max(14px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));gap:10px}.touchbtns button{width:64px;height:64px;font-size:11px}.touchbtns .hit{width:82px;height:82px}
+ #adminBtn{top:58px}#adminStatus{top:90px}#editorBtn{top:58px}
+}
+#start.homeStart{padding:18px;background:
+ radial-gradient(circle at 18% 18%,rgba(40,120,220,.25),transparent 34%),
+ radial-gradient(circle at 82% 34%,rgba(27,74,150,.24),transparent 30%),
+ linear-gradient(180deg,#07101a,#020508 72%)}
+.homeShell{width:min(1120px,96vw);display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center}
+.homeCard{padding:clamp(22px,3vw,40px);border:1px solid #6ab8ff33;border-radius:24px;background:linear-gradient(180deg,#0c1827ed,#050a11f2);box-shadow:0 30px 90px #000a;backdrop-filter:blur(12px)}
+.homeEyebrow{font-size:11px;letter-spacing:.22em;color:#71c2ff;font-weight:900}.homeCard h1{font-size:clamp(44px,7vw,84px);line-height:.88;letter-spacing:-.055em;margin:10px 0 14px}.homeCard h1 span{display:block;color:#55bdff;text-shadow:0 0 34px #2da9ff55}.homeLead{font-size:clamp(14px,1.6vw,18px);line-height:1.5;color:#bed0df;max-width:680px}
+.homeFeatures{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:20px 0}.homeFeature{padding:11px;border-radius:12px;border:1px solid #ffffff10;background:#ffffff06}.homeFeature b{display:block;font-size:12px;color:#fff;margin-bottom:3px}.homeFeature span{font-size:10px;color:#8fa8bd;line-height:1.35}
+.homeActions{display:flex;gap:10px;flex-wrap:wrap}.homePlay{padding:15px 34px;border-radius:13px;background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}.homeSecondary{padding:14px 20px;border-radius:13px;background:#ffffff0c;border:1px solid #ffffff18;color:#dcecff;font-weight:900}
+.homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}
+.homeVisual{position:relative;min-height:430px;border:1px solid #6ab8ff22;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 20%,#17395f 0,#09131f 35%,#020508 78%);box-shadow:inset 0 0 70px #0008,0 30px 90px #0008}
+.homeCeiling{position:absolute;inset:0 0 58% 0;background:repeating-linear-gradient(90deg,transparent 0 10%,#49627555 10.2% 10.45%),repeating-linear-gradient(0deg,transparent 0 28%,#49627544 28.4% 28.8%);transform:perspective(420px) rotateX(56deg);transform-origin:top center}
+.homeWall{position:absolute;left:10%;right:10%;top:19%;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.miniScreen{aspect-ratio:16/10;border:3px solid #05080d;border-radius:3px;background:linear-gradient(135deg,#1c7ec0,#101c38 45%,#7c2c66 47%,#185b42 70%,#d79b2e);box-shadow:0 0 14px #3aa4ff33}.miniScreen:nth-child(2n){background:linear-gradient(135deg,#13283a,#f0f4f8 32%,#175f8f 34%,#0b1622 70%)}.miniScreen:nth-child(3n){background:linear-gradient(135deg,#3b8645,#192b7a 35%,#802851 56%,#162637)}
+.homeDesk{position:absolute;left:7%;right:7%;bottom:17%;height:18%;background:linear-gradient(#171d24,#080b10);clip-path:polygon(5% 0,95% 0,100% 28%,94% 34%,91% 100%,87% 100%,86% 35%,14% 35%,13% 100%,9% 100%,7% 35%,0 28%);filter:drop-shadow(0 18px 15px #000)}
+.homeBat{position:absolute;right:8%;bottom:6%;width:72px;height:290px;border-radius:36px;background:linear-gradient(90deg,#33404a,#c6d0d8 48%,#2f3941);transform:rotate(28deg);box-shadow:0 0 22px #67b8ff33}
+.homeGlow{position:absolute;left:12%;right:12%;bottom:8%;height:4px;background:#44b7ff;box-shadow:0 0 28px 9px #2b91ff66}
+@media(max-width:850px){.homeShell{grid-template-columns:1fr}.homeVisual{display:none}.homeFeatures{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){#start.homeStart{padding:10px}.homeCard{padding:20px 16px}.homeFeatures{grid-template-columns:1fr}.homeActions{display:grid}.homePlay,.homeSecondary{width:100%}.homeCard h1{font-size:48px}}
+</style>
 </head>
 <body>
 <div id="game"></div>
-<div id="start" class="overlay posterStart">
-  <div class="posterWrap">
-    <img class="posterImg" src="./mcr_destroyer_poster_hd.jpg?v=4" alt="MCR DESTROYER">
-    <button id="play" class="posterPlay" aria-label="GIOCA" title="GIOCA"></button>
+<div id="start" class="overlay homeStart">
+  <div class="homeShell">
+    <section class="homeCard">
+      <div class="homeEyebrow">CONTROL ROOM // BROWSER GAME</div>
+      <h1>MCR <span>DESTROYER</span></h1>
+      <p class="homeLead">Entra nella control room in prima persona, impugna la mazza e distruggi monitor, sedie, tastiere, telefoni, vetri e scrivanie. Nessuna installazione: parte direttamente dal browser.</p>
+      <div class="homeFeatures">
+        <div class="homeFeature"><b>PRIMA PERSONA</b><span>Visuale immersiva e mazza sempre davanti a te.</span></div>
+        <div class="homeFeature"><b>DISTRUZIONE</b><span>Oggetti rompibili, frammenti, danni e combo.</span></div>
+        <div class="homeFeature"><b>SMARTPHONE</b><span>Joystick a sinistra, visuale e azioni a destra.</span></div>
+        <div class="homeFeature"><b>ORIZZONTALE</b><span>Landscape consigliato per avere più spazio di gioco.</span></div>
+      </div>
+      <div class="homeActions">
+        <button id="play" class="homePlay">GIOCA ORA</button>
+        <button id="homeHelp" class="homeSecondary">COMANDI</button>
+      </div>
+      <div class="homeNote">PC: WASD + mouse. Smartphone: puoi muoverti e dare la mazzata contemporaneamente. Ruota il telefono in orizzontale per l'esperienza migliore.</div>
+    </section>
+    <section class="homeVisual" aria-hidden="true">
+      <div class="homeCeiling"></div>
+      <div class="homeWall"><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div><div class="miniScreen"></div></div>
+      <div class="homeDesk"></div>
+      <div class="homeBat"></div>
+      <div class="homeGlow"></div>
+    </section>
   </div>
 </div>
 <div id="hud" class="hidden">
@@ -44,7 +96,16 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   <div id="msg"></div><div id="cross"></div>
 </div>
 <div id="help" class="hidden"><b>COMANDI — PRIMA PERSONA</b><br>WASD movimento · Shift corsa · Spazio salto<br>Mouse visuale · Click mazza · R reset · E editor · H chiudi aiuto</div>
-<div id="touch" class="hidden"><div id="joy" class="joy"><div id="knob" class="knob"></div></div><div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div></div>
+<div id="touch" class="hidden">
+  <div id="lookzone" aria-hidden="true"></div>
+  <div id="joy" class="joy"><div id="knob" class="knob"></div></div>
+  <div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div>
+</div>
+<div id="rotateHint" class="hidden">
+  <b>Gioca meglio in orizzontale</b>
+  <p>Ruota lo smartphone. Se il browser lo consente, posso anche provare ad attivare automaticamente la modalità landscape.</p>
+  <div class="rotateActions"><button id="rotateNow">RUOTA</button><button id="rotateDismiss" class="secondary">CONTINUA COSÌ</button></div>
+</div>
 <button id="adminBtn" class="hidden">ADMIN</button><div id="adminStatus" class="hidden">ADMIN ATTIVO</div><button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
   <h3>EDITOR MCR</h3>
@@ -636,8 +697,30 @@ function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode){updatePlayer(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera())}loop();
 
-q('#play').onclick=()=>{started=true;avatar.visible=false;fpView.visible=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();if(matchMedia('(pointer:coarse)').matches)touch.classList.remove('hidden');else renderer.domElement.requestPointerLock?.()};
-q('#reset').onclick=resetRoom;q('#jump').onclick=()=>{if(grounded){jumpV=4.8;grounded=false}};q('#hit').onclick=attack;
+function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
+function updateRotateHint(){
+ if(!mobileDevice()||!started){q('#rotateHint').classList.add('hidden');return}
+ const portrait=innerHeight>innerWidth;
+ q('#rotateHint').classList.toggle('hidden',!portrait);
+}
+async function requestLandscape(){
+ try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement)await document.documentElement.requestFullscreen()}catch(e){}
+ try{if(screen.orientation?.lock)await screen.orientation.lock('landscape')}catch(e){}
+ setTimeout(updateRotateHint,150)
+}
+q('#homeHelp').onclick=()=>help.classList.toggle('hidden');
+q('#rotateNow').onclick=requestLandscape;
+q('#rotateDismiss').onclick=()=>q('#rotateHint').classList.add('hidden');
+addEventListener('orientationchange',()=>setTimeout(updateRotateHint,160));
+q('#play').onclick=()=>{started=true;avatar.visible=false;fpView.visible=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}else renderer.domElement.requestPointerLock?.()};
+q('#reset').onclick=resetRoom;
+const jumpAction=()=>{if(grounded){jumpV=4.8;grounded=false}};
+q('#jump').onclick=jumpAction;
+q('#hit').onclick=attack;
+q('#jump').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();jumpAction()},{passive:false});
+q('#hit').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();attack()},{passive:false});
+q('#jump').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();jumpAction()},{passive:false});
+q('#hit').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();attack()},{passive:false});
 addEventListener('keydown',e=>{if(editorMode&&(e.code==='Delete'||e.code==='Backspace')){deleteSelectedObject();e.preventDefault();return}if(editorMode&&e.code==='Escape'){selectEdit(null);return}if(editorMode&&e.code==='KeyT'){setTopView(!topViewMode);e.preventDefault();return}keys.add(e.code);if(!editorMode&&e.code==='Space'&&grounded){jumpV=4.8;grounded=false}if(!editorMode&&e.code==='KeyR')resetRoom();if(e.code==='KeyH')help.classList.toggle('hidden')});
 addEventListener('keyup',e=>keys.delete(e.code));
 document.addEventListener('pointerlockchange',()=>pointer=document.pointerLockElement===renderer.domElement);
@@ -645,9 +728,17 @@ addEventListener('mousemove',e=>{if(editorMode&&editDragging&&selectedEdit&&drag
 renderer.domElement.addEventListener('mousedown',e=>{if(e.button!==0)return;if(editorMode){const hit=editorPick(e.clientX,e.clientY);if(hit){selectEdit(hit.d,e.shiftKey);if(selectedEdit&&selectedEdits.has(hit.d)){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){dragStartPoint=p;dragStartPositions.clear();for(const d of selectedEdits)dragStartPositions.set(d,d.o.position.clone());editDragging=true}}}else if(!e.shiftKey)selectEdit(null);return}if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();attack()});
 renderer.domElement.addEventListener('wheel',e=>{if(editorMode&&topViewMode){topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);topCamera.updateProjectionMatrix()}},{passive:true});
 let joy=q('#joy'),knob=q('#knob'),jid=null;
-joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid)});
-joy.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;let r=joy.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),max=40;if(l>max){x=x/l*max;y=y/l*max}knob.style.transform='translate('+x+'px,'+y+'px)';mobile.x=x/max;mobile.y=y/max});
-joy.addEventListener('pointerup',e=>{if(e.pointerId!==jid)return;jid=null;knob.style.transform='';mobile.x=mobile.y=0});
+function resetJoy(){jid=null;knob.style.transform='';mobile.x=mobile.y=0}
+joy.addEventListener('pointerdown',e=>{e.preventDefault();jid=e.pointerId;joy.setPointerCapture?.(jid)},{passive:false});
+joy.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;e.preventDefault();let r=joy.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),max=42;if(l>max){x=x/l*max;y=y/l*max}knob.style.transform='translate('+x+'px,'+y+'px)';mobile.x=x/max;mobile.y=y/max},{passive:false});
+joy.addEventListener('pointerup',e=>{if(e.pointerId===jid)resetJoy()});
+joy.addEventListener('pointercancel',resetJoy);joy.addEventListener('lostpointercapture',resetJoy);
+
+let lookzone=q('#lookzone'),lookId=null,lastLookX=0,lastLookY=0;
+lookzone.addEventListener('pointerdown',e=>{lookId=e.pointerId;lastLookX=e.clientX;lastLookY=e.clientY;lookzone.setPointerCapture?.(lookId)});
+lookzone.addEventListener('pointermove',e=>{if(e.pointerId!==lookId)return;const dx=e.clientX-lastLookX,dy=e.clientY-lastLookY;lastLookX=e.clientX;lastLookY=e.clientY;yaw-=dx*.0052;pitch=THREE.MathUtils.clamp(pitch-dy*.0042,-1.20,1.15)});
+function resetLook(e){if(!e||e.pointerId===lookId)lookId=null}
+lookzone.addEventListener('pointerup',resetLook);lookzone.addEventListener('pointercancel',resetLook);lookzone.addEventListener('lostpointercapture',resetLook);
 adminBtn.onclick=()=>{if(isAdmin){setEditorMode(!editorMode)}else{adminLogin.classList.remove('hidden');adminMessage.textContent=''}};
 q('#adminClose').onclick=()=>adminLogin.classList.add('hidden');
 q('#adminSignIn').onclick=adminSignIn;
@@ -670,7 +761,7 @@ q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
 q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}const fr=new FileReader();fr.onload=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorData(d,fr.result);n++}show(n?('IMMAGINE APPLICATA A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};fr.readAsDataURL(file)};
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const aspect=innerWidth/innerHeight,halfH=10;topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const aspect=innerWidth/innerHeight,halfH=10;topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updateRotateHint()});
 window.addEventListener('error',e=>{
   console.error(e.error||e.message);
   const old=document.getElementById('runtimeError');
