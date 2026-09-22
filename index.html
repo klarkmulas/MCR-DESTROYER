@@ -419,7 +419,7 @@ function soundNpcHit(){playSfx(sfxImpact,1,.58);setTimeout(()=>playSfx(sfxImpact
 function soundTest(){playSfx(sfxImpact,.95,1.15)}
 function box(w,h,d,ma,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
 function cyl(r1,r2,h,ma,x,y,z){const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
-function reg(o,type,hp,val,mode='static'){const d={o,type,hp:1,max:1,val,mode,dead:false,vel:new THREE.Vector3(),spin:new THREE.Vector3(),startPos:o.position.clone(),startQuat:o.quaternion.clone(),startScale:o.scale.clone(),origPos:o.position.clone(),origQuat:o.quaternion.clone(),origScale:o.scale.clone(),startVis:o.visible};o.userData.d=d;destruct.push(d);return d}
+const impactBodies=[];function reg(o,type,hp,val,mode='static'){const d={o,type,hp:1,max:1,val,mode,dead:false,vel:new THREE.Vector3(),spin:new THREE.Vector3(),impactVel:new THREE.Vector3(),impactSpin:new THREE.Vector3(),startPos:o.position.clone(),startQuat:o.quaternion.clone(),startScale:o.scale.clone(),origPos:o.position.clone(),origQuat:o.quaternion.clone(),origScale:o.scale.clone(),startVis:o.visible};o.userData.d=d;destruct.push(d);return d}
 function addObstacle(o,w,d){obstacles.push({o,w,d})}
 let monitorSeed=0;
 function monitorTex(state,seed=0){
@@ -696,64 +696,82 @@ function fallbackHuman(){
  const watch=new THREE.Mesh(new THREE.BoxGeometry(.075,.035,.085),blackMat);watch.position.set(-.015,-.21,.075);lFore.add(watch);
 
  rHand.add(batPivot);batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);
- officeRig={pelvis,torsoPivot,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand};
+ officeRig={pelvis,hip,torsoPivot,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand};
 }
 function animateOffice(dt,speedRatio,run){
  if(!officeRig)return;
  const moving=speedRatio>.025,attackP=attacking?Math.min(1,attackT/.62):0;
- if(moving&&!attacking)walkPhase+=dt*(run?9.8:6.6)*Math.max(.4,speedRatio);
- const s=moving?Math.sin(walkPhase):0,opp=-s,k=1-Math.exp(-15*dt),stride=(run ? .70 : .47)*speedRatio;
+ if(moving&&!attacking)walkPhase+=dt*(run?10.4:6.7)*Math.max(.38,speedRatio);
+ else if(!attacking)walkPhase+=dt*.65;
+ const s=Math.sin(walkPhase),c2=Math.cos(walkPhase),k=1-Math.exp(-16*dt);
+ const stride=(run?.78:.50)*speedRatio;
+ const movingS=moving?s:0,opp=-movingS;
 
- let lLegX=s*stride,rLegX=opp*stride,lArmX=opp*stride*.66,rArmX=s*stride*.58;
- let lKnee=Math.max(0,-s)*.64*speedRatio,rKnee=Math.max(0,-opp)*.64*speedRatio;
- let torsoY=moving?s*.045*speedRatio:0,torsoZ=moving?-s*.018*speedRatio:0,pelvisY=moving?-s*.028*speedRatio:0;
- let lForeX=-.10+Math.max(0,opp)*.10*speedRatio,rForeX=-.12;
+ let lLegX=movingS*stride,rLegX=opp*stride;
+ let lKnee=Math.max(0,-movingS)*.78*speedRatio,rKnee=Math.max(0,-opp)*.78*speedRatio;
+ let lArmX=opp*stride*.62,rArmX=movingS*stride*.56;
+ let lForeX=-.10+Math.max(0,opp)*.13*speedRatio,rForeX=-.12+Math.max(0,movingS)*.08*speedRatio;
  let rArmY=0,rArmZ=0,rForeY=0,rForeZ=0,lArmY=0;
+ let torsoY=moving?movingS*.10*speedRatio:Math.sin(walkPhase*.7)*.015;
+ let torsoZ=moving?-movingS*.026*speedRatio:0;
+ let torsoX=moving?(run?-.10:-.045)*speedRatio:Math.sin(walkPhase*.55)*.012;
+ let pelvisY=moving?-movingS*.045*speedRatio:0;
+ let pelvisZ=moving?movingS*.055*speedRatio:Math.sin(walkPhase*.5)*.012;
+ let headY=moving?-torsoY*.45:Math.sin(walkPhase*.42)*.06;
+ let headX=moving?(run?.025:.012)*Math.sin(walkPhase*2):Math.sin(walkPhase*.31)*.018;
+ let bodyBob=moving?Math.abs(Math.sin(walkPhase*2))*(run?.027:.016)*speedRatio:Math.sin(walkPhase*.8)*.004;
 
  if(attacking){
-   const wind=THREE.MathUtils.smoothstep(Math.min(attackP/.24,1),0,1);
-   const strike=attackP<.24?0:THREE.MathUtils.smoothstep(Math.min((attackP-.24)/.26,1),0,1);
-   const follow=attackP<.50?0:THREE.MathUtils.smoothstep(Math.min((attackP-.50)/.24,1),0,1);
-   const recover=attackP<.74?0:THREE.MathUtils.smoothstep(Math.min((attackP-.74)/.26,1),0,1);
+   const smooth=t=>t*t*(3-2*t),wind=smooth(Math.min(attackP/.24,1));
+   const strike=attackP<.24?0:(1-Math.pow(1-Math.min((attackP-.24)/.26,1),3));
+   const follow=attackP<.50?0:smooth(Math.min((attackP-.50)/.24,1));
+   const recover=attackP<.74?0:smooth(Math.min((attackP-.74)/.26,1));
 
-   torsoY=-.62*wind + 1.20*strike - .38*follow;
-   torsoZ=-.07*wind + .10*strike - .04*follow;
-   pelvisY=-.18*wind + .30*strike - .10*follow;
+   torsoX=-.18*wind+.24*strike-.08*follow;
+   torsoY=-.68*wind+1.22*strike-.42*follow;
+   torsoZ=-.10*wind+.14*strike-.05*follow;
+   pelvisY=-.18*wind+.28*strike-.10*follow;
+   pelvisZ=.08*wind-.14*strike+.05*follow;
+   headY=.16*wind-.22*strike+.08*follow;
+   headX=-.05*wind+.09*strike;
 
-   rArmX=-.40*wind - .95*strike + .18*follow;
-   rArmY=-.55*wind + 1.05*strike - .28*follow;
-   rArmZ=-.35*wind + .55*strike - .12*follow;
-   rForeX=-1.05*wind + .66*strike + .12*follow;
-   rForeY=-.18*wind + .35*strike;
-   rForeZ=.10*wind -.28*strike;
+   rArmX=-.45*wind-1.02*strike+.22*follow;
+   rArmY=-.58*wind+1.08*strike-.30*follow;
+   rArmZ=-.38*wind+.58*strike-.14*follow;
+   rForeX=-1.08*wind+.72*strike+.16*follow;
+   rForeY=-.18*wind+.38*strike;
+   rForeZ=.12*wind-.30*strike;
+   lArmX=.30*wind-.22*strike;lArmY=.24*wind-.16*strike;lForeX=-.24;
 
-   lArmX=.26*wind - .18*strike;
-   lArmY=.22*wind - .14*strike;
-   lForeX=-.22;
-
-   lLegX*=.28;rLegX*=.28;lKnee*=.28;rKnee*=.28;
+   lLegX=-.12*wind+.18*strike;rLegX=.16*wind-.12*strike;
+   lKnee=.18*wind;rKnee=.08*wind;
+   bodyBob=0;
 
    if(recover>0){
-     torsoY=THREE.MathUtils.lerp(torsoY,0,recover);torsoZ=THREE.MathUtils.lerp(torsoZ,0,recover);pelvisY=THREE.MathUtils.lerp(pelvisY,0,recover);
-     rArmX=THREE.MathUtils.lerp(rArmX,0,recover);rArmY=THREE.MathUtils.lerp(rArmY,0,recover);rArmZ=THREE.MathUtils.lerp(rArmZ,0,recover);
-     rForeX=THREE.MathUtils.lerp(rForeX,-.12,recover);rForeY=THREE.MathUtils.lerp(rForeY,0,recover);rForeZ=THREE.MathUtils.lerp(rForeZ,0,recover);
-     lArmX=THREE.MathUtils.lerp(lArmX,0,recover);lArmY=THREE.MathUtils.lerp(lArmY,0,recover);lForeX=THREE.MathUtils.lerp(lForeX,-.10,recover);
+     const back=(v,target)=>THREE.MathUtils.lerp(v,target,recover);
+     torsoX=back(torsoX,0);torsoY=back(torsoY,0);torsoZ=back(torsoZ,0);pelvisY=back(pelvisY,0);pelvisZ=back(pelvisZ,0);
+     headY=back(headY,0);headX=back(headX,0);
+     rArmX=back(rArmX,0);rArmY=back(rArmY,0);rArmZ=back(rArmZ,0);rForeX=back(rForeX,-.12);rForeY=back(rForeY,0);rForeZ=back(rForeZ,0);
+     lArmX=back(lArmX,0);lArmY=back(lArmY,0);lForeX=back(lForeX,-.10);
+     lLegX=back(lLegX,0);rLegX=back(rLegX,0);lKnee=back(lKnee,0);rKnee=back(rKnee,0);
    }
  }
+
  const set=(obj,axis,val)=>obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],val,k);
- set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
- set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);set(officeRig.rArm,'x',rArmX);set(officeRig.rArm,'y',rArmY);set(officeRig.rArm,'z',rArmZ);
+ set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);
+ set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
+ set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);
+ set(officeRig.rArm,'x',rArmX);set(officeRig.rArm,'y',rArmY);set(officeRig.rArm,'z',rArmZ);
  set(officeRig.lFore,'x',lForeX);set(officeRig.rFore,'x',rForeX);set(officeRig.rFore,'y',rForeY);set(officeRig.rFore,'z',rForeZ);
- set(officeRig.torsoPivot,'y',torsoY);set(officeRig.torsoPivot,'z',torsoZ);set(officeRig.pelvis,'y',pelvisY);
- const bob=moving&&!attacking?Math.abs(Math.sin(walkPhase*2))*(run ? .020 : .012)*speedRatio:0;avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bob,k);
+ set(officeRig.torsoPivot,'x',torsoX);set(officeRig.torsoPivot,'y',torsoY);set(officeRig.torsoPivot,'z',torsoZ);
+ set(officeRig.pelvis,'y',pelvisY);set(officeRig.pelvis,'z',pelvisZ);
+ set(officeRig.head,'y',headY);set(officeRig.head,'x',headX);
+ avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bodyBob,k);
 
  const swing=attacking?Math.sin(Math.min(1,attackP)*Math.PI):0;
- const batZ=attacking?(-2.38+swing*1.75):-2.38;
- const batX=attacking?(.08+swing*.44):.08;
- const batY=attacking?(.10-swing*.38):.10;
- batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,batZ,k);
- batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,batX,k);
- batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,batY,k);
+ batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,attacking?(-2.38+swing*1.82):-2.38,k);
+ batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,attacking?(.08+swing*.50):.08,k);
+ batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,attacking?(.10-swing*.42):.10,k);
 }
 fallbackHuman();avatar.rotation.y=Math.PI;avatar.visible=false;
 
@@ -798,11 +816,18 @@ function createNpc(kind='office',path=[],opts={}){
  const pelvis=new THREE.Group();pelvis.position.y=.88;body.add(pelvis);
  const hip=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.26),pants);pelvis.add(hip);
  const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.38,5,10),shirt);torso.position.y=.34;torso.scale.set(1.12,1,.76);pelvis.add(torso);
- const head=new THREE.Mesh(new THREE.SphereGeometry(.18,14,10),skin);head.position.set(0,.93,0);head.scale.set(.96,1.08,.98);pelvis.add(head);
+ const neck=new THREE.Mesh(new THREE.CylinderGeometry(.065,.075,.08,10),skin);neck.position.set(0,.76,0);pelvis.add(neck);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.18,16,12),skin);head.position.set(0,.93,0);head.scale.set(.96,1.08,.98);pelvis.add(head);
+ const faceDark=mat(0x20252b,.8,0);
+ const nose=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin);nose.scale.set(.7,.85,1.25);nose.position.set(0,.945,.178);pelvis.add(nose);
+ for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,7,5),faceDark);eye.position.set(sx*.058,.98,.176);pelvis.add(eye)}
+ const earL=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin),earR=earL.clone();earL.scale.set(.65,1,.55);earR.scale.copy(earL.scale);earL.position.set(-.175,.95,0);earR.position.set(.175,.95,0);pelvis.add(earL,earR);
  const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.186,12,8,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.02,-.005);pelvis.add(hairCap);
  function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,5,8),material);m.position.y=-len*.5;p.add(m);return p}
  const lArm=limb(pelvis,-.31,.58,shirt,.30,.068),rArm=limb(pelvis,.31,.58,shirt,.30,.068);
  const lFore=limb(lArm,0,-.29,skin,.27,.056),rFore=limb(rArm,0,-.29,skin,.27,.056);
+ const lHand=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),skin);lHand.scale.set(.82,1.05,.72);lHand.position.y=-.27;lFore.add(lHand);
+ const rHand=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),skin);rHand.scale.copy(lHand.scale);rHand.position.y=-.27;rFore.add(rHand);
  const lLeg=limb(pelvis,-.13,-.02,pants,.36,.09),rLeg=limb(pelvis,.13,-.02,pants,.36,.09);
  const lShin=limb(lLeg,0,-.35,pants,.35,.078),rShin=limb(rLeg,0,-.35,pants,.35,.078);
  const lf=new THREE.Mesh(new THREE.BoxGeometry(.21,.11,.36),shoe);lf.position.set(0,-.35,-.07);lShin.add(lf);const rf=lf.clone();rShin.add(rf);
@@ -823,7 +848,7 @@ function createNpc(kind='office',path=[],opts={}){
    const h1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.72,8),metal);h1.rotation.z=Math.PI/2;h1.position.set(0,.98,.34);cart.add(h1);
    for(const x of [-.27,.27])for(const z of [-.34,.34]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,10),darkPants);w.rotation.z=Math.PI/2;w.position.set(x,.08,z);cart.add(w)}
  }
- const npc={id:++npcIdSeed,root,body,pelvis,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,fallen:false,fallT:0,fallDir:1,cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000};
+ const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000};
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
 }
@@ -849,39 +874,82 @@ function spawnNpcs(){
  }});
 }
 function updateNpcs(dt){
+ const now=performance.now();
  for(const n of npcs){
    if(n.fallen){
-     n.fallT=Math.min(1,n.fallT+dt*2.9);
-     const e=n.fallT*n.fallT*(3-2*n.fallT);
-     n.body.rotation.z=THREE.MathUtils.lerp(0,n.fallDir*Math.PI*.48,e);
-     n.body.position.y=THREE.MathUtils.lerp(.04,.16,e);
-     if(n.cart){n.cart.position.lerp(new THREE.Vector3(n.root.position.x,0,n.root.position.z+.7),Math.min(1,dt*2))}
+     n.fallT=Math.min(1,n.fallT+dt*2.35);
+     const e=n.fallT*n.fallT*(3-2*n.fallT),settle=1-Math.pow(1-n.fallT,3);
+     n.root.position.addScaledVector(n.hitVel,dt);n.hitVel.multiplyScalar(Math.exp(-5.2*dt));
+     n.body.rotation.z=THREE.MathUtils.lerp(0,n.fallDir*Math.PI*.49,e);
+     n.body.rotation.x=THREE.MathUtils.lerp(0,n.fallPitch,e);
+     n.body.position.y=THREE.MathUtils.lerp(.04,.12,e);
+     n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,-1.0*n.fallDir,e);
+     n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,.72*n.fallDir,e);
+     n.lFore.rotation.x=THREE.MathUtils.lerp(n.lFore.rotation.x,-.80,e);
+     n.rFore.rotation.x=THREE.MathUtils.lerp(n.rFore.rotation.x,-1.05,e);
+     n.lLeg.rotation.x=THREE.MathUtils.lerp(n.lLeg.rotation.x,.30,e);
+     n.rLeg.rotation.x=THREE.MathUtils.lerp(n.rLeg.rotation.x,-.18,e);
+     n.lShin.rotation.x=THREE.MathUtils.lerp(n.lShin.rotation.x,.55*settle,e);
+     n.rShin.rotation.x=THREE.MathUtils.lerp(n.rShin.rotation.x,.28*settle,e);
+     if(n.cart){n.cart.position.lerp(new THREE.Vector3(n.root.position.x,0,n.root.position.z+.7),Math.min(1,dt*2.4));n.cart.rotation.z=THREE.MathUtils.lerp(n.cart.rotation.z,n.fallDir*.18,e)}
      continue;
    }
+
+   if(now<n.pauseUntil){
+     const idle=Math.sin(n.phase*.55),k=1-Math.exp(-8*dt);n.phase+=dt*.9;
+     n.head.rotation.y=THREE.MathUtils.lerp(n.head.rotation.y,n.lookBias+idle*.10,k);
+     n.head.rotation.x=THREE.MathUtils.lerp(n.head.rotation.x,Math.sin(n.phase*.37)*.025,k);
+     n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,0,k);n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,0,k);
+     n.lLeg.rotation.x=THREE.MathUtils.lerp(n.lLeg.rotation.x,0,k);n.rLeg.rotation.x=THREE.MathUtils.lerp(n.rLeg.rotation.x,0,k);
+     continue;
+   }
+
    if(n.path.length<2)continue;
    const target=n.path[n.target%n.path.length],delta=target.clone().sub(n.root.position);delta.y=0;
-   const d=delta.length();if(d<.22){n.target=(n.target+1)%n.path.length;continue}
-   delta.normalize();n.root.position.addScaledVector(delta,n.speed*dt);
-   const want=Math.atan2(delta.x,delta.z);n.root.rotation.y=THREE.MathUtils.lerp(n.root.rotation.y,want,1-Math.exp(-7*dt));
-   n.phase+=dt*n.speed*6.1;const s=Math.sin(n.phase),k=1-Math.exp(-14*dt);
-   n.lLeg.rotation.x=THREE.MathUtils.lerp(n.lLeg.rotation.x,s*.46,k);n.rLeg.rotation.x=THREE.MathUtils.lerp(n.rLeg.rotation.x,-s*.46,k);
-   n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,-s*.34,k);if(n.kind!=='sweeper')n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,s*.34,k);
-   n.pelvis.position.y=.88+Math.abs(Math.sin(n.phase*2))*.012;
-   if(n.broom)n.broom.rotation.y=Math.sin(n.phase*.72)*.28;
+   const d=delta.length();
+   if(d<.22){
+     n.target=(n.target+1)%n.path.length;
+     if(Math.random()<.34)n.pauseUntil=now+650+Math.random()*1500;
+     continue;
+   }
+
+   delta.normalize();
+   n.root.position.addScaledVector(delta,n.speed*n.gait*dt);
+   const want=Math.atan2(delta.x,delta.z),turn=Math.atan2(Math.sin(want-n.root.rotation.y),Math.cos(want-n.root.rotation.y));
+   n.root.rotation.y+=turn*(1-Math.exp(-6.5*dt));
+   n.phase+=dt*n.speed*n.gait*6.2;
+   const s=Math.sin(n.phase),opp=-s,k=1-Math.exp(-13*dt),stride=.48*n.gait;
+
+   n.lLeg.rotation.x=THREE.MathUtils.lerp(n.lLeg.rotation.x,s*stride,k);
+   n.rLeg.rotation.x=THREE.MathUtils.lerp(n.rLeg.rotation.x,opp*stride,k);
+   n.lShin.rotation.x=THREE.MathUtils.lerp(n.lShin.rotation.x,Math.max(0,-s)*.62,k);
+   n.rShin.rotation.x=THREE.MathUtils.lerp(n.rShin.rotation.x,Math.max(0,-opp)*.62,k);
+   n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,opp*.34*n.gait,k);
+   if(n.kind!=='sweeper')n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,s*.34*n.gait,k);
+
+   n.pelvis.position.y=.88+Math.abs(Math.sin(n.phase*2))*.013;
+   n.pelvis.rotation.z=THREE.MathUtils.lerp(n.pelvis.rotation.z,s*.035,k);
+   n.torso.rotation.y=THREE.MathUtils.lerp(n.torso.rotation.y,-s*.06,k);
+   n.torso.rotation.z=THREE.MathUtils.lerp(n.torso.rotation.z,-s*.018,k);
+   n.head.rotation.y=THREE.MathUtils.lerp(n.head.rotation.y,n.lookBias+s*.025,k);
+   n.head.rotation.x=THREE.MathUtils.lerp(n.head.rotation.x,Math.sin(n.phase*.5)*.018,k);
+
+   if(n.broom){n.broom.rotation.y=Math.sin(n.phase*.72)*.30;n.rFore.rotation.x=THREE.MathUtils.lerp(n.rFore.rotation.x,-.70+Math.sin(n.phase)*.08,k)}
    if(n.cart){
      const back=new THREE.Vector3(0,0,.78).applyAxisAngle(up,n.root.rotation.y);
      n.cart.position.set(n.root.position.x+back.x,0,n.root.position.z+back.z);n.cart.rotation.y=n.root.rotation.y;
+     n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,-.62,k);n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,-.62,k);
    }
-   if(n.voiceProfile&&started&&performance.now()>=n.nextSpeakAt){
-     const distToPlayer=n.root.position.distanceTo(player.position);
-     if(distToPlayer<7.5)speakNpc(n);
-     n.nextSpeakAt=performance.now()+14000+Math.random()*12000;
+
+   if(n.voiceProfile&&started&&now>=n.nextSpeakAt){
+     if(n.root.position.distanceTo(player.position)<7.5)speakNpc(n);
+     n.nextSpeakAt=now+14000+Math.random()*12000;
    }
  }
 }
 function knockDownNpc(n,dir){
  if(!n||n.fallen)return;
- n.fallen=true;n.fallT=0;n.fallDir=(dir.x*Math.cos(n.root.rotation.y)-dir.z*Math.sin(n.root.rotation.y))>=0?1:-1;
+ n.fallen=true;n.fallT=0;n.fallDir=(dir.x*Math.cos(n.root.rotation.y)-dir.z*Math.sin(n.root.rotation.y))>=0?1:-1;n.fallPitch=-.18-Math.random()*.18;n.hitVel.copy(dir).setY(0).normalize().multiplyScalar(1.15+Math.random()*.55);
  shake=.12;recoilPitch=.025;soundNpcHit();if(n.voiceProfile)speakNpc(n,n.voiceProfile.hit,true);else show(n.kind==='office'?'IMPIEGATO A TERRA':'ADDETTO PULIZIE A TERRA');
 }
 spawnNpcs();
@@ -1323,8 +1391,40 @@ function restartCompletedGame(){
  else renderer.domElement.requestPointerLock?.();
  saveRuntimeSession();
 }
+function impactProfile(d){
+ const t=d.type;
+ if(t==='keyboard'||t==='phone')return {push:2.25,spin:3.2};
+ if(t==='chair')return {push:1.65,spin:2.6};
+ if(t==='monitor')return {push:.42,spin:.75};
+ if(t==='desk')return {push:.16,spin:.22};
+ if(t==='rack'||t==='column')return {push:.08,spin:.12};
+ if(t==='cube')return {push:.55,spin:.55};
+ if(t==='panel'||t==='glass')return {push:.20,spin:.20};
+ return {push:.12,spin:.18};
+}
+function kickObject(d,dir){
+ if(!d||d.dead)return;
+ const p=impactProfile(d),v=dir.clone().setY(0);
+ if(v.lengthSq()<.001)v.set(0,0,-1);v.normalize();
+ d.impactVel.addScaledVector(v,p.push);
+ d.impactSpin.x+=(Math.random()-.5)*p.spin;
+ d.impactSpin.y+=(Math.random()-.5)*p.spin*.7;
+ d.impactSpin.z+=(Math.random()-.5)*p.spin;
+ if(!impactBodies.includes(d))impactBodies.push(d);
+}
+function updateImpactBodies(dt){
+ for(let i=impactBodies.length-1;i>=0;i--){
+   const d=impactBodies[i];
+   if(!d||d.dead||!d.o.visible){impactBodies.splice(i,1);continue}
+   d.o.position.x+=d.impactVel.x*dt;d.o.position.z+=d.impactVel.z*dt;
+   d.o.rotation.x+=d.impactSpin.x*dt;d.o.rotation.y+=d.impactSpin.y*dt;d.o.rotation.z+=d.impactSpin.z*dt;
+   const drag=Math.exp(-6.8*dt),ang=Math.exp(-7.8*dt);d.impactVel.multiplyScalar(drag);d.impactSpin.multiplyScalar(ang);
+   d.o.rotation.x=THREE.MathUtils.clamp(d.o.rotation.x,-.28,.28);d.o.rotation.z=THREE.MathUtils.clamp(d.o.rotation.z,-.28,.28);
+   if(d.impactVel.lengthSq()<.001&&d.impactSpin.lengthSq()<.002){d.impactVel.set(0,0,0);d.impactSpin.set(0,0,0);impactBodies.splice(i,1)}
+ }
+}
 function applyHit(d,dir){
- if(d.dead)return;d.hp--;soundObjectHit(d.type,d.hp<=0);countdownOn=true;shake=.14;let now=performance.now();combo=now<comboUntil?Math.min(9,combo+1):1;comboUntil=now+1200;comboEl.textContent='COMBO x'+combo;comboEl.classList.add('on');setTimeout(()=>{if(performance.now()>comboUntil-150)comboEl.classList.remove('on')},1050);
+ if(d.dead)return;d.hp--;kickObject(d,dir);soundObjectHit(d.type,d.hp<=0);countdownOn=true;shake=.14;let now=performance.now();combo=now<comboUntil?Math.min(9,combo+1):1;comboUntil=now+1200;comboEl.textContent='COMBO x'+combo;comboEl.classList.add('on');setTimeout(()=>{if(performance.now()>comboUntil-150)comboEl.classList.remove('on')},1050);
  damage+=Math.round(d.val*(d.hp<=0?1:.18)*combo);damageEl.textContent='€ '+damage.toLocaleString('it-IT');
  if(d.type==='monitor'&&d.hp===1){d.o.userData.screen.material.map=texCrack;d.o.userData.screen.material.needsUpdate=true;spark(d.o.getWorldPosition(new THREE.Vector3()),9)}
  if(d.mode==='dynamic'){d.vel.addScaledVector(dir,5.8);d.vel.y+=2.5;d.spin.set((Math.random()-.5)*5,(Math.random()-.5)*7,(Math.random()-.5)*5);if(!dynamics.includes(d))dynamics.push(d)}
@@ -1379,9 +1479,9 @@ function resetRoom(){
  gameCompleted=false;q('#completePopup')?.classList.add('hidden');
  damage=0;destroyed=0;combo=1;countdown=150;countdownOn=false;damageEl.textContent='€ 0';destroyedEl.textContent='0';timerEl.textContent='02:30';
  for(let i=dynamics.length-1;i>=0;i--){if(dynamics[i].fragment)scene.remove(dynamics[i].o)}
- destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);d.vel.set(0,0,0);d.spin.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
- dynamics.length=0;moveVel.set(0,0,0);player.position.set(0,0,6);jumpV=0;grounded=true;
- for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.y=.04;n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;if(n.path[0])n.root.position.copy(n.path[0])} try{speechSynthesis?.cancel?.()}catch(e){}
+ destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);d.vel.set(0,0,0);d.spin.set(0,0,0);d.impactVel?.set(0,0,0);d.impactSpin?.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
+ dynamics.length=0;impactBodies.length=0;moveVel.set(0,0,0);player.position.set(0,0,6);jumpV=0;grounded=true;
+ for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;n.pelvis.rotation.set(0,0,0);n.torso.rotation.set(0,0,0);n.head.rotation.set(0,0,0);for(const limb of [n.lArm,n.rArm,n.lFore,n.rFore,n.lLeg,n.rLeg,n.lShin,n.rShin])limb.rotation.set(0,0,0);n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;if(n.path[0])n.root.position.copy(n.path[0])} try{speechSynthesis?.cancel?.()}catch(e){}
  show('SALA RIPRISTINATA')
 }
 function resolve(np){
@@ -1457,7 +1557,7 @@ function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];i
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 let lastSessionSave=0;
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
+function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
 function applyMobileOrientation(){
