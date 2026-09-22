@@ -82,7 +82,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWid
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);
 const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,28,.01);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[];
-let yaw=0,pitch=-.05,dist=5.3,started=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false;let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0;const MAX_FRAGMENTS=110;
+let yaw=0,pitch=-.05,dist=5.3,started=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false;let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
 const avatar=new THREE.Group();player.add(avatar);const batPivot=new THREE.Group();batPivot.position.set(.42,1.25,.05);player.add(batPivot);
 const metalMat=new THREE.MeshStandardMaterial({color:0x545e68,roughness:.28,metalness:.8});
@@ -92,14 +92,14 @@ const fpView=new THREE.Group();camera.add(fpView);fpView.visible=false;
 function buildFirstPersonView(){
  const skin=mat(0xc88a68,.58,0),shirt=mat(0x7f7f79,.66,.02),watchMat=mat(0x17191d,.45,.15);
  const shoulder=new THREE.Group();shoulder.position.set(.34,-.28,-.58);fpView.add(shoulder);
- const upper=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.30,6,10),shirt);upper.rotation.z=-.28;upper.position.set(.05,-.08,.02);shoulder.add(upper);
+ const upper=new THREE.Mesh(new THREE.CapsuleGeometry(.075,.30,6,10),shirt);upper.rotation.z=-.28;upper.position.set(.05,-.08,.02);upper.renderOrder=20;shoulder.add(upper);
  const elbow=new THREE.Group();elbow.position.set(.17,-.20,-.02);shoulder.add(elbow);
- const fore=new THREE.Mesh(new THREE.CapsuleGeometry(.068,.30,6,10),skin);fore.rotation.z=-.66;fore.position.set(.10,-.09,-.01);elbow.add(fore);
+ const fore=new THREE.Mesh(new THREE.CapsuleGeometry(.068,.30,6,10),skin);fore.rotation.z=-.66;fore.position.set(.10,-.09,-.01);fore.renderOrder=20;elbow.add(fore);
  const hand=new THREE.Group();hand.position.set(.25,-.18,-.02);elbow.add(hand);
  const palm=new THREE.Mesh(new THREE.SphereGeometry(.072,12,10),skin);palm.scale.set(.82,1.1,.72);hand.add(palm);
  const watch=new THREE.Mesh(new THREE.BoxGeometry(.075,.035,.085),watchMat);watch.position.set(-.10,.04,.05);hand.add(watch);
  const weapon=new THREE.Group();weapon.position.set(.02,-.02,-.04);weapon.rotation.set(.05,.08,-2.22);hand.add(weapon);
- const batFp=new THREE.Mesh(new THREE.CylinderGeometry(.046,.075,1.05,12),metalMat);batFp.position.set(.18,.27,0);batFp.rotation.z=-.08;weapon.add(batFp);
+ const batFp=new THREE.Mesh(new THREE.CylinderGeometry(.046,.075,1.05,12),metalMat);batFp.position.set(.18,.27,0);batFp.rotation.z=-.08;batFp.renderOrder=21;weapon.add(batFp);
  fpRig={shoulder,elbow,hand,weapon,bat:batFp,restPos:shoulder.position.clone()};
 }
 buildFirstPersonView();
@@ -313,27 +313,61 @@ function updateFirstPersonView(dt,speedRatio,run){
  if(!fpRig)return;
  const moving=speedRatio>.025;
  if(moving&&!attacking)fpWalk+=dt*(run?10.5:7.2);
- const k=1-Math.exp(-18*dt);
- const sway=moving?Math.sin(fpWalk)*.018*speedRatio:0;
- const bob=moving?Math.abs(Math.sin(fpWalk*2))*(run ? .018 : .010)*speedRatio:0;
+ const k=1-Math.exp(-20*dt);
+ const sway=moving?Math.sin(fpWalk)*.014*speedRatio:0;
+ const bob=moving?Math.abs(Math.sin(fpWalk*2))*(run ? .014 : .008)*speedRatio:0;
  let sx=.34+sway,sy=-.28-bob,sz=-.58;
- let shoulderX=0,shoulderY=0,shoulderZ=0,elbowX=0,elbowY=0,weaponX=.05,weaponY=.08,weaponZ=-2.22;
+ let shoulderX=0,shoulderY=0,shoulderZ=0,elbowX=0,elbowY=0,elbowZ=0,weaponX=.05,weaponY=.08,weaponZ=-2.22;
 
  if(attacking){
-   const p=Math.min(1,attackT/.52);
-   const wind=p<.25?THREE.MathUtils.smoothstep(p/.25,0,1):1;
-   const strike=p<.25?0:(p<.55?THREE.MathUtils.smoothstep((p-.25)/.30,0,1):1);
-   const recover=p<.55?0:THREE.MathUtils.smoothstep((p-.55)/.45,0,1);
-   shoulderX=-.35*wind+.95*strike-.60*recover;
-   shoulderY=-.42*wind+.65*strike-.28*recover;
-   shoulderZ=-.16*wind+.22*strike-.12*recover;
-   elbowX=-.55*wind+.78*strike-.32*recover;
-   elbowY=-.32*wind+.42*strike-.18*recover;
-   weaponZ=-2.22-1.0*wind+2.45*strike-1.45*recover;
-   weaponX=.05+.28*strike-.18*recover;
-   weaponY=.08-.55*wind+.70*strike-.30*recover;
-   sx+=.08*strike;sy+=.02*strike;sz+=.05*strike;
+   const p=Math.min(1,attackT/.56);
+   const smooth=t=>t*t*(3-2*t);
+   const easeOut=t=>1-Math.pow(1-t,3);
+   let wind=0,strike=0,follow=0,recover=0;
+   if(p<.24)wind=smooth(p/.24);
+   else wind=1;
+   if(p>=.24&&p<.50)strike=easeOut((p-.24)/.26);
+   else if(p>=.50)strike=1;
+   if(p>=.50&&p<.70)follow=smooth((p-.50)/.20);
+   else if(p>=.70)follow=1;
+   if(p>=.70)recover=smooth((p-.70)/.30);
+
+   // Wind-up: pull the elbow and hammer slightly back/right.
+   shoulderX=-.20*wind;
+   shoulderY=-.38*wind;
+   shoulderZ=-.22*wind;
+   elbowX=-.72*wind;
+   elbowY=-.26*wind;
+   elbowZ=.18*wind;
+   weaponX=-.12*wind;
+   weaponY=-.22*wind;
+   weaponZ=-.92*wind;
+
+   // Strike: shoulder leads, elbow opens, hammer crosses the centre.
+   if(strike>0){
+     shoulderX+=.56*strike;shoulderY+=.88*strike;shoulderZ+=.34*strike;
+     elbowX+=1.26*strike;elbowY+=.30*strike;elbowZ-=.42*strike;
+     weaponX+=.34*strike;weaponY+=.38*strike;weaponZ+=2.18*strike;
+     sx+=.09*strike;sy+=.035*strike;sz+=.045*strike;
+   }
+
+   // Follow-through pushes slightly down and left after impact.
+   if(follow>0){
+     shoulderX-=.28*follow;shoulderY-=.20*follow;shoulderZ-=.18*follow;
+     elbowX-=.30*follow;elbowY+=.15*follow;elbowZ-=.10*follow;
+     weaponX+=.12*follow;weaponY-=.28*follow;weaponZ+=.34*follow;
+     sy+=.02*follow;
+   }
+
+   // Recover smoothly to the resting pose.
+   if(recover>0){
+     shoulderX=THREE.MathUtils.lerp(shoulderX,0,recover);shoulderY=THREE.MathUtils.lerp(shoulderY,0,recover);shoulderZ=THREE.MathUtils.lerp(shoulderZ,0,recover);
+     elbowX=THREE.MathUtils.lerp(elbowX,0,recover);elbowY=THREE.MathUtils.lerp(elbowY,0,recover);elbowZ=THREE.MathUtils.lerp(elbowZ,0,recover);
+     weaponX=THREE.MathUtils.lerp(weaponX,.05,recover);weaponY=THREE.MathUtils.lerp(weaponY,.08,recover);weaponZ=THREE.MathUtils.lerp(weaponZ,-2.22,recover);
+     sx=THREE.MathUtils.lerp(sx,.34+sway,recover);sy=THREE.MathUtils.lerp(sy,-.28-bob,recover);sz=THREE.MathUtils.lerp(sz,-.58,recover);
+   }
  }
+
  fpRig.shoulder.position.x=THREE.MathUtils.lerp(fpRig.shoulder.position.x,sx,k);
  fpRig.shoulder.position.y=THREE.MathUtils.lerp(fpRig.shoulder.position.y,sy,k);
  fpRig.shoulder.position.z=THREE.MathUtils.lerp(fpRig.shoulder.position.z,sz,k);
@@ -342,6 +376,7 @@ function updateFirstPersonView(dt,speedRatio,run){
  fpRig.shoulder.rotation.z=THREE.MathUtils.lerp(fpRig.shoulder.rotation.z,shoulderZ,k);
  fpRig.elbow.rotation.x=THREE.MathUtils.lerp(fpRig.elbow.rotation.x,elbowX,k);
  fpRig.elbow.rotation.y=THREE.MathUtils.lerp(fpRig.elbow.rotation.y,elbowY,k);
+ fpRig.elbow.rotation.z=THREE.MathUtils.lerp(fpRig.elbow.rotation.z,elbowZ,k);
  fpRig.weapon.rotation.x=THREE.MathUtils.lerp(fpRig.weapon.rotation.x,weaponX,k);
  fpRig.weapon.rotation.y=THREE.MathUtils.lerp(fpRig.weapon.rotation.y,weaponY,k);
  fpRig.weapon.rotation.z=THREE.MathUtils.lerp(fpRig.weapon.rotation.z,weaponZ,k);
@@ -483,12 +518,12 @@ function applyHit(d,dir){
    spark(p,d.type==='glass'?14:(d.type==='monitor'?12:8),d.type==='glass'?0xd9f4ff:(d.type==='monitor'?0xbcd9f2:0x6d747c),d.type==='glass'?.038:.06);
    breakApart(d,dir);
    d.o.visible=false;d.vel.set(0,0,0);d.spin.set(0,0,0);
-   shake=.32;
+   shake=.24;recoilPitch=.055;recoilYaw=(Math.random()-.5)*.035;recoilRoll=(Math.random()-.5)*.025;impactPulse=.11;
    show(label(d.type)+' FRANTUMATO  +€ '+d.val.toLocaleString('it-IT'));
  }
 }
 function attack(){
- if(!started||attacking)return;attacking=true;attackT=0;hitDone=false
+ if(!started||editorMode||attacking)return;attacking=true;attackT=0;hitDone=false
 }
 function hit(){
  camera.getWorldDirection(fwd);fwd.normalize();const origin=camera.getWorldPosition(new THREE.Vector3());
@@ -516,14 +551,22 @@ function updatePlayer(dt){
  const speed=Math.hypot(moveVel.x,moveVel.z),ratio=Math.min(1,speed/maxSpeed);
  jumpV-=9.82*dt;player.position.y+=jumpV*dt;if(player.position.y<=0){player.position.y=0;jumpV=0;grounded=true}
  if(attacking)attackT+=dt;updateFirstPersonView(dt,ratio,run);
- if(attacking){let p=Math.min(1,attackT/.52);if(!hitDone&&p>.47){hitDone=true;hit()}if(p>=1){attacking=false;attackT=0;hitDone=false}}
+ if(attacking){let p=Math.min(1,attackT/.56);if(!hitDone&&p>.47){hitDone=true;hit()}if(p>=1){attacking=false;attackT=0;hitDone=false}}
 }
 function updateCam(dt){
  const speed=Math.hypot(moveVel.x,moveVel.z),run=keys.has('ShiftLeft')||keys.has('ShiftRight'),ratio=Math.min(1,speed/(run?5.15:3.15));
- const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .018 : .010)*ratio:0;
+ const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .016 : .009)*ratio:0;
  camera.position.set(player.position.x,player.position.y+1.67+headBob,player.position.z);
- camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;camera.rotation.z=grounded&&speed>.05?Math.sin(fpWalk)*.004*ratio:0;
- if(shake>0){shake=Math.max(0,shake-dt);camera.position.x+=(Math.random()-.5)*shake*.08;camera.position.y+=(Math.random()-.5)*shake*.07}
+ camera.rotation.order='YXZ';
+ camera.rotation.y=yaw+recoilYaw;
+ camera.rotation.x=pitch-recoilPitch;
+ camera.rotation.z=(grounded&&speed>.05?Math.sin(fpWalk)*.0035*ratio:0)+recoilRoll;
+ if(shake>0){shake=Math.max(0,shake-dt);camera.position.x+=(Math.random()-.5)*shake*.06;camera.position.y+=(Math.random()-.5)*shake*.05}
+ recoilPitch=THREE.MathUtils.lerp(recoilPitch,0,1-Math.exp(-18*dt));
+ recoilYaw=THREE.MathUtils.lerp(recoilYaw,0,1-Math.exp(-20*dt));
+ recoilRoll=THREE.MathUtils.lerp(recoilRoll,0,1-Math.exp(-20*dt));
+ impactPulse=Math.max(0,impactPulse-dt);
+ const targetFov=impactPulse>0?75:72;if(Math.abs(camera.fov-targetFov)>.02){camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-24*dt));camera.updateProjectionMatrix()}
  fpView.visible=started&&!editorMode;
 }
 function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];if(d.dead)continue;if(d.fragment){d.life-=dt;if(d.life<=0){disposeFragment(d);dynamics.splice(i,1);continue}}d.vel.y-=9.82*dt;d.o.position.addScaledVector(d.vel,dt);d.o.rotation.x+=d.spin.x*dt;d.o.rotation.y+=d.spin.y*dt;d.o.rotation.z+=d.spin.z*dt;if(d.o.position.y<.15){d.o.position.y=.15;d.vel.y*=-.22;d.vel.x*=.68;d.vel.z*=.68;d.spin.multiplyScalar(.72)}}}
