@@ -105,7 +105,28 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
  .homeNote{display:none}
  .joy{width:108px;height:108px}.knob{left:30px;top:30px;width:48px;height:48px}
  .touchbtns button{width:70px;height:70px}.touchbtns .hit{width:88px;height:88px}
- #lookzone{top:76px}
+ #lookzone{top:72px}
+
+ /* HUD di gioco: comandi solo ai bordi, mai al centro dello schermo */
+ .joy{left:max(12px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));width:106px;height:106px}
+ .knob{left:29px;top:29px;width:48px;height:48px}
+ .touchbtns{right:max(12px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));gap:9px}
+ .touchbtns button{width:68px;height:68px;font-size:11px}
+ .touchbtns .hit{width:86px;height:86px}
+
+ #viewToggle{left:50%!important;top:auto!important;bottom:max(8px,env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;font-size:9px!important;padding:7px 10px!important}
+ #soundToggle{left:max(10px,env(safe-area-inset-left))!important;top:92px!important;bottom:auto!important;font-size:8px!important;padding:7px 9px!important}
+ #homeGameBtn{right:max(10px,env(safe-area-inset-right))!important;top:92px!important;bottom:auto!important;font-size:9px!important;padding:8px 10px!important}
+
+ /* Comandi ADMIN compatti nella fascia alta centrale */
+ #adminStatus{display:none!important}
+ #adminBtn{left:50%!important;right:auto!important;top:8px!important;bottom:auto!important;transform:translateX(-50%)!important;padding:7px 10px!important;font-size:9px!important}
+ #operatorPreviewBtn{left:50%!important;right:auto!important;top:8px!important;bottom:auto!important;transform:translateX(-205px)!important;padding:7px 10px!important;font-size:8px!important}
+ #editorBtn{left:50%!important;right:auto!important;top:8px!important;bottom:auto!important;transform:translateX(86px)!important;padding:7px 10px!important;font-size:9px!important}
+ #adminStatsBtn{left:50%!important;right:auto!important;top:45px!important;bottom:auto!important;transform:translateX(-50%)!important;padding:6px 9px!important;font-size:8px!important}
+
+ /* Pannello statistiche centrato e compatto se aperto */
+ #adminStats{left:50%!important;right:auto!important;top:78px!important;bottom:auto!important;transform:translateX(-50%)!important;width:min(330px,88vw)!important;max-height:calc(100dvh - 90px);overflow:auto}
 }
 </style>
 </head>
