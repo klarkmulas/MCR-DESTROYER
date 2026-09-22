@@ -54,7 +54,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .currentPlayerBar{display:flex;align-items:center;gap:10px;margin:0 0 15px;padding:10px 12px;border-radius:12px;background:#07101a9c;border:1px solid #ffffff10}.currentPlayerBar b{color:#7fcaff}.currentPlayerBar button{margin-left:auto;padding:7px 10px;border-radius:9px;background:#ffffff0b;border:1px solid #ffffff18;color:#dcecff;font-size:10px;font-weight:900}
 #playerBadge{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:24;padding:8px 12px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff44;color:#dff3ff;font-size:10px;font-weight:900;letter-spacing:.07em;pointer-events:none}
 @media(max-width:720px){.playerGrid{grid-template-columns:repeat(2,1fr)}#playerBadge{top:56px;font-size:9px}.currentPlayerBar{flex-wrap:wrap}.currentPlayerBar button{margin-left:0}}
-#start.homeStart{padding:18px;background:
+#start.homeStart{padding:18px;overflow-y:auto;overflow-x:hidden;align-items:start;background:
  radial-gradient(circle at 18% 18%,rgba(40,120,220,.25),transparent 34%),
  radial-gradient(circle at 82% 34%,rgba(27,74,150,.24),transparent 30%),
  linear-gradient(180deg,#07101a,#020508 72%)}
@@ -83,7 +83,29 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .homeBat{position:absolute;right:8%;bottom:6%;width:72px;height:290px;border-radius:36px;background:linear-gradient(90deg,#33404a,#c6d0d8 48%,#2f3941);transform:rotate(28deg);box-shadow:0 0 22px #67b8ff33}
 .homeGlow{position:absolute;left:12%;right:12%;bottom:8%;height:4px;background:#44b7ff;box-shadow:0 0 28px 9px #2b91ff66}
 @media(max-width:850px){.homeShell{grid-template-columns:1fr}.homeVisual{display:none}.homeFeatures{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){#start.homeStart{padding:10px}.homeCard{padding:20px 16px}.homeFeatures{grid-template-columns:1fr}.homeActions{display:grid}.homePlay,.homeSecondary{width:100%}.homeCard h1{font-size:48px}}
+@media(max-width:520px){
+ #start.homeStart{padding:8px;display:block}
+ .homeShell{width:100%;min-height:100%;display:block}
+ .homeCard{padding:18px 14px 26px;display:flex;flex-direction:column;min-height:auto}
+ .homeCard .homeEyebrow{order:1}.homeCard h1{order:2;font-size:44px;margin:8px 0 10px}.homeLead{order:3;font-size:13px;line-height:1.4}
+ .viewChoice{order:4;margin:12px 0}.homeActions{order:5;display:grid;position:sticky;bottom:0;z-index:8;padding:10px 0 8px;background:linear-gradient(180deg,transparent,#07101a 28%,#07101a 100%)}
+ .homeFeatures{order:6;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.homeFeature{padding:9px}.homeFeature span{font-size:9px}
+ .homeNote{order:7;margin-top:8px}.homePlay,.homeSecondary{width:100%}.homePlay{font-size:17px;padding:15px 20px}
+}
+@media(max-width:380px){.homeFeatures{grid-template-columns:1fr}.homeCard h1{font-size:40px}}
+
+@media (orientation:landscape) and (pointer:coarse){
+ #start.homeStart{padding:6px}
+ .homeShell{width:min(980px,98vw);grid-template-columns:1fr .72fr;gap:10px}
+ .homeCard{padding:14px 16px}.homeVisual{display:block;min-height:calc(100dvh - 12px)}
+ .homeCard h1{font-size:38px;margin:5px 0 8px}.homeLead{font-size:12px;line-height:1.35}
+ .homeFeatures{grid-template-columns:repeat(2,1fr);gap:5px;margin:8px 0}.homeFeature{padding:7px}.homeFeature span{display:none}
+ .viewChoice{margin:8px 0}.viewChoiceBtns button{padding:8px}.homeActions{display:flex;position:static;padding:0;background:none}.homeActions button{padding:9px 12px;font-size:11px;width:auto}
+ .homeNote{display:none}
+ .joy{width:108px;height:108px}.knob{left:30px;top:30px;width:48px;height:48px}
+ .touchbtns button{width:70px;height:70px}.touchbtns .hit{width:88px;height:88px}
+ #lookzone{top:76px}
+}
 </style>
 </head>
 <body>
@@ -152,11 +174,6 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   <div id="lookzone" aria-hidden="true"></div>
   <div id="joy" class="joy"><div id="knob" class="knob"></div></div>
   <div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div>
-</div>
-<div id="rotateHint" class="hidden">
-  <b>Gioca meglio in orizzontale</b>
-  <p>Ruota lo smartphone. Se il browser lo consente, posso anche provare ad attivare automaticamente la modalità landscape.</p>
-  <div class="rotateActions"><button id="rotateNow">RUOTA</button><button id="rotateDismiss" class="secondary">CONTINUA COSÌ</button></div>
 </div>
 
 <div id="adminStats" class="hidden">
@@ -1046,7 +1063,7 @@ function restoreRuntimeSession(){
    let mm=Math.floor(countdown/60),ss=Math.floor(countdown%60);timerEl.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
    // Importante: la sessione NON sovrascrive più posizione/dimensione degli oggetti.
    // Il layout globale ADMIN resta sempre la fonte della disposizione della sala.
-   if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}
+   if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
    show('SESSIONE RIPRISTINATA');
    return true;
  }catch(e){console.warn('Sessione gioco non ripristinata',e);return false}
@@ -1310,15 +1327,16 @@ let lastSessionSave=0;
 function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode){updatePlayer(dt);updateNpcs(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
-function updateRotateHint(){
- if(!mobileDevice()||!started){q('#rotateHint').classList.add('hidden');return}
- const portrait=innerHeight>innerWidth;
- q('#rotateHint').classList.toggle('hidden',!portrait);
-}
-async function requestLandscape(){
- try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement)await document.documentElement.requestFullscreen()}catch(e){}
- try{if(screen.orientation?.lock)await screen.orientation.lock('landscape')}catch(e){}
- setTimeout(updateRotateHint,150)
+function applyMobileOrientation(){
+ const landscape=innerWidth>innerHeight;
+ document.body.classList.toggle('phone-landscape',mobileDevice()&&landscape);
+ document.body.classList.toggle('phone-portrait',mobileDevice()&&!landscape);
+ camera.aspect=innerWidth/innerHeight;
+ camera.fov=gameBaseFov();
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+ const aspect=innerWidth/innerHeight,halfH=10;
+ topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();
 }
 sessionStorage.removeItem('mcrCurrentPlayer');localStorage.removeItem('mcrLastPlayer');
 cameraMode=localStorage.getItem('mcrCameraMode')==='third'?'third':'first';
@@ -1329,9 +1347,9 @@ q('#viewToggle').onclick=toggleCameraMode;
 q('#soundToggle').onclick=()=>{audioEnabled=!audioEnabled;localStorage.setItem('mcrAudioEnabled',audioEnabled?'1':'0');updateSoundUI();if(audioEnabled){unlockAudio();setTimeout(soundTest,30)}};
 q('#testAudioHome').onclick=()=>{audioEnabled=true;localStorage.setItem('mcrAudioEnabled','1');unlockAudio();setTimeout(soundTest,30)};
 q('#homeHelp').onclick=()=>help.classList.toggle('hidden');
-q('#rotateNow').onclick=requestLandscape;
-q('#rotateDismiss').onclick=()=>q('#rotateHint').classList.add('hidden');
-addEventListener('orientationchange',()=>setTimeout(updateRotateHint,160));
+addEventListener('orientationchange',()=>setTimeout(applyMobileOrientation,120));
+addEventListener('resize',()=>setTimeout(applyMobileOrientation,40));
+applyMobileOrientation();
 ['pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 function exitToHome(){
  if(!started)return;
@@ -1343,7 +1361,6 @@ function exitToHome(){
  keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
  hud.classList.add('hidden');
  touch.classList.add('hidden');
- q('#rotateHint').classList.add('hidden');
  q('#soundToggle').classList.add('hidden');
  q('#homeGameBtn').classList.add('hidden');
  q('#viewToggle').classList.add('hidden');
@@ -1371,7 +1388,7 @@ function beginGameFromObjective(){
  q('#homeGameBtn').classList.remove('hidden');
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
  saveRuntimeSession();
- if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}
+ if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
  else renderer.domElement.requestPointerLock?.();
 }
 q('#play').onclick=()=>{
@@ -1528,7 +1545,7 @@ q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
 q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}const fr=new FileReader();fr.onload=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorData(d,fr.result);n++}show(n?('IMMAGINE APPLICATA A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};fr.readAsDataURL(file)};
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=gameBaseFov();camera.updateProjectionMatrix();const aspect=innerWidth/innerHeight,halfH=10;topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);updateRotateHint()});
+addEventListener('resize',applyMobileOrientation);
 window.addEventListener('error',e=>{
   console.error(e.error||e.message);
   const old=document.getElementById('runtimeError');
