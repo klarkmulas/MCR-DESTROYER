@@ -733,6 +733,38 @@ function animateOffice(dt,speedRatio,run){
 fallbackHuman();avatar.rotation.y=Math.PI;avatar.visible=false;
 
 
+let npcSpeechLast=0;
+function npcVoiceFor(lang){
+ if(!('speechSynthesis' in window))return null;
+ const voices=speechSynthesis.getVoices?.()||[],target=(lang||'').toLowerCase(),base=target.split('-')[0];
+ return voices.find(v=>v.lang?.toLowerCase()===target)||voices.find(v=>v.lang?.toLowerCase().startsWith(base))||null;
+}
+function showNpcSpeech(n,text){
+ const flag=n.voiceProfile?.flag||'🗣️';
+ msg.textContent=flag+' '+text;
+ msg.classList.add('on');
+ clearTimeout(show.t);
+ show.t=setTimeout(()=>msg.classList.remove('on'),3200);
+}
+function speakNpc(n,text=null,force=false){
+ if(!n?.voiceProfile||!audioEnabled||!started)return;
+ const now=performance.now();
+ if(!force&&(now-npcSpeechLast<5000))return;
+ const p=n.voiceProfile;
+ const phrase=text||p.phrases[Math.floor(Math.random()*p.phrases.length)];
+ if(!phrase)return;
+ npcSpeechLast=now;
+ showNpcSpeech(n,phrase);
+ try{
+   if(!('speechSynthesis' in window))return;
+   if(!force&&speechSynthesis.speaking)return;
+   if(force)speechSynthesis.cancel();
+   const u=new SpeechSynthesisUtterance(phrase);
+   u.lang=p.lang;u.rate=p.rate||.93;u.pitch=p.pitch||1;u.volume=.95;
+   const v=npcVoiceFor(p.lang);if(v)u.voice=v;
+   speechSynthesis.speak(u);
+ }catch(e){console.warn('Voce NPC non disponibile',e)}
+}
 function createNpc(kind='office',path=[],opts={}){
  const root=new THREE.Group();root.position.copy(path[0]||new THREE.Vector3());scene.add(root);
  const skin=mat(opts.skin||0xc88a68,.68,0), hair=mat(opts.hair||0x2a211c,.82,0), darkPants=mat(0x242832,.72,.03);
@@ -766,7 +798,7 @@ function createNpc(kind='office',path=[],opts={}){
    const h1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.72,8),metal);h1.rotation.z=Math.PI/2;h1.position.set(0,.98,.34);cart.add(h1);
    for(const x of [-.27,.27])for(const z of [-.34,.34]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,10),darkPants);w.rotation.z=Math.PI/2;w.position.set(x,.08,z);cart.add(w)}
  }
- const npc={id:++npcIdSeed,root,body,pelvis,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,fallen:false,fallT:0,fallDir:1,cart,broom};
+ const npc={id:++npcIdSeed,root,body,pelvis,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,fallen:false,fallT:0,fallDir:1,cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000};
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
 }
@@ -775,9 +807,21 @@ function spawnNpcs(){
  createNpc('office',[V(-11,6),V(-7,6),V(-7,3.4),V(-11,3.4)],{shirt:0x6a737d,speed:1.15});
  createNpc('office',[V(10,6),V(7,6),V(7,2.8),V(10,2.8)],{shirt:0x5b6c82,skin:0xb97855,speed:1.08});
  createNpc('office',[V(-4,5.4),V(3.7,5.4),V(3.7,3.5),V(-4,3.5)],{shirt:0x858079,speed:1.22});
- createNpc('cart',[V(-12,-6.8),V(-8,-6.8),V(-8,-3.2),V(-12,-3.2)],{speed:.82});
- createNpc('cleaner',[V(11,-6.6),V(8,-6.6),V(8,-3.4),V(11,-3.4)],{speed:.95});
- createNpc('sweeper',[V(-5,-6.5),V(4.7,-6.5),V(4.7,-4.4),V(-5,-4.4)],{speed:.72});
+ createNpc('cart',[V(-12,-6.8),V(-8,-6.8),V(-8,-3.2),V(-12,-3.2)],{speed:.82,voiceProfile:{
+   lang:'ar-EG',flag:'🇪🇬',rate:.90,
+   phrases:['خلي بالك، الأرض لسه مبلولة.','صباح الخير يا جماعة، الدنيا تمام؟','أنا بخلص التنضيف هنا وبعدين همشي.','يا جماعة، مين عمل كده؟'],
+   hit:'إيه ده؟ خلي بالك!'
+ }});
+ createNpc('cleaner',[V(11,-6.6),V(8,-6.6),V(8,-3.4),V(11,-3.4)],{speed:.95,voiceProfile:{
+   lang:'es-ES',flag:'🇪🇸',rate:.96,
+   phrases:['Cuidado, el suelo está recién limpiado.','Buenos días, termino aquí y sigo con el pasillo.','¿Quién ha dejado todo esto por aquí?','Hoy hay muchísimo trabajo aquí.'],
+   hit:'¡Oye, cuidado!'
+ }});
+ createNpc('sweeper',[V(-5,-6.5),V(4.7,-6.5),V(4.7,-4.4),V(-5,-4.4)],{speed:.72,voiceProfile:{
+   lang:'ru-RU',flag:'🇷🇺',rate:.90,
+   phrases:['Осторожно, пол ещё мокрый.','Добрый день, я здесь закончу и пойду дальше.','Кто опять всё здесь разбросал?','Сегодня здесь очень много работы.'],
+   hit:'Эй, осторожно!'
+ }});
 }
 function updateNpcs(dt){
  for(const n of npcs){
@@ -803,12 +847,17 @@ function updateNpcs(dt){
      const back=new THREE.Vector3(0,0,.78).applyAxisAngle(up,n.root.rotation.y);
      n.cart.position.set(n.root.position.x+back.x,0,n.root.position.z+back.z);n.cart.rotation.y=n.root.rotation.y;
    }
+   if(n.voiceProfile&&started&&performance.now()>=n.nextSpeakAt){
+     const distToPlayer=n.root.position.distanceTo(player.position);
+     if(distToPlayer<7.5)speakNpc(n);
+     n.nextSpeakAt=performance.now()+14000+Math.random()*12000;
+   }
  }
 }
 function knockDownNpc(n,dir){
  if(!n||n.fallen)return;
  n.fallen=true;n.fallT=0;n.fallDir=(dir.x*Math.cos(n.root.rotation.y)-dir.z*Math.sin(n.root.rotation.y))>=0?1:-1;
- shake=.12;recoilPitch=.025;soundNpcHit();show(n.kind==='office'?'IMPIEGATO A TERRA':'ADDETTO PULIZIE A TERRA');
+ shake=.12;recoilPitch=.025;soundNpcHit();if(n.voiceProfile)speakNpc(n,n.voiceProfile.hit,true);else show(n.kind==='office'?'IMPIEGATO A TERRA':'ADDETTO PULIZIE A TERRA');
 }
 spawnNpcs();
 
@@ -1278,7 +1327,7 @@ function resetRoom(){
  for(let i=dynamics.length-1;i>=0;i--){if(dynamics[i].fragment)scene.remove(dynamics[i].o)}
  destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);d.vel.set(0,0,0);d.spin.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
  dynamics.length=0;moveVel.set(0,0,0);player.position.set(0,0,6);jumpV=0;grounded=true;
- for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.y=.04;n.target=1%Math.max(1,n.path.length);if(n.path[0])n.root.position.copy(n.path[0])}
+ for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.y=.04;n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;if(n.path[0])n.root.position.copy(n.path[0])} try{speechSynthesis?.cancel?.()}catch(e){}
  show('SALA RIPRISTINATA')
 }
 function resolve(np){
@@ -1374,7 +1423,7 @@ setCameraMode(cameraMode,false);
 q('#chooseFirst').onclick=()=>setCameraMode('first',false);
 q('#chooseThird').onclick=()=>setCameraMode('third',false);
 q('#viewToggle').onclick=toggleCameraMode;
-q('#soundToggle').onclick=()=>{audioEnabled=!audioEnabled;localStorage.setItem('mcrAudioEnabled',audioEnabled?'1':'0');updateSoundUI();if(audioEnabled){unlockAudio();setTimeout(soundTest,30)}};
+q('#soundToggle').onclick=()=>{audioEnabled=!audioEnabled;localStorage.setItem('mcrAudioEnabled',audioEnabled?'1':'0');updateSoundUI();if(audioEnabled){unlockAudio();setTimeout(soundTest,30)}else{try{speechSynthesis?.cancel?.()}catch(e){}}};
 q('#testAudioHome').onclick=()=>{audioEnabled=true;localStorage.setItem('mcrAudioEnabled','1');unlockAudio();setTimeout(soundTest,30)};
 q('#homeHelp').onclick=()=>help.classList.toggle('hidden');
 addEventListener('orientationchange',()=>setTimeout(applyMobileOrientation,120));
@@ -1387,6 +1436,7 @@ function exitToHome(){
  saveRuntimeSession();
  if(editorMode)setEditorMode(false);
  document.exitPointerLock?.();
+ try{speechSynthesis?.cancel?.()}catch(e){}
  started=false;
  keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
  hud.classList.add('hidden');
