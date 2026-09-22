@@ -53,7 +53,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
 const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch');
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;game.appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.65));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);
 const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.05,100);
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[];
@@ -73,19 +73,38 @@ function box(w,h,d,ma,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d)
 function cyl(r1,r2,h,ma,x,y,z){const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
 function reg(o,type,hp,val,mode='static'){const d={o,type,hp:1,max:1,val,mode,dead:false,vel:new THREE.Vector3(),spin:new THREE.Vector3(),startPos:o.position.clone(),startQuat:o.quaternion.clone(),startVis:o.visible};o.userData.d=d;destruct.push(d);return d}
 function addObstacle(o,w,d){obstacles.push({o,w,d})}
-function monitorTex(state){
+let monitorSeed=0;
+function monitorTex(state,seed=0){
  const c=document.createElement('canvas');c.width=512;c.height=288;const g=c.getContext('2d');
- if(state==='dead'){g.fillStyle='#06080c';g.fillRect(0,0,512,288);g.fillStyle='#15202a';for(let y=12;y<288;y+=18)g.fillRect(0,y,512,1)}
- else{g.fillStyle='#07121c';g.fillRect(0,0,512,288);const cs=['#1c6186','#1a765b','#744a32','#573783','#812f47','#174d69','#34672f','#384789'];for(let y=0;y<3;y++)for(let x=0;x<4;x++){g.fillStyle=cs[(x+y*3)%cs.length];g.fillRect(x*128+2,y*96+2,124,92);g.fillStyle='#ffffff28';for(let k=0;k<5;k++)g.fillRect(x*128+9,y*96+12+k*12,55+(k*11)%48,2)}g.fillStyle='#d9f1ff';g.font='bold 12px Arial';g.fillText('MCR // MULTIVIEW // ON AIR',12,16)}
- if(state==='crack'){g.strokeStyle='#ecf8ff';g.lineWidth=2;for(let a=0;a<14;a++){let an=a/14*Math.PI*2;g.beginPath();g.moveTo(270,145);g.lineTo(270+Math.cos(an)*(65+(a%4)*19),145+Math.sin(an)*(40+(a%5)*14));g.stroke()}}
- const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t
+ if(state==='dead'){g.fillStyle='#05080c';g.fillRect(0,0,512,288);g.fillStyle='#18232d';for(let y=16;y<288;y+=18)g.fillRect(0,y,512,1)}
+ else{
+  g.fillStyle='#071019';g.fillRect(0,0,512,288);
+  g.fillStyle='#0a2231';g.fillRect(0,0,512,20);g.fillStyle='#dbf4ff';g.font='bold 11px Arial';g.fillText('MCR // CONTROL // ON AIR',10,14);
+  const layout=seed%4, colors=['#1f6386','#20805f','#79532e','#60439a','#8e3552','#1d5b78','#3c7335','#4954a1'];
+  if(layout===0){
+   const cw=126,ch=84;for(let r=0;r<3;r++)for(let x=0;x<4;x++){let px=4+x*127,py=24+r*87;g.fillStyle=colors[(seed+x+r*3)%colors.length];g.fillRect(px,py,cw,ch);g.fillStyle='rgba(255,255,255,.18)';for(let k=0;k<5;k++)g.fillRect(px+8,py+10+k*11,45+((seed+x+k)*17)%55,2);g.fillStyle=(x+r)%3===0?'#ff4d68':'#43df78';g.fillRect(px+8,py+67,58,5)}
+  }else if(layout===1){
+   g.fillStyle='#eef3f7';g.fillRect(8,28,220,112);g.fillStyle='#c5d0db';for(let i=0;i<7;i++)g.fillRect(18,42+i*12,175,2);for(let i=0;i<5;i++){g.fillStyle='#43b85f';g.beginPath();g.arc(160+i*11,118,4,0,Math.PI*2);g.fill()}
+   g.fillStyle='#122434';g.fillRect(238,28,266,112);for(let r=0;r<6;r++)for(let x=0;x<8;x++){g.fillStyle=(x+r+seed)%3===0?'#ef4e6d':((x+r)%2?'#4edb72':'#56b9ff');g.fillRect(248+x*30,39+r*15,22,9)}
+   g.fillStyle='#0d1b28';g.fillRect(8,150,496,130);for(let i=0;i<8;i++){g.fillStyle=i%2?'#152a3b':'#112233';g.fillRect(16,160+i*14,480,10);g.fillStyle='#77d7ff';g.fillRect(24,164+i*14,80+((i+seed)*37)%310,3)}
+  }else if(layout===2){
+   const bars=['#eeeeee','#f0e600','#00cfe9','#29d35f','#d94eff','#ff4b4b','#355eff'];const bw=496/bars.length;bars.forEach((col,i)=>{g.fillStyle=col;g.fillRect(8+i*bw,28,bw-2,95)});
+   g.fillStyle='#101a24';g.fillRect(8,132,496,148);for(let r=0;r<3;r++)for(let x=0;x<4;x++){let px=18+x*120,py=142+r*44;g.fillStyle=colors[(seed+r+x)%colors.length];g.fillRect(px,py,108,36);g.fillStyle='rgba(255,255,255,.15)';g.fillRect(px+8,py+9,76,2);g.fillRect(px+8,py+18,54,2)}
+  }else{
+   g.fillStyle='#102334';g.fillRect(8,28,162,252);for(let i=0;i<8;i++){g.fillStyle=i%2?'#16364a':'#122b3e';g.fillRect(14,36+i*29,150,22);for(let j=0;j<6;j++){g.fillStyle=['#4eda72','#f2c74b','#60baff','#dc6bff','#ff5f7c'][(i+j+seed)%5];g.fillRect(82+j*12,41+i*29,8,12)}}
+   g.fillStyle='#edf2f6';g.fillRect(180,28,324,96);g.fillStyle='#c7d2dc';for(let i=0;i<5;i++)g.fillRect(192,42+i*14,260,2);
+   g.fillStyle='#0d1d29';g.fillRect(180,134,324,146);for(let i=0;i<7;i++){g.fillStyle=i%2?'#213446':'#182938';g.fillRect(190,144+i*18,304,12);g.fillStyle='#64cbff';g.fillRect(198,148+i*18,90+((i+seed)*43)%180,3)}
+  }
+ }
+ if(state==='crack'){g.strokeStyle='rgba(238,248,255,.92)';g.lineWidth=2;const cx=276,cy=142;for(let a=0;a<14;a++){let an=a/14*Math.PI*2;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(an)*(60+(a%4)*18),cy+Math.sin(an)*(42+(a%5)*12));g.stroke()}}
+ const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t
 }
-const texInt=monitorTex('int'),texCrack=monitorTex('crack'),texDead=monitorTex('dead');
+const texInt=monitorTex('int',0),texCrack=monitorTex('crack',0),texDead=monitorTex('dead',0);
 
 function addMonitor(x,y,z,w=.9,h=.58,wall=false){
  const g=new THREE.Group();g.position.set(x,y,z);scene.add(g);
  const frame=new THREE.Mesh(new THREE.BoxGeometry(w,h,.11),black);frame.castShadow=true;g.add(frame);
- const sm=new THREE.MeshBasicMaterial({map:texInt,toneMapped:false});const s=new THREE.Mesh(new THREE.PlaneGeometry(w*.92,h*.84),sm);s.position.z=.061;g.add(s);g.userData.screen=s;
+ const intactMap=monitorTex('int',monitorSeed++);const sm=new THREE.MeshBasicMaterial({map:intactMap,toneMapped:false});const s=new THREE.Mesh(new THREE.PlaneGeometry(w*.92,h*.84),sm);s.position.z=.061;g.add(s);g.userData.screen=s;g.userData.intactMap=intactMap;
  if(!wall){const st=new THREE.Mesh(new THREE.BoxGeometry(.06,.37,.06),black);st.position.y=-h*.65;g.add(st);const foot=new THREE.Mesh(new THREE.BoxGeometry(.4,.035,.23),black);foot.position.set(0,-h*.86,.06);g.add(foot)}
  return reg(g,'monitor',2,wall?4200:1600,'screen')
 }
@@ -125,12 +144,12 @@ function buildRoom(){
  box(1.7,1.5,.08,mat(0x324f35,.62,.05),-.2,1.22,1.95);
  cyl(.2,.24,.9,mat(0xa9151f,.35,.35),12.4,.46,6.25);
 }
-scene.add(new THREE.AmbientLight(0x91a6bd,.34));
-scene.add(new THREE.HemisphereLight(0xa7c2dd,0x24150d,.62));
+scene.add(new THREE.AmbientLight(0xa5b7ca,.42));
+scene.add(new THREE.HemisphereLight(0xb3cce5,0x2b1a10,.72));
 const sun=new THREE.DirectionalLight(0xc9d9eb,1.35);sun.position.set(4,9,3);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=14;sun.shadow.camera.bottom=-14;scene.add(sun);
-for(let x=-10;x<=10;x+=5)for(const z of [-4,1,4]){let l=new THREE.PointLight(0xffd7a3,12,9,1.9);l.position.set(x,4.65,z);scene.add(l)}
-for(let i=0;i<5;i++){let l=new THREE.PointLight(0x4e9ee8,12,8,1.8);l.position.set(-5.6+i*2.8,3.3,-7.0);scene.add(l)}
-let fill1=new THREE.PointLight(0x8cbcf0,8,18,2);fill1.position.set(0,2.5,1.5);scene.add(fill1);
+for(let x=-10;x<=10;x+=5)for(const z of [-4,1,4]){let l=new THREE.PointLight(0xffd7a3,15,10,1.85);l.position.set(x,4.65,z);scene.add(l)}
+for(let i=0;i<5;i++){let l=new THREE.PointLight(0x58a8f2,15,9,1.75);l.position.set(-5.6+i*2.8,3.3,-7.0);scene.add(l)}
+let fill1=new THREE.PointLight(0x9bc8f5,10,19,2);fill1.position.set(0,2.5,1.5);scene.add(fill1);
 buildRoom();totalEl.textContent=destruct.length;
 
 function fallbackHuman(){
@@ -144,7 +163,7 @@ function fallbackHuman(){
  const tie=new THREE.Mesh(new THREE.BoxGeometry(.07,.34,.025),tieMat);tie.position.set(0,.37,.20);torsoPivot.add(tie);
  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.08,.09,.09,12),skin);neck.position.y=.75;torsoPivot.add(neck);
  const head=new THREE.Mesh(new THREE.SphereGeometry(.22,22,18),skin);head.position.set(0,.98,0);head.scale.y=1.09;head.castShadow=true;torsoPivot.add(head);
- const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.225,18,14,0,Math.PI*2,0,Math.PI*.56),hair);hairCap.position.set(0,1.08,0);torsoPivot.add(hairCap);
+ const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.225,18,14,0,Math.PI*2,0,Math.PI*.56),hair);hairCap.position.set(0,1.08,0);torsoPivot.add(hairCap);const nose=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),skin);nose.scale.set(.72,.85,1.15);nose.position.set(0,.98,.205);torsoPivot.add(nose);const earL=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),skin),earR=earL.clone();earL.scale.set(.65,1,.5);earR.scale.copy(earL.scale);earL.position.set(-.22,.98,0);earR.position.set(.22,.98,0);torsoPivot.add(earL,earR);const eyeMat=mat(0x202329,.65,0);const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),eyeMat),eyeR=eyeL.clone();eyeL.position.set(-.075,1.01,.205);eyeR.position.set(.075,1.01,.205);torsoPivot.add(eyeL,eyeR);
 
  function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,5,10),material);m.position.y=-len*.52;m.castShadow=true;p.add(m);return p}
  const lArm=limb(torsoPivot,-.37,.62,shirt,.34,.078),rArm=limb(torsoPivot,.37,.62,shirt,.34,.078);
@@ -164,7 +183,7 @@ function animateOffice(dt,speedRatio,run){
  if(!officeRig)return;
  const moving=speedRatio>.025,attackP=attacking?Math.min(1,attackT/.58):0;
  if(moving&&!attacking)walkPhase+=dt*(run?10.3:7.0)*Math.max(.4,speedRatio);
- const s=moving?Math.sin(walkPhase):0,opp=-s,k=1-Math.exp(-16*dt),stride=(run?.76:.52)*speedRatio;
+ const s=moving?Math.sin(walkPhase):0,opp=-s,k=1-Math.exp(-16*dt),stride=(run ? .76 : .52)*speedRatio;
 
  let lLegX=s*stride,rLegX=opp*stride,lArmX=opp*stride*.72,rArmX=s*stride*.62;
  let lKnee=Math.max(0,-s)*.72*speedRatio,rKnee=Math.max(0,-opp)*.72*speedRatio;
@@ -189,7 +208,7 @@ function animateOffice(dt,speedRatio,run){
  set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
  set(officeRig.lArm,'x',lArmX);set(officeRig.rArm,'x',rArmX);set(officeRig.lFore,'x',lForeX);set(officeRig.rFore,'x',rForeX);
  set(officeRig.torsoPivot,'y',torsoY);set(officeRig.torsoPivot,'z',torsoZ);set(officeRig.pelvis,'y',pelvisY);
- const bob=moving&&!attacking?Math.abs(Math.sin(walkPhase*2))*(run?.025:.015)*speedRatio:0;avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bob,k);
+ const bob=moving&&!attacking?Math.abs(Math.sin(walkPhase*2))*(run ? .025 : .015)*speedRatio:0;avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bob,k);
  const batZ=attacking?(-2.42+Math.sin(Math.min(1,attackP)*Math.PI)*2.15):-2.42;
  const batX=attacking?(.08+Math.sin(Math.min(1,attackP)*Math.PI)*.55):.08;
  batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,batZ,k);batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,batX,k);
@@ -255,7 +274,7 @@ function hit(){
 function resetRoom(){
  damage=0;destroyed=0;combo=1;countdown=150;countdownOn=false;damageEl.textContent='€ 0';destroyedEl.textContent='0';timerEl.textContent='02:30';
  for(let i=dynamics.length-1;i>=0;i--){if(dynamics[i].fragment)scene.remove(dynamics[i].o)}
- destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.vel.set(0,0,0);d.spin.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=texInt;d.o.userData.screen.material.needsUpdate=true}});
+ destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.vel.set(0,0,0);d.spin.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
  dynamics.length=0;moveVel.set(0,0,0);player.position.set(0,0,6);jumpV=0;grounded=true;show('SALA RIPRISTINATA')
 }
 function resolve(np){np.x=THREE.MathUtils.clamp(np.x,-13.1,13.1);np.z=THREE.MathUtils.clamp(np.z,-8,8);for(const ob of obstacles){if(!ob.o.visible)continue;let dx=np.x-ob.o.position.x,dz=np.z-ob.o.position.z,px=ob.w+.42-Math.abs(dx),pz=ob.d+.42-Math.abs(dz);if(px>0&&pz>0){if(px<pz)np.x+=Math.sign(dx||1)*px;else np.z+=Math.sign(dz||1)*pz}}}
