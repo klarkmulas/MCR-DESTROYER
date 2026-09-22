@@ -109,7 +109,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <button id="adminBtn" class="hidden">ADMIN</button><div id="adminStatus" class="hidden">ADMIN ATTIVO</div><button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
   <h3>EDITOR MCR</h3>
-  <p class="hint"><b>Shift + click</b> seleziona più oggetti · <b>Canc</b> elimina la selezione · trascina per spostare · <b>E</b> apre/chiude l'editor.</p>
+  <p class="hint"><b>Shift + click</b> seleziona più oggetti · <b>Canc</b> elimina la selezione · trascina per spostare · <b>E</b> apre/chiude l'editor.<br><b>SALVA PER TUTTI</b> pubblica la sala per tutti gli utenti.</p>
   <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="clearSelection">DESELEZIONA</button></div>
   <div id="selectedName">Nessun oggetto selezionato</div>
   <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
@@ -126,7 +126,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
     <input id="screenFile" type="file" accept="image/png,image/jpeg,image/webp">
     <button id="applyScreenFile">USA IMMAGINE CARICATA</button>
   </div>
-  <div class="editorBtns"><button id="saveLayout" class="save">SALVA</button><button id="publishLayout" class="save">SALVA PER TUTTI</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
+  <div class="editorBtns"><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
 <div id="adminLogin" class="hidden">
   <div class="loginCard">
@@ -509,7 +509,7 @@ function layoutData(){
  return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null}))};
 }
 function saveLayout(){
- const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('LAYOUT SALVATO SU QUESTO PC');
+ const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
 }
 function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.stringify(layoutData()))))}
 function applyLayoutData(data){
@@ -576,13 +576,22 @@ async function adminLogout(){
 supabase.auth.onAuthStateChange((_event,session)=>{adminSession=session;updateAdminUI()});
 refreshAdminSession();
 async function publishLayoutGlobal(){
- if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per pubblicare la sala.';return}
+ if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per pubblicare la sala.';return false}
  const data=layoutData();
- const {error}=await supabase.from('mcr_global_layout').upsert({id:'main',layout:data,updated_at:new Date().toISOString(),updated_by:ADMIN_EMAIL},{onConflict:'id'});
- if(error){show('ERRORE SALVATAGGIO');console.error(error);return}
+ show('SALVATAGGIO PER TUTTI…');
+ const payload={layout:data,updated_at:new Date().toISOString(),updated_by:ADMIN_EMAIL};
+ let {data:row,error}=await supabase.from('mcr_global_layout').update(payload).eq('id','main').select('id,updated_at,updated_by,layout').maybeSingle();
+ if(!error&&!row){
+   const ins=await supabase.from('mcr_global_layout').insert({id:'main',...payload}).select('id,updated_at,updated_by,layout').single();
+   row=ins.data;error=ins.error;
+ }
+ if(error){show('ERRORE: NON SALVATO PER TUTTI');console.error('MCR global save error',error);return false}
+ if(!row?.layout?.items || row.layout.items.length!==data.items.length){show('ERRORE VERIFICA SALVATAGGIO');console.error('MCR global save verification failed',row);return false}
  destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});
  localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));
- show('SALA SALVATA PER TUTTI');
+ localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));
+ show('✓ SALVATO PER TUTTI');
+ return true;
 }
 const SPARK_GEOMETRY=new THREE.BoxGeometry(.035,.035,.055);function spark(p,n=6,color=0xffcf55,size=.035){const sm=new THREE.MeshBasicMaterial({color,toneMapped:false,transparent:true});for(let i=0;i<Math.min(n,6);i++){let m=new THREE.Mesh(SPARK_GEOMETRY,sm);m.position.copy(p);scene.add(m);particles.push({m,v:new THREE.Vector3((Math.random()-.5)*2.3,.7+Math.random()*2,(Math.random()-.5)*2.3),life:.35+Math.random()*.35,spin:new THREE.Vector3(Math.random()*5,Math.random()*5,Math.random()*5)})}}
 function show(t){msg.textContent=t;msg.classList.add('on');clearTimeout(show.t);show.t=setTimeout(()=>msg.classList.remove('on'),1500)}
@@ -749,8 +758,8 @@ editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
 topViewBtn.onclick=()=>setTopView(!topViewMode);
 q('#clearSelection').onclick=()=>selectEdit(null);
-q('#saveLayout').onclick=saveLayout;
-q('#publishLayout').onclick=publishLayoutGlobal;
+q('#saveLayout').onclick=publishLayoutGlobal;
+q('#publishLayout').onclick=saveLayout;
 q('#resetLayout').onclick=restoreOriginalLayout;
 q('#resetSelected').onclick=resetSelectedObjects;
 q('#deleteSelected').onclick=deleteSelectedObject;
