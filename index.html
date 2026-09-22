@@ -49,7 +49,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
   <h3>Editor sala</h3>
-  <p class="hint">Clicca un oggetto per selezionarlo, poi trascinalo col mouse. Puoi anche usare i controlli qui sotto. Le modifiche si salvano su questo browser.</p>
+  <p class="hint">Clicca un oggetto per selezionarlo, poi trascinalo col mouse. Puoi anche usare i controlli qui sotto. Le modifiche si salvano su questo browser. “Copia link layout” crea un link che mostra la stessa sala anche su un altro PC.</p>
   <div id="selectedName">Nessun oggetto selezionato</div>
   <div class="editorRow"><label>X</label><input id="editX" type="range" min="-13" max="13" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
   <div class="editorRow"><label>Y / altezza</label><input id="editY" type="range" min="0" max="5" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
@@ -57,7 +57,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   <div class="editorRow"><label>Rotazione</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
   <div class="nudge"><button id="nudgeLeft">X−</button><button id="nudgeRight">X+</button><button id="nudgeBack">Z−</button><button id="nudgeFront">Z+</button></div>
   <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.65" max="1.9" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
-  <div class="editorBtns"><button id="saveLayout" class="save">SALVA LAYOUT</button><button id="closeEditor">CHIUDI</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="resetSelected">RESET OGGETTO</button></div>
+  <div class="editorBtns"><button id="saveLayout" class="save">SALVA LAYOUT</button><button id="closeEditor">CHIUDI</button><button id="deleteSelected" class="danger">ELIMINA OGGETTO</button><button id="resetSelected">RESET OGGETTO</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button></div>
 </div>
 
 <script type="importmap">
@@ -171,10 +171,10 @@ function applySavedLayout(){
  try{
   const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
   if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
-  if(Array.isArray(saved.items))saved.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)})
+  if(Array.isArray(saved.items))saved.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)})
  }catch(e){console.warn('Layout non caricato',e)}
 }
-applySavedLayout();
+if(!loadLayoutFromUrl())applySavedLayout();
 
 function fallbackHuman(){
  const skin=mat(0xc88a68,.64,0),shirt=mat(0x7f7f79,.72,.02),pants=mat(0x24262b,.72,.05),shoe=mat(0x202329,.76,.08),hair=mat(0x2b211c,.84,0),blackMat=mat(0x17191d,.68,.08),badgeMat=mat(0xd7d9db,.58,.02),screenBlue=mat(0x233a55,.55,.05);
@@ -304,11 +304,27 @@ function setEditorMode(on){
  else{editDragging=false;selectEdit(null);show('EDITOR CHIUSO');}
 }
 function saveLayout(){
- const data={exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y}))};
+ const data={exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,visible:d.o.visible}))};
  localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)});show('LAYOUT SALVATO');
 }
+function encodeLayoutForUrl(){
+ const data={exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:+d.o.position.x.toFixed(2),y:+d.o.position.y.toFixed(2),z:+d.o.position.z.toFixed(2),ry:+d.o.rotation.y.toFixed(4),visible:d.o.visible}))};
+ return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+}
+function applyLayoutData(data){
+ if(!data)return;
+ if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
+ if(Array.isArray(data.items))data.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)});
+}
+function loadLayoutFromUrl(){
+ try{const raw=new URLSearchParams(location.search).get('layout');if(!raw)return false;const data=JSON.parse(decodeURIComponent(escape(atob(raw))));applyLayoutData(data);return true}catch(e){console.warn('Layout URL non valido',e);return false}
+}
+function deleteSelectedObject(){
+ if(!selectedEdit)return;
+ selectedEdit.o.visible=false;selectedEdit.startVis=false;show(editorLabel(selectedEdit)+' eliminato');selectEdit(null);
+}
 function restoreOriginalLayout(){
- destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat)});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');if(editHelper)editHelper.update();refreshEditorFields();show('LAYOUT ORIGINALE RIPRISTINATO');
+ destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat)});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');if(editHelper)editHelper.update();refreshEditorFields();show('LAYOUT ORIGINALE RIPRISTINATO');
 }
 function editorPick(clientX,clientY){
  const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,camera);
@@ -422,7 +438,7 @@ editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
 q('#saveLayout').onclick=saveLayout;
 q('#resetLayout').onclick=restoreOriginalLayout;
-q('#resetSelected').onclick=()=>{if(!selectedEdit)return;selectedEdit.o.position.copy(selectedEdit.origPos);selectedEdit.o.quaternion.copy(selectedEdit.origQuat);if(editHelper)editHelper.update();refreshEditorFields()};
+q('#resetSelected').onclick=()=>{if(!selectedEdit)return;selectedEdit.o.position.copy(selectedEdit.origPos);selectedEdit.o.quaternion.copy(selectedEdit.origQuat);selectedEdit.o.visible=true;selectedEdit.startVis=true;if(editHelper)editHelper.update();refreshEditorFields()};q('#deleteSelected').onclick=deleteSelectedObject;q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+'?layout='+encodeURIComponent(encodeLayoutForUrl());try{await navigator.clipboard.writeText(url);show('LINK LAYOUT COPIATO')}catch(e){prompt('Copia questo link',url)}};
 [editX,editY,editZ,editRot].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
 q('#nudgeLeft').onclick=()=>{if(selectedEdit){selectedEdit.o.position.x-=.2;refreshEditorFields();if(editHelper)editHelper.update()}};
