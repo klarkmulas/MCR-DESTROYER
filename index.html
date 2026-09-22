@@ -266,11 +266,11 @@ function sNoise(dur=.08,vol=.08,cut=1400){
  src.buffer=buf;f.type='lowpass';f.frequency.value=cut;g.gain.value=vol;src.connect(f);f.connect(g);g.connect(audioMaster);src.start(t);
 }
 function soundSwing(){sNoise(.10,.035,900);sTone(180,.09,.035,'sine',90)}
-function soundFootstep(run=false){sTone(run?88:72,.055,run?.07:.055,'sine',45);sNoise(.045,run?.028:.022,520)}
+function soundFootstep(run=false){sTone(run?88:72,.055,run ? .07 : .055,'sine',45);sNoise(.045,run ? .028 : .022,520)}
 function soundObjectHit(type,broken=false){
- if(type==='glass'){sNoise(broken?.18:.10,broken?.13:.08,4200);sTone(1700,.08,.035,'triangle',700);return}
+ if(type==='glass'){sNoise(broken ? .18 : .10,broken ? .13 : .08,4200);sTone(1700,.08,.035,'triangle',700);return}
  if(['monitor','rack','column'].includes(type)){sTone(430,.10,.08,'square',220);sTone(860,.055,.025,'triangle',420);sNoise(.055,.035,2100);return}
- sTone(broken?78:96,broken?.13:.08,broken?.13:.09,'sine',42);sNoise(broken?.10:.055,broken?.07:.045,720);
+ sTone(broken?78:96,broken ? .13 : .08,broken ? .13 : .09,'sine',42);sNoise(broken ? .10 : .055,broken ? .07 : .045,720);
 }
 function soundNpcHit(){sTone(82,.13,.13,'sine',46);sNoise(.09,.065,540);setTimeout(()=>sTone(145,.09,.035,'triangle',95),35)}
 function box(w,h,d,ma,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
@@ -1205,7 +1205,7 @@ function updatePlayer(dt){
  let np=player.position.clone().addScaledVector(moveVel,dt);resolve(np);player.position.x=np.x;player.position.z=np.z;player.rotation.y=yaw;
  const speed=Math.hypot(moveVel.x,moveVel.z),ratio=Math.min(1,speed/maxSpeed);
  jumpV-=9.82*dt;player.position.y+=jumpV*dt;if(player.position.y<=0){player.position.y=0;jumpV=0;grounded=true}
- if(grounded&&speed>.35){footstepTimer-=dt;if(footstepTimer<=0){soundFootstep(run);footstepTimer=run?.25:.39}}else footstepTimer=0;
+ if(grounded&&speed>.35){footstepTimer-=dt;if(footstepTimer<=0){soundFootstep(run);footstepTimer=run ? .25 : .39}}else footstepTimer=0;
  if(attacking)attackT+=dt;updateFirstPersonView(dt,ratio,run);
  if(attacking){let p=Math.min(1,attackT/.56);if(!hitDone&&p>.47){hitDone=true;hit()}if(p>=1){attacking=false;attackT=0;hitDone=false}}
 }
