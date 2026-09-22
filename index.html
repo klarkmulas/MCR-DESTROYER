@@ -235,10 +235,10 @@ function animateOffice(dt,speedRatio,run){
    lLegX*=.28;rLegX*=.28;lKnee*=.28;rKnee*=.28;
 
    if(recover>0){
-     torsoY=lerp(torsoY,0,recover);torsoZ=lerp(torsoZ,0,recover);pelvisY=lerp(pelvisY,0,recover);
-     rArmX=lerp(rArmX,0,recover);rArmY=lerp(rArmY,0,recover);rArmZ=lerp(rArmZ,0,recover);
-     rForeX=lerp(rForeX,-.12,recover);rForeY=lerp(rForeY,0,recover);rForeZ=lerp(rForeZ,0,recover);
-     lArmX=lerp(lArmX,0,recover);lArmY=lerp(lArmY,0,recover);lForeX=lerp(lForeX,-.10,recover);
+     torsoY=THREE.MathUtils.lerp(torsoY,0,recover);torsoZ=THREE.MathUtils.lerp(torsoZ,0,recover);pelvisY=THREE.MathUtils.lerp(pelvisY,0,recover);
+     rArmX=THREE.MathUtils.lerp(rArmX,0,recover);rArmY=THREE.MathUtils.lerp(rArmY,0,recover);rArmZ=THREE.MathUtils.lerp(rArmZ,0,recover);
+     rForeX=THREE.MathUtils.lerp(rForeX,-.12,recover);rForeY=THREE.MathUtils.lerp(rForeY,0,recover);rForeZ=THREE.MathUtils.lerp(rForeZ,0,recover);
+     lArmX=THREE.MathUtils.lerp(lArmX,0,recover);lArmY=THREE.MathUtils.lerp(lArmY,0,recover);lForeX=THREE.MathUtils.lerp(lForeX,-.10,recover);
    }
  }
  const set=(obj,axis,val)=>obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],val,k);
@@ -360,6 +360,15 @@ joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid
 joy.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;let r=joy.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),max=40;if(l>max){x=x/l*max;y=y/l*max}knob.style.transform='translate('+x+'px,'+y+'px)';mobile.x=x/max;mobile.y=y/max});
 joy.addEventListener('pointerup',e=>{if(e.pointerId!==jid)return;jid=null;knob.style.transform='';mobile.x=mobile.y=0});
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+window.addEventListener('error',e=>{
+  console.error(e.error||e.message);
+  const old=document.getElementById('runtimeError');
+  if(old)old.remove();
+  const b=document.createElement('div');b.id='runtimeError';
+  b.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;background:#6b1010;color:white;padding:10px 14px;border-radius:10px;font:12px system-ui;max-width:80vw';
+  b.textContent='Errore gioco: '+(e.message||'errore sconosciuto');
+  document.body.appendChild(b);
+});
 </script>
 </body>
 </html>
