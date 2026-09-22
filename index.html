@@ -109,8 +109,8 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <button id="adminBtn" class="hidden">ADMIN</button><div id="adminStatus" class="hidden">ADMIN ATTIVO</div><button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
   <h3>EDITOR MCR</h3>
-  <p class="hint"><b>Shift / Ctrl + click</b> seleziona più oggetti · trascina per spostarli insieme · <b>Frecce</b> spostano · <b>Ctrl+C / Ctrl+V</b> copia/incolla · <b>Ctrl+D</b> duplica · <b>Canc</b> elimina.<br><b>SALVA PER TUTTI</b> pubblica la sala per tutti gli utenti.</p>
-  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="clearSelection">DESELEZIONA</button></div>
+  <p class="hint"><b>Shift / Ctrl + click</b> seleziona più oggetti · poi trascina QUALSIASI oggetto già selezionato per spostarli tutti insieme · <b>Ctrl+A</b> seleziona tutti gli oggetti · <b>Frecce</b> spostano il gruppo · <b>Ctrl+C / Ctrl+V</b> copia/incolla · <b>Ctrl+D</b> duplica · <b>Canc</b> elimina.<br><b>SALVA PER TUTTI</b> pubblica la sala per tutti gli utenti.</p>
+  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="selectAll">SELEZIONA TUTTI</button><button id="clearSelection">DESELEZIONA</button></div>
   <div id="selectedName">Nessun oggetto selezionato</div>
   <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
   <div class="editorRow"><label>X</label><input id="editX" type="range" min="-13" max="13" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
@@ -540,6 +540,18 @@ function selectEdit(d,additive=false){
  }else{selectedEdit=null;selectedEdits.clear()}
  rebuildEditHelpers();refreshEditorFields();
 }
+function selectAllObjects(){
+ selectedEdits.clear();
+ for(const d of destruct){
+   if(d?.o?.visible && !d.dead) selectedEdits.add(d);
+ }
+ selectedEdit=[...selectedEdits].at(-1)||null;
+ rebuildEditHelpers();
+ if(topViewMode)buildTopPlanHelpers();
+ refreshEditorFields();
+ show(selectedEdits.size+' OGGETTI SELEZIONATI');
+}
+
 function moveSelection(dx,dy,dz){
  for(const d of selectedEdits){d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-13,13);d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,0,5);d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-8,8)}
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
@@ -857,6 +869,7 @@ q('#hit').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation
 addEventListener('keydown',e=>{
  if(editorMode){
    const mod=e.ctrlKey||e.metaKey;
+   if(mod&&e.code==='KeyA'){selectAllObjects();e.preventDefault();return}
    if(mod&&e.code==='KeyC'){copySelectedObjects();e.preventDefault();return}
    if(mod&&e.code==='KeyV'){pasteCopiedObjects();e.preventDefault();return}
    if(mod&&e.code==='KeyD'){duplicateSelectedObjects();e.preventDefault();return}
@@ -879,7 +892,39 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>keys.delete(e.code));
 document.addEventListener('pointerlockchange',()=>pointer=document.pointerLockElement===renderer.domElement);
 addEventListener('mousemove',e=>{if(editorMode&&editDragging&&selectedEdit&&dragStartPoint){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){const dx=p.x-dragStartPoint.x,dz=p.z-dragStartPoint.z;for(const [d,pos] of dragStartPositions){d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-13,13);d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-8,8)}rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields()}return}if(!pointer)return;yaw-=e.movementX*.00225;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0019,-1.20,1.15)});addEventListener('mouseup',()=>{editDragging=false;dragStartPoint=null;dragStartPositions.clear()});
-renderer.domElement.addEventListener('mousedown',e=>{if(e.button!==0)return;if(editorMode){const hit=editorPick(e.clientX,e.clientY);if(hit){selectEdit(hit.d,e.shiftKey||e.ctrlKey||e.metaKey);if(selectedEdit&&selectedEdits.has(hit.d)){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){dragStartPoint=p;dragStartPositions.clear();for(const d of selectedEdits)dragStartPositions.set(d,d.o.position.clone());editDragging=true}}}else if(!(e.shiftKey||e.ctrlKey||e.metaKey))selectEdit(null);return}if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();attack()});
+renderer.domElement.addEventListener('mousedown',e=>{
+ if(e.button!==0)return;
+ if(editorMode){
+   const hit=editorPick(e.clientX,e.clientY);
+   const additive=e.shiftKey||e.ctrlKey||e.metaKey;
+   if(hit){
+     if(additive){
+       selectEdit(hit.d,true);
+     }else if(selectedEdits.size>1 && selectedEdits.has(hit.d)){
+       // Keep the complete group selected when the drag starts on one member.
+       selectedEdit=hit.d;
+       rebuildEditHelpers();
+       refreshEditorFields();
+     }else{
+       selectEdit(hit.d,false);
+     }
+     if(selectedEdit&&selectedEdits.has(hit.d)){
+       const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);
+       if(p){
+         dragStartPoint=p;
+         dragStartPositions.clear();
+         for(const d of selectedEdits)dragStartPositions.set(d,d.o.position.clone());
+         editDragging=true;
+       }
+     }
+   }else if(!additive){
+     selectEdit(null);
+   }
+   return;
+ }
+ if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();
+ attack()
+});
 renderer.domElement.addEventListener('wheel',e=>{if(editorMode&&topViewMode){topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);topCamera.updateProjectionMatrix()}},{passive:true});
 let joy=q('#joy'),knob=q('#knob'),jid=null;
 function resetJoy(){jid=null;knob.style.transform='';mobile.x=mobile.y=0}
@@ -902,6 +947,7 @@ adminPassword.addEventListener('keydown',e=>{if(e.key==='Enter')adminSignIn()});
 editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
 topViewBtn.onclick=()=>setTopView(!topViewMode);
+q('#selectAll').onclick=selectAllObjects;
 q('#clearSelection').onclick=()=>selectEdit(null);
 q('#saveLayout').onclick=publishLayoutGlobal;
 q('#publishLayout').onclick=saveLayout;
