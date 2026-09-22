@@ -58,7 +58,8 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .homeFeatures{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:20px 0}.homeFeature{padding:11px;border-radius:12px;border:1px solid #ffffff10;background:#ffffff06}.homeFeature b{display:block;font-size:12px;color:#fff;margin-bottom:3px}.homeFeature span{font-size:10px;color:#8fa8bd;line-height:1.35}
 .homeActions{display:flex;gap:10px;flex-wrap:wrap}.homePlay{padding:15px 34px;border-radius:13px;background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}.homeSecondary{padding:14px 20px;border-radius:13px;background:#ffffff0c;border:1px solid #ffffff18;color:#dcecff;font-weight:900}
 .viewChoice{margin:16px 0 18px}.viewChoiceLabel{font-size:10px;letter-spacing:.16em;color:#88bfe8;font-weight:900;margin-bottom:8px}.viewChoiceBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.viewChoiceBtns button{padding:12px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff16;color:#d7e8f7;font-weight:900}.viewChoiceBtns button.on{background:linear-gradient(135deg,#1473c7,#269ee7);border-color:#79ceff;color:#fff;box-shadow:0 0 22px #2c9fff44}
-#viewToggle{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:26;padding:10px 15px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff55;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle{position:fixed;left:18px;top:118px;z-index:70;padding:10px 13px;border-radius:12px;background:#07101af2;border:1px solid #65bdff77;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}
+#viewToggle{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:26;padding:10px 15px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff55;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#exitHome{background:#6f2730!important;border-color:#a94a57!important;color:#fff!important}#exitHome:hover{background:#8b303c!important}
+#soundToggle{position:fixed;left:18px;top:118px;z-index:70;padding:10px 13px;border-radius:12px;background:#07101af2;border:1px solid #65bdff77;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}
 @media(max-width:700px){#viewToggle{bottom:max(116px,calc(env(safe-area-inset-bottom) + 110px));font-size:10px;padding:8px 11px}#soundToggle{left:10px;top:114px;font-size:9px;padding:8px 10px}}
 .homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}
 .homeVisual{position:relative;min-height:430px;border:1px solid #6ab8ff22;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 20%,#17395f 0,#09131f 35%,#020508 78%);box-shadow:inset 0 0 70px #0008,0 30px 90px #0008}
@@ -108,7 +109,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <div id="hud" class="hidden">
   <div class="glass left"><div class="label">DANNI</div><div id="damage" class="big">€ 0</div><div class="sub"><span id="destroyed">0</span> / <span id="total">0</span> oggetti distrutti</div></div>
   <div id="combo">COMBO x1</div>
-  <div class="glass right"><div class="label">TEMPO PRIMA DELL'INTERVENTO TECNICO</div><div id="timer" class="big">02:30</div><button id="reset">RESET SALA</button></div>
+  <div class="glass right"><div class="label">TEMPO PRIMA DELL'INTERVENTO TECNICO</div><div id="timer" class="big">02:30</div><div style="display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap"><button id="reset">RESET SALA</button><button id="exitHome">ESCI</button></div></div>
   <div id="msg"></div><div id="cross"></div>
   <button id="viewToggle" class="hidden">🎮 TERZA PERSONA</button>
 </div>
@@ -1240,8 +1241,29 @@ q('#rotateNow').onclick=requestLandscape;
 q('#rotateDismiss').onclick=()=>q('#rotateHint').classList.add('hidden');
 addEventListener('orientationchange',()=>setTimeout(updateRotateHint,160));
 ['pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
+function exitToHome(){
+ if(!started)return;
+ saveRuntimeSession();
+ if(editorMode)setEditorMode(false);
+ document.exitPointerLock?.();
+ started=false;
+ keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
+ hud.classList.add('hidden');
+ touch.classList.add('hidden');
+ q('#rotateHint').classList.add('hidden');
+ q('#soundToggle').classList.add('hidden');
+ q('#viewToggle').classList.add('hidden');
+ help.classList.add('hidden');
+ adminBtn.classList.add('hidden');
+ adminStatus.classList.add('hidden');
+ editorBtn.classList.add('hidden');
+ operatorPreviewBtn.classList.add('hidden');
+ avatar.visible=false;fpView.visible=false;
+ start.classList.remove('hidden');
+}
 q('#play').onclick=()=>{unlockAudio();started=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();setCameraMode(cameraMode,false);updateSoundUI();setTimeout(()=>{if(audioEnabled)soundTest()},80);saveRuntimeSession();if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}else renderer.domElement.requestPointerLock?.()};
 q('#reset').onclick=resetRoom;
+q('#exitHome').onclick=exitToHome;
 const jumpAction=()=>{if(grounded){jumpV=4.8;grounded=false}};
 q('#jump').onclick=jumpAction;
 q('#hit').onclick=attack;
