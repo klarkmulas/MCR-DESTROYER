@@ -25,11 +25,12 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .touchbtns .hit{width:106px;height:106px;background:linear-gradient(160deg,#ff655f55,#d5192f77);border-color:#ff929955;box-shadow:0 0 25px #ff405044,0 12px 30px #0007}
 #lookzone{position:absolute;right:0;top:92px;bottom:0;width:58%;height:auto;pointer-events:auto;touch-action:none;z-index:1}
 #editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}#editorBtn.active{background:#176bb0;border-color:#91d1ff}#adminBtn{position:fixed;z-index:45;left:18px;bottom:18px;padding:9px 12px;border-radius:10px;background:#07101acc;border:1px solid #ffffff20;color:#93abc2;font-size:10px;font-weight:900;letter-spacing:.08em}#adminStatus{position:fixed;z-index:45;left:18px;bottom:58px;padding:7px 10px;border-radius:9px;background:#07101ad9;border:1px solid #ffffff16;color:#89d4a4;font-size:10px;font-weight:800}#operatorPreviewBtn{position:fixed;z-index:45;left:118px;bottom:18px;padding:9px 12px;border-radius:10px;background:#152434e8;border:1px solid #65bdff44;color:#d9edff;font-size:10px;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0006}#operatorPreviewBtn.on{background:#1f6841;border-color:#75d99f;color:#edfff3}
-#adminStats{position:fixed;left:18px;top:118px;z-index:72;width:280px;padding:13px;border-radius:14px;background:#07101af2;border:1px solid #65bdff55;box-shadow:0 16px 40px #0009;backdrop-filter:blur(10px);color:#e9f6ff}
-#adminStats .statsHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.statsTitle{font-size:11px;font-weight:1000;letter-spacing:.12em;color:#77c8ff}.statsRefresh{padding:6px 8px;border-radius:8px;background:#132639;color:#dff3ff;border:1px solid #ffffff18;font-size:10px;font-weight:900}
+#adminStatsBtn{position:fixed;right:14px;top:14px;z-index:74;padding:9px 12px;border-radius:10px;background:#0b1a28ee;border:1px solid #65bdff55;color:#dff3ff;font-size:10px;font-weight:1000;letter-spacing:.06em;box-shadow:0 10px 28px #0008;pointer-events:auto}
+#adminStats{position:fixed;left:18px;top:64px;z-index:75;width:280px;padding:13px;border-radius:14px;background:#07101af7;border:1px solid #65bdff55;box-shadow:0 16px 40px #0009;backdrop-filter:blur(10px);color:#e9f6ff}
+#adminStats .statsHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.statsTitle{font-size:11px;font-weight:1000;letter-spacing:.12em;color:#77c8ff}.statsHeadActions{display:flex;gap:6px}.statsRefresh,.statsClose{padding:6px 8px;border-radius:8px;background:#132639;color:#dff3ff;border:1px solid #ffffff18;font-size:10px;font-weight:900}.statsClose{background:#52232a;color:#fff}
 .statsGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.statCell{padding:10px;border-radius:11px;background:#ffffff07;border:1px solid #ffffff0d}.statCell b{display:block;font-size:22px;line-height:1;color:#fff}.statCell span{display:block;margin-top:4px;font-size:9px;letter-spacing:.08em;color:#86a2ba;font-weight:900}
 .onlineDot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#425466;box-shadow:0 0 0 0 transparent}.onlineDot.on{background:#52df8b;box-shadow:0 0 12px #52df8b88}.statsFoot{margin-top:9px;font-size:9px;color:#708aa2;line-height:1.4}
-@media(max-width:700px){#adminStats{left:8px;right:8px;top:145px;width:auto;max-width:330px}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
+@media(max-width:700px){#adminStatsBtn{right:10px;top:10px;font-size:9px;padding:8px 10px}#adminStats{left:8px;right:8px;top:52px;width:auto;max-width:360px;margin:auto}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
 #adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
 #roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
@@ -82,13 +83,14 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .homeGlow{position:absolute;left:12%;right:12%;bottom:8%;height:4px;background:#44b7ff;box-shadow:0 0 28px 9px #2b91ff66}
 @media(max-width:850px){.homeShell{grid-template-columns:1fr}.homeVisual{display:none}.homeFeatures{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){
- #start.homeStart{padding:8px;display:block}
+ #start.homeStart{padding:8px 8px 96px;display:block}
  .homeShell{width:100%;min-height:100%;display:block}
- .homeCard{padding:18px 14px 26px;display:flex;flex-direction:column;min-height:auto}
+ .homeCard{padding:18px 14px 110px;display:flex;flex-direction:column;min-height:auto}
  .homeCard .homeEyebrow{order:1}.homeCard h1{order:2;font-size:44px;margin:8px 0 10px}.homeLead{order:3;font-size:13px;line-height:1.4}
- .viewChoice{order:4;margin:12px 0}.homeActions{order:5;display:grid;position:sticky;bottom:0;z-index:8;padding:10px 0 8px;background:linear-gradient(180deg,transparent,#07101a 28%,#07101a 100%)}
+ .viewChoice{order:4;margin:12px 0}.homeActions{order:5;display:grid;position:static;padding:6px 0;background:none}
  .homeFeatures{order:6;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.homeFeature{padding:9px}.homeFeature span{font-size:9px}
- .homeNote{order:7;margin-top:8px}.homePlay,.homeSecondary{width:100%}.homePlay{font-size:17px;padding:15px 20px}
+ .homeNote{order:7;margin-top:8px}.homePlay,.homeSecondary{width:100%}
+ #play{position:fixed;left:14px;right:14px;bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px));z-index:96;width:auto!important;min-height:58px;font-size:18px;padding:16px 20px;box-shadow:0 14px 38px #000b,0 0 30px #2196ff55}
 }
 @media(max-width:380px){.homeFeatures{grid-template-columns:1fr}.homeCard h1{font-size:40px}}
 
@@ -99,6 +101,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
  .homeCard h1{font-size:38px;margin:5px 0 8px}.homeLead{font-size:12px;line-height:1.35}
  .homeFeatures{grid-template-columns:repeat(2,1fr);gap:5px;margin:8px 0}.homeFeature{padding:7px}.homeFeature span{display:none}
  .viewChoice{margin:8px 0}.viewChoiceBtns button{padding:8px}.homeActions{display:flex;position:static;padding:0;background:none}.homeActions button{padding:9px 12px;font-size:11px;width:auto}
+ #play{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;min-height:auto!important;width:auto!important}
  .homeNote{display:none}
  .joy{width:108px;height:108px}.knob{left:30px;top:30px;width:48px;height:48px}
  .touchbtns button{width:70px;height:70px}.touchbtns .hit{width:88px;height:88px}
@@ -174,8 +177,9 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   <div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div>
 </div>
 
+<button id="adminStatsBtn" class="hidden">📊 MCR LIVE</button>
 <div id="adminStats" class="hidden">
-  <div class="statsHead"><div class="statsTitle">📊 MCR LIVE</div><button id="statsRefresh" class="statsRefresh">AGGIORNA</button></div>
+  <div class="statsHead"><div class="statsTitle">📊 MCR LIVE</div><div class="statsHeadActions"><button id="statsRefresh" class="statsRefresh">AGGIORNA</button><button id="statsClose" class="statsClose">✕</button></div></div>
   <div class="statsGrid">
     <div class="statCell"><b id="statTotal">—</b><span>ACCESSI TOTALI</span></div>
     <div class="statCell"><b id="statToday">—</b><span>OGGI</span></div>
@@ -240,7 +244,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -256,7 +260,7 @@ let yaw=0,pitch=-.05,dist=5.3,started=false,attacking=false,attackT=0,hitDone=fa
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
 let analyticsSession=sessionStorage.getItem(ANALYTICS_SESSION_KEY);
 if(!analyticsSession){analyticsSession=(crypto.randomUUID?.()||('mcr-'+Date.now()+'-'+Math.random().toString(36).slice(2)));sessionStorage.setItem(ANALYTICS_SESSION_KEY,analyticsSession)}
-let analyticsTimer=null,statsTimer=null;
+let analyticsTimer=null,statsTimer=null,adminStatsOpen=false;
 async function analyticsHeartbeat(forcePlaying=null){
  try{
    const playing=forcePlaying===null?(started&&!document.hidden):!!forcePlaying;
@@ -269,7 +273,7 @@ async function initAnalytics(){
  if(!analyticsTimer)analyticsTimer=setInterval(()=>analyticsHeartbeat(),15000);
 }
 async function refreshAdminStats(){
- if(!isAdmin){adminStats.classList.add('hidden');return}
+ if(!isAdmin||!adminStatsOpen){adminStats.classList.add('hidden');return}
  adminStats.classList.remove('hidden');
  try{
    const {data,error}=await supabase.rpc('mcr_admin_stats');
@@ -288,14 +292,19 @@ async function refreshAdminStats(){
  }
 }
 function syncStatsTimer(){
- if(isAdmin){
+ adminStatsBtn.classList.toggle('hidden',!isAdmin);
+ if(isAdmin&&adminStatsOpen){
+   adminStats.classList.remove('hidden');
    refreshAdminStats();
-   if(!statsTimer)statsTimer=setInterval(()=>{if(isAdmin)refreshAdminStats()},10000);
+   if(!statsTimer)statsTimer=setInterval(()=>{if(isAdmin&&adminStatsOpen)refreshAdminStats()},10000);
  }else{
    adminStats.classList.add('hidden');
    if(statsTimer){clearInterval(statsTimer);statsTimer=null}
+   if(!isAdmin)adminStatsOpen=false;
  }
 }
+function openAdminStats(){if(!isAdmin)return;adminStatsOpen=true;syncStatsTimer()}
+function closeAdminStats(){adminStatsOpen=false;syncStatsTimer()}
 initAnalytics();
 document.addEventListener('visibilitychange',()=>analyticsHeartbeat(document.hidden?false:null));
 
@@ -1112,12 +1121,14 @@ async function adminCreate(){
  else adminMessage.textContent='Account creato. Controlla la tua email per confermare l’accesso, poi torna qui e premi ACCEDI.';
 }
 async function adminLogout(){
+ closeAdminStats();
  await supabase.auth.signOut();adminSession=null;adminOperatorPreview=false;sessionStorage.removeItem('mcrAdminOperatorPreview');updateAdminUI();adminLogin.classList.add('hidden');show('ADMIN DISCONNESSO');
 }
 function toggleOperatorPreview(){
  const authAdmin=adminSession?.user?.email?.toLowerCase()===ADMIN_EMAIL;
  if(!authAdmin)return;
  adminOperatorPreview=!adminOperatorPreview;
+ if(adminOperatorPreview)closeAdminStats();
  sessionStorage.setItem('mcrAdminOperatorPreview',adminOperatorPreview?'1':'0');
  if(adminOperatorPreview&&editorMode)setEditorMode(false);
  updateAdminUI();
@@ -1399,7 +1410,9 @@ q('#objectiveBack').onclick=()=>{q('#objectivePopup').classList.add('hidden');st
 q('#reset').onclick=resetRoom;
 q('#exitHome').onclick=exitToHome;
 q('#homeGameBtn').onclick=exitToHome;
+q('#adminStatsBtn').onclick=openAdminStats;
 q('#statsRefresh').onclick=refreshAdminStats;
+q('#statsClose').onclick=closeAdminStats;
 const jumpAction=()=>{if(grounded){jumpV=4.8;grounded=false}};
 function bindMobileAction(el,fn){
  const fire=e=>{e.preventDefault();e.stopPropagation();unlockAudio();fn()};
