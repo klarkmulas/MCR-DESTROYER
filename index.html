@@ -18,9 +18,9 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #reset{pointer-events:auto;margin-top:6px;padding:7px 10px;border-radius:8px;color:#fff;background:#ffffff10;border:1px solid #ffffff1a;font-weight:800;font-size:10px}
 #help{position:fixed;z-index:40;left:16px;bottom:16px;padding:12px 14px;border-radius:12px;background:#07101ae8;border:1px solid #77baff33;color:#b1c1d3;font-size:12px;line-height:1.55}
 #touch{position:fixed;inset:0;z-index:30;pointer-events:none}.joy{position:absolute;left:24px;bottom:25px;width:116px;height:116px;border-radius:50%;border:1px solid #ffffff25;background:#ffffff10;pointer-events:auto;touch-action:none}.knob{position:absolute;left:34px;top:34px;width:48px;height:48px;border-radius:50%;background:#5dbdff99}.touchbtns{position:absolute;right:20px;bottom:22px;display:flex;gap:12px;align-items:flex-end;pointer-events:auto}.touchbtns button{width:72px;height:72px;border-radius:50%;background:#ffffff16;border:1px solid #ffffff25;color:white;font-weight:900}.touchbtns .hit{width:90px;height:90px;background:#ff546333}
-#editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}
-#roomEditor{position:fixed;z-index:46;right:18px;bottom:68px;width:min(330px,92vw);max-height:76vh;overflow:auto;padding:16px;border-radius:16px;background:#08111bea;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}
-#roomEditor h3{margin:0 0 4px;font-size:17px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
+#editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}#editorBtn.active{background:#176bb0;border-color:#91d1ff}
+#roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
+#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){.controls{grid-template-columns:repeat(2,1fr)}.panel{padding:24px 18px}.left{left:9px;top:9px;min-width:145px}.right{right:9px;top:9px;min-width:175px}.big{font-size:22px}#combo{top:83px;font-size:18px}#cross{display:none}}
 </style>
 </head>
@@ -48,16 +48,25 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <div id="touch" class="hidden"><div id="joy" class="joy"><div id="knob" class="knob"></div></div><div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div></div>
 <button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
-  <h3>Editor sala</h3>
-  <p class="hint">Clicca un oggetto per selezionarlo, poi trascinalo col mouse. Puoi anche usare i controlli qui sotto. Le modifiche si salvano su questo browser. “Copia link layout” crea un link che mostra la stessa sala anche su un altro PC.</p>
+  <h3>EDITOR MCR</h3>
+  <p class="hint"><b>Shift + click</b> seleziona più oggetti · <b>Canc</b> elimina la selezione · trascina per spostare · <b>E</b> apre/chiude l'editor.</p>
+  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="clearSelection">DESELEZIONA</button></div>
   <div id="selectedName">Nessun oggetto selezionato</div>
+  <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
   <div class="editorRow"><label>X</label><input id="editX" type="range" min="-13" max="13" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
   <div class="editorRow"><label>Y / altezza</label><input id="editY" type="range" min="0" max="5" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
   <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-8" max="8" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
   <div class="editorRow"><label>Rotazione</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
   <div class="nudge"><button id="nudgeLeft">X−</button><button id="nudgeRight">X+</button><button id="nudgeBack">Z−</button><button id="nudgeFront">Z+</button></div>
-  <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.65" max="1.9" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
-  <div class="editorBtns"><button id="saveLayout" class="save">SALVA LAYOUT</button><button id="closeEditor">CHIUDI</button><button id="deleteSelected" class="danger">ELIMINA OGGETTO</button><button id="resetSelected">RESET OGGETTO</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button></div>
+  <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.45" max="3.0" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
+  <div class="screenBox">
+    <div class="label">SCHERMI SELEZIONATI</div>
+    <select id="screenPreset"><option value="0">Multiview</option><option value="1">Dashboard tecnica</option><option value="2">Barre colore</option><option value="3">Log / playout</option></select>
+    <button id="applyScreenPreset">APPLICA PRESET</button>
+    <input id="screenFile" type="file" accept="image/png,image/jpeg,image/webp">
+    <button id="applyScreenFile">USA IMMAGINE CARICATA</button>
+  </div>
+  <div class="editorBtns"><button id="saveLayout" class="save">SALVA</button><button id="publishLayout" class="save">SALVA PER TUTTI</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
 
 <script type="importmap">
@@ -67,11 +76,11 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editLightv=q('#editLightv');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile');
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);
-const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.05,100);
+const camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.05,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,28,.01);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[];
 let yaw=0,pitch=-.13,dist=5.3,started=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false;let officeRig=null,walkPhase=0;const MAX_FRAGMENTS=110;
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
@@ -83,7 +92,7 @@ function mat(c,r=.45,m=.15){return new THREE.MeshStandardMaterial({color:c,rough
 const dark=mat(0x171c22,.48,.32), black=mat(0x090d12,.38,.38), steel=mat(0x575f68,.30,.72), deskMat=mat(0x11171d,.34,.30);
 const floorMat=new THREE.MeshPhysicalMaterial({color:0x301c16,roughness:.25,metalness:.04,clearcoat:.72,clearcoatRoughness:.14});
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xacc5d7,transparent:true,opacity:.15,roughness:.025,transmission:.5,thickness:.05});
-const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3(),editOffset=new THREE.Vector3();let editorMode=false,selectedEdit=null,editHelper=null,editDragging=false;
+const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map();
 
 function box(w,h,d,ma,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
 function cyl(r1,r2,h,ma,x,y,z){const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
@@ -122,7 +131,7 @@ function addMonitor(x,y,z,w=.9,h=.58,wall=false){
  const frame=new THREE.Mesh(new THREE.BoxGeometry(w,h,.11),black);frame.castShadow=true;g.add(frame);
  const intactMap=texVariants[(monitorSeed++)%texVariants.length];const sm=new THREE.MeshBasicMaterial({map:intactMap,toneMapped:false});const s=new THREE.Mesh(new THREE.PlaneGeometry(w*.92,h*.84),sm);s.position.z=.061;g.add(s);g.userData.screen=s;g.userData.intactMap=intactMap;
  if(!wall){const st=new THREE.Mesh(new THREE.BoxGeometry(.06,.37,.06),black);st.position.y=-h*.65;g.add(st);const foot=new THREE.Mesh(new THREE.BoxGeometry(.4,.035,.23),black);foot.position.set(0,-h*.86,.06);g.add(foot)}
- return reg(g,'monitor',2,wall?4200:1600,'screen')
+ const d=reg(g,'monitor',2,wall?4200:1600,'screen');d.screenPreset=(monitorSeed-1)%texVariants.length;d.origScreenPreset=d.screenPreset;d.screenData=null;return d
 }
 function addDesk(x,z,w,d){
  const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
@@ -169,7 +178,7 @@ buildRoom();totalEl.textContent=destruct.length;
 destruct.forEach((d,i)=>{d.editId=i;d.o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=d.o})});
 function applySavedLayout(){
  try{
-  const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
+  const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
   if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
   if(Array.isArray(saved.items))saved.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)})
  }catch(e){console.warn('Layout non caricato',e)}
@@ -284,54 +293,84 @@ function animateOffice(dt,speedRatio,run){
 fallbackHuman();avatar.rotation.y=Math.PI;
 
 function editorLabel(d){return ({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1)}
+function activeCamera(){return editorMode&&topViewMode?topCamera:camera}
+function clearEditHelpers(){for(const h of editHelpers)scene.remove(h);editHelpers=[]}
+function rebuildEditHelpers(){clearEditHelpers();for(const d of selectedEdits){const h=new THREE.BoxHelper(d.o,d===selectedEdit?0x55bbff:0xffc857);scene.add(h);editHelpers.push(h)}}
 function refreshEditorFields(){
+ selectionCount.textContent=selectedEdits.size+' oggett'+(selectedEdits.size===1?'o':'i')+' selezionat'+(selectedEdits.size===1?'o':'i');
  if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';return}
- const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit);
+ const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit)+(selectedEdits.size>1?'  + altri '+(selectedEdits.size-1):'');
  editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);
  editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';
+ if(selectedEdit.type==='monitor'&&selectedEdit.screenPreset!=null)screenPreset.value=String(selectedEdit.screenPreset);
 }
-function selectEdit(d){
- selectedEdit=d||null;if(editHelper){scene.remove(editHelper);editHelper=null}
- if(selectedEdit){editHelper=new THREE.BoxHelper(selectedEdit.o,0x55bbff);scene.add(editHelper)}
- refreshEditorFields();
+function selectEdit(d,additive=false){
+ if(!additive)selectedEdits.clear();
+ if(d){
+   if(additive&&selectedEdits.has(d)){selectedEdits.delete(d);if(selectedEdit===d)selectedEdit=[...selectedEdits].at(-1)||null}
+   else{selectedEdits.add(d);selectedEdit=d}
+ }else{selectedEdit=null;selectedEdits.clear()}
+ rebuildEditHelpers();refreshEditorFields();
+}
+function moveSelection(dx,dy,dz){
+ for(const d of selectedEdits){d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-13,13);d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,0,5);d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-8,8)}
+ rebuildEditHelpers();refreshEditorFields();
 }
 function updateSelectedFromUI(){
- if(!selectedEdit)return;const o=selectedEdit.o;o.position.set(parseFloat(editX.value),parseFloat(editY.value),parseFloat(editZ.value));o.rotation.y=THREE.MathUtils.degToRad(parseFloat(editRot.value));if(editHelper)editHelper.update();refreshEditorFields();
+ if(!selectedEdit)return;
+ const old=selectedEdit.o.position.clone(),newPos=new THREE.Vector3(parseFloat(editX.value),parseFloat(editY.value),parseFloat(editZ.value)),delta=newPos.sub(old);
+ for(const d of selectedEdits)d.o.position.add(delta);
+ selectedEdit.o.rotation.y=THREE.MathUtils.degToRad(parseFloat(editRot.value));
+ rebuildEditHelpers();refreshEditorFields();
+}
+function setTopView(on){
+ topViewMode=on;topViewBtn.classList.toggle('on',on);topViewBtn.textContent=on?'🎮 TORNA 3D':'⬇ VISTA DALL\'ALTO';document.exitPointerLock?.();
 }
 function setEditorMode(on){
- editorMode=on;roomEditor.classList.toggle('hidden',!on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
- if(on){document.exitPointerLock?.();show('EDITOR SALA ATTIVO');}
- else{editDragging=false;selectEdit(null);show('EDITOR CHIUSO');}
+ editorMode=on;document.body.classList.toggle('editor-active',on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
+ if(on){document.exitPointerLock?.();moveVel.set(0,0,0);show('EDITOR SALA ATTIVO');}
+ else{editDragging=false;setTopView(false);selectEdit(null);show('EDITOR CHIUSO');}
+}
+function applyMonitorPreset(d,preset){
+ if(!d||d.type!=='monitor'||!d.o.userData.screen)return;d.screenPreset=Number(preset)%texVariants.length;d.screenData=null;d.o.userData.intactMap=texVariants[d.screenPreset];d.o.userData.screen.material.map=d.o.userData.intactMap;d.o.userData.screen.material.needsUpdate=true;
+}
+function applyMonitorData(d,data){
+ if(!d||d.type!=='monitor'||!data)return;const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=512;cv.height=288;const gx=cv.getContext('2d');const s=Math.max(512/img.width,288/img.height),w=img.width*s,h=img.height*s;gx.drawImage(img,(512-w)/2,(288-h)/2,w,h);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;d.screenData=data;d.o.userData.intactMap=tex;d.o.userData.screen.material.map=tex;d.o.userData.screen.material.needsUpdate=true};img.src=data;
+}
+function layoutData(){
+ return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null}))};
 }
 function saveLayout(){
- const data={exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,visible:d.o.visible}))};
- localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)});show('LAYOUT SALVATO');
+ const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('LAYOUT SALVATO SU QUESTO PC');
 }
-function encodeLayoutForUrl(){
- const data={exposure:renderer.toneMappingExposure,items:destruct.map(d=>({x:+d.o.position.x.toFixed(2),y:+d.o.position.y.toFixed(2),z:+d.o.position.z.toFixed(2),ry:+d.o.rotation.y.toFixed(4),visible:d.o.visible}))};
- return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-}
+function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.stringify(layoutData()))))}
 function applyLayoutData(data){
  if(!data)return;
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
- if(Array.isArray(data.items))data.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)});
+ if(Array.isArray(data.items))data.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);if(d.type==='monitor'){if(s.screenData)applyMonitorData(d,s.screenData);else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset)}})
 }
 function loadLayoutFromUrl(){
  try{const raw=new URLSearchParams(location.search).get('layout');if(!raw)return false;const data=JSON.parse(decodeURIComponent(escape(atob(raw))));applyLayoutData(data);return true}catch(e){console.warn('Layout URL non valido',e);return false}
 }
 function deleteSelectedObject(){
- if(!selectedEdit)return;
- selectedEdit.o.visible=false;selectedEdit.startVis=false;show(editorLabel(selectedEdit)+' eliminato');selectEdit(null);
+ if(!selectedEdits.size)return;for(const d of selectedEdits){d.o.visible=false;d.startVis=false}show(selectedEdits.size+' oggetti eliminati');selectEdit(null);
+}
+function resetSelectedObjects(){
+ for(const d of selectedEdits){d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.visible=true;d.startVis=true;if(d.type==='monitor')applyMonitorPreset(d,d.origScreenPreset??0)}
+ rebuildEditHelpers();refreshEditorFields();
 }
 function restoreOriginalLayout(){
- destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat)});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');if(editHelper)editHelper.update();refreshEditorFields();show('LAYOUT ORIGINALE RIPRISTINATO');
+ destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);if(d.type==='monitor')applyMonitorPreset(d,d.origScreenPreset??0)});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);show('LAYOUT ORIGINALE RIPRISTINATO');
 }
 function editorPick(clientX,clientY){
- const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,camera);
- const hits=editRay.intersectObjects(scene.children,true);for(const h of hits){const root=h.object.userData.editorRoot;if(root&&root.userData.d&&!root.userData.d.dead)return {d:root.userData.d,point:h.point}}return null;
+ const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());
+ const hits=editRay.intersectObjects(scene.children,true);for(const h of hits){const root=h.object.userData.editorRoot;if(root&&root.userData.d&&!root.userData.d.dead&&root.visible)return {d:root.userData.d,point:h.point}}return null;
 }
 function editorDragPoint(clientX,clientY,y){
- const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,camera);editPlane.constant=-y;return editRay.ray.intersectPlane(editPlane,editPoint)?editPoint:null;
+ const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());editPlane.constant=-y;return editRay.ray.intersectPlane(editPlane,editPoint)?editPoint.clone():null;
+}
+async function publishLayoutGlobal(){
+ show('SALVATAGGIO PER TUTTI: COLLEGA FIREBASE');console.warn('Firebase non configurato: serve un progetto Firebase dedicato per pubblicare il layout a tutti.');
 }
 const SPARK_GEOMETRY=new THREE.BoxGeometry(.035,.035,.055);function spark(p,n=6,color=0xffcf55,size=.035){const sm=new THREE.MeshBasicMaterial({color,toneMapped:false,transparent:true});for(let i=0;i<Math.min(n,6);i++){let m=new THREE.Mesh(SPARK_GEOMETRY,sm);m.position.copy(p);scene.add(m);particles.push({m,v:new THREE.Vector3((Math.random()-.5)*2.3,.7+Math.random()*2,(Math.random()-.5)*2.3),life:.35+Math.random()*.35,spin:new THREE.Vector3(Math.random()*5,Math.random()*5,Math.random()*5)})}}
 function show(t){msg.textContent=t;msg.classList.add('on');clearTimeout(show.t);show.t=setTimeout(()=>msg.classList.remove('on'),1500)}
@@ -420,33 +459,37 @@ function updateCam(dt){let speed=Math.hypot(moveVel.x,moveVel.z),target=player.p
 function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];if(d.dead)continue;if(d.fragment){d.life-=dt;if(d.life<=0){disposeFragment(d);dynamics.splice(i,1);continue}}d.vel.y-=9.82*dt;d.o.position.addScaledVector(d.vel,dt);d.o.rotation.x+=d.spin.x*dt;d.o.rotation.y+=d.spin.y*dt;d.o.rotation.z+=d.spin.z*dt;if(d.o.position.y<.15){d.o.position.y=.15;d.vel.y*=-.22;d.vel.x*=.68;d.vel.z*=.68;d.spin.multiplyScalar(.72)}}}
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started){updatePlayer(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}updateCam(dt);renderer.render(scene,camera)}loop();
+function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode){updatePlayer(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera())}loop();
 
 q('#play').onclick=()=>{started=true;start.classList.add('hidden');hud.classList.remove('hidden');editorBtn.classList.remove('hidden');if(matchMedia('(pointer:coarse)').matches)touch.classList.remove('hidden');else renderer.domElement.requestPointerLock?.()};
 q('#reset').onclick=resetRoom;q('#jump').onclick=()=>{if(grounded){jumpV=4.8;grounded=false}};q('#hit').onclick=attack;
-addEventListener('keydown',e=>{keys.add(e.code);if(e.code==='Space'&&grounded){jumpV=4.8;grounded=false}if(e.code==='KeyR')resetRoom();if(e.code==='KeyH')help.classList.toggle('hidden')});
+addEventListener('keydown',e=>{if(editorMode&&(e.code==='Delete'||e.code==='Backspace')){deleteSelectedObject();e.preventDefault();return}if(editorMode&&e.code==='Escape'){selectEdit(null);return}if(editorMode&&e.code==='KeyT'){setTopView(!topViewMode);e.preventDefault();return}keys.add(e.code);if(!editorMode&&e.code==='Space'&&grounded){jumpV=4.8;grounded=false}if(!editorMode&&e.code==='KeyR')resetRoom();if(e.code==='KeyH')help.classList.toggle('hidden')});
 addEventListener('keyup',e=>keys.delete(e.code));
 document.addEventListener('pointerlockchange',()=>pointer=document.pointerLockElement===renderer.domElement);
-addEventListener('mousemove',e=>{if(editorMode&&editDragging&&selectedEdit){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){selectedEdit.o.position.x=THREE.MathUtils.clamp(p.x+editOffset.x,-13,13);selectedEdit.o.position.z=THREE.MathUtils.clamp(p.z+editOffset.z,-8,8);if(editHelper)editHelper.update();refreshEditorFields()}return}if(!pointer)return;yaw-=e.movementX*.0024;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018,-.62,.48)});addEventListener('mouseup',()=>{editDragging=false});
-renderer.domElement.addEventListener('mousedown',e=>{if(e.button!==0)return;if(editorMode){const hit=editorPick(e.clientX,e.clientY);if(hit){selectEdit(hit.d);const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){editOffset.copy(selectedEdit.o.position).sub(p);editDragging=true}}return}if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();attack()});
-renderer.domElement.addEventListener('wheel',e=>{dist=THREE.MathUtils.clamp(dist+e.deltaY*.003,3.4,7.2)},{passive:true});
+addEventListener('mousemove',e=>{if(editorMode&&editDragging&&selectedEdit&&dragStartPoint){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){const dx=p.x-dragStartPoint.x,dz=p.z-dragStartPoint.z;for(const [d,pos] of dragStartPositions){d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-13,13);d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-8,8)}rebuildEditHelpers();refreshEditorFields()}return}if(!pointer)return;yaw-=e.movementX*.0024;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0018,-.62,.48)});addEventListener('mouseup',()=>{editDragging=false;dragStartPoint=null;dragStartPositions.clear()});
+renderer.domElement.addEventListener('mousedown',e=>{if(e.button!==0)return;if(editorMode){const hit=editorPick(e.clientX,e.clientY);if(hit){selectEdit(hit.d,e.shiftKey);if(selectedEdit&&selectedEdits.has(hit.d)){const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);if(p){dragStartPoint=p;dragStartPositions.clear();for(const d of selectedEdits)dragStartPositions.set(d,d.o.position.clone());editDragging=true}}}else if(!e.shiftKey)selectEdit(null);return}if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();attack()});
+renderer.domElement.addEventListener('wheel',e=>{if(editorMode&&topViewMode){topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);topCamera.updateProjectionMatrix();return}dist=THREE.MathUtils.clamp(dist+e.deltaY*.003,3.4,7.2)},{passive:true});
 let joy=q('#joy'),knob=q('#knob'),jid=null;
 joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid)});
 joy.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;let r=joy.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),max=40;if(l>max){x=x/l*max;y=y/l*max}knob.style.transform='translate('+x+'px,'+y+'px)';mobile.x=x/max;mobile.y=y/max});
 joy.addEventListener('pointerup',e=>{if(e.pointerId!==jid)return;jid=null;knob.style.transform='';mobile.x=mobile.y=0});
 editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
+topViewBtn.onclick=()=>setTopView(!topViewMode);
+q('#clearSelection').onclick=()=>selectEdit(null);
 q('#saveLayout').onclick=saveLayout;
+q('#publishLayout').onclick=publishLayoutGlobal;
 q('#resetLayout').onclick=restoreOriginalLayout;
-q('#resetSelected').onclick=()=>{if(!selectedEdit)return;selectedEdit.o.position.copy(selectedEdit.origPos);selectedEdit.o.quaternion.copy(selectedEdit.origQuat);selectedEdit.o.visible=true;selectedEdit.startVis=true;if(editHelper)editHelper.update();refreshEditorFields()};q('#deleteSelected').onclick=deleteSelectedObject;q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+'?layout='+encodeURIComponent(encodeLayoutForUrl());try{await navigator.clipboard.writeText(url);show('LINK LAYOUT COPIATO')}catch(e){prompt('Copia questo link',url)}};
+q('#resetSelected').onclick=resetSelectedObjects;
+q('#deleteSelected').onclick=deleteSelectedObject;
+q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+'?layout='+encodeURIComponent(encodeLayoutForUrl());try{await navigator.clipboard.writeText(url);show('LINK LAYOUT COPIATO')}catch(e){prompt('Copia questo link',url)}};
 [editX,editY,editZ,editRot].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
-q('#nudgeLeft').onclick=()=>{if(selectedEdit){selectedEdit.o.position.x-=.2;refreshEditorFields();if(editHelper)editHelper.update()}};
-q('#nudgeRight').onclick=()=>{if(selectedEdit){selectedEdit.o.position.x+=.2;refreshEditorFields();if(editHelper)editHelper.update()}};
-q('#nudgeBack').onclick=()=>{if(selectedEdit){selectedEdit.o.position.z-=.2;refreshEditorFields();if(editHelper)editHelper.update()}};
-q('#nudgeFront').onclick=()=>{if(selectedEdit){selectedEdit.o.position.z+=.2;refreshEditorFields();if(editHelper)editHelper.update()}};
+q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>moveSelection(.2,0,0);q('#nudgeBack').onclick=()=>moveSelection(0,0,-.2);q('#nudgeFront').onclick=()=>moveSelection(0,0,.2);
+q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
+q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}const fr=new FileReader();fr.onload=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorData(d,fr.result);n++}show(n?('IMMAGINE APPLICATA A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};fr.readAsDataURL(file)};
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
-addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();const aspect=innerWidth/innerHeight,halfH=10;topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 window.addEventListener('error',e=>{
   console.error(e.error||e.message);
   const old=document.getElementById('runtimeError');
