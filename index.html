@@ -40,6 +40,14 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
  .touchbtns{right:max(14px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));gap:10px}.touchbtns button{width:64px;height:64px;font-size:11px}.touchbtns .hit{width:82px;height:82px}
  #adminBtn{top:58px}#adminStatus{top:90px}#editorBtn{top:58px}
 }
+#playerSelect{z-index:95;background:radial-gradient(circle at 50% 18%,rgba(31,111,189,.28),transparent 36%),linear-gradient(180deg,#06101bfa,#020508fa)}
+.playerSelectCard{width:min(880px,94vw);padding:clamp(20px,4vw,38px);border-radius:24px;background:linear-gradient(180deg,#0b1826f4,#050b12f6);border:1px solid #65bfff44;box-shadow:0 32px 90px #000b;backdrop-filter:blur(12px)}
+.playerSelectCard h2{margin:6px 0 8px;font-size:clamp(30px,5vw,52px)}.playerSelectCard>p{margin:0 0 18px;color:#a9bfd0;line-height:1.45}
+.playerGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.playerPick{padding:15px 10px;border-radius:13px;border:1px solid #ffffff14;background:#ffffff08;color:#e8f5ff;font-weight:1000;letter-spacing:.03em;cursor:pointer}.playerPick:hover,.playerPick.on{background:linear-gradient(135deg,#116cb9,#2aa9f0);border-color:#8dd9ff;box-shadow:0 0 22px #259fff44}
+.playerLast{margin-top:14px;font-size:11px;color:#6f8aa0}
+.currentPlayerBar{display:flex;align-items:center;gap:10px;margin:0 0 15px;padding:10px 12px;border-radius:12px;background:#07101a9c;border:1px solid #ffffff10}.currentPlayerBar b{color:#7fcaff}.currentPlayerBar button{margin-left:auto;padding:7px 10px;border-radius:9px;background:#ffffff0b;border:1px solid #ffffff18;color:#dcecff;font-size:10px;font-weight:900}
+#playerBadge{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:24;padding:8px 12px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff44;color:#dff3ff;font-size:10px;font-weight:900;letter-spacing:.07em;pointer-events:none}
+@media(max-width:720px){.playerGrid{grid-template-columns:repeat(2,1fr)}#playerBadge{top:56px;font-size:9px}.currentPlayerBar{flex-wrap:wrap}.currentPlayerBar button{margin-left:0}}
 #start.homeStart{padding:18px;background:
  radial-gradient(circle at 18% 18%,rgba(40,120,220,.25),transparent 34%),
  radial-gradient(circle at 82% 34%,rgba(27,74,150,.24),transparent 30%),
@@ -65,6 +73,28 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 </head>
 <body>
 <div id="game"></div>
+<div id="playerSelect" class="overlay hidden">
+  <div class="playerSelectCard">
+    <div class="homeEyebrow">MCR DESTROYER // PLAYER</div>
+    <h2>CHI SEI?</h2>
+    <p>Scegli il tuo nome. Lo useremo per la partita e per la classifica tra colleghi.</p>
+    <div class="playerGrid">
+      <button class="playerPick" data-player="CENOLLI">CENOLLI</button>
+      <button class="playerPick" data-player="D'ALESSANDRO">D'ALESSANDRO</button>
+      <button class="playerPick" data-player="ELIA">ELIA</button>
+      <button class="playerPick" data-player="MESSINA">MESSINA</button>
+      <button class="playerPick" data-player="CAVUOTO">CAVUOTO</button>
+      <button class="playerPick" data-player="DELCOK">DELCOK</button>
+      <button class="playerPick" data-player="LONGONI">LONGONI</button>
+      <button class="playerPick" data-player="BELAITER">BELAITER</button>
+      <button class="playerPick" data-player="GUIDA">GUIDA</button>
+      <button class="playerPick" data-player="MULAS">MULAS</button>
+      <button class="playerPick" data-player="PARIANI">PARIANI</button>
+      <button class="playerPick" data-player="MANCINI">MANCINI</button>
+    </div>
+    <div id="playerLast" class="playerLast"></div>
+  </div>
+</div>
 <div id="start" class="overlay homeStart">
   <div class="homeShell">
     <section class="homeCard">
@@ -77,6 +107,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
         <div class="homeFeature"><b>SMARTPHONE</b><span>Joystick a sinistra, visuale e azioni a destra.</span></div>
         <div class="homeFeature"><b>ORIZZONTALE</b><span>Landscape consigliato per avere più spazio di gioco.</span></div>
       </div>
+      <div class="currentPlayerBar"><span>GIOCATORE: <b id="homePlayerName">—</b></span><button id="changePlayer">CAMBIA GIOCATORE</button></div>
       <div class="viewChoice">
         <div class="viewChoiceLabel">SCEGLI LA VISUALE</div>
         <div class="viewChoiceBtns"><button id="chooseFirst" class="on">👁 PRIMA PERSONA</button><button id="chooseThird">🎮 TERZA PERSONA</button></div>
@@ -97,6 +128,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   </div>
 </div>
 <div id="hud" class="hidden">
+  <div id="playerBadge" class="hidden">GIOCATORE: —</div>
   <div class="glass left"><div class="label">DANNI</div><div id="damage" class="big">€ 0</div><div class="sub"><span id="destroyed">0</span> / <span id="total">0</span> oggetti distrutti</div></div>
   <div id="combo">COMBO x1</div>
   <div class="glass right"><div class="label">TEMPO PRIMA DELL'INTERVENTO TECNICO</div><div id="timer" class="big">02:30</div><button id="reset">RESET SALA</button></div>
@@ -159,12 +191,12 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), playerSelect=q('#playerSelect'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
-let adminSession=null,isAdmin=false;
+let adminSession=null,isAdmin=false,currentPlayer='';
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
@@ -392,7 +424,43 @@ function applySavedLayout(){
   if(Array.isArray(saved.items))applyStableLayoutItems(saved.items);
  }catch(e){console.warn('Layout non caricato',e)}
 }
-if(!loadLayoutFromUrl())loadGlobalLayout();
+if(!loadLayoutFromUrl())loadGlobalLayout().finally(()=>setTimeout(showPlayerSelectorIfNeeded,0));else setTimeout(showPlayerSelectorIfNeeded,0);
+
+
+const PLAYER_NAMES=["CENOLLI","D'ALESSANDRO","ELIA","MESSINA","CAVUOTO","DELCOK","LONGONI","BELAITER","GUIDA","MULAS","PARIANI","MANCINI"];
+function updatePlayerIdentityUI(){
+ const name=currentPlayer||'—';
+ const hp=q('#homePlayerName');if(hp)hp.textContent=name;
+ const badge=q('#playerBadge');if(badge){badge.textContent='GIOCATORE: '+name;badge.classList.toggle('hidden',!started||!currentPlayer)}
+ document.querySelectorAll('.playerPick').forEach(b=>b.classList.toggle('on',b.dataset.player===currentPlayer));
+}
+function choosePlayer(name){
+ if(!PLAYER_NAMES.includes(name))return;
+ currentPlayer=name;
+ sessionStorage.setItem('mcrCurrentPlayer',name);
+ localStorage.setItem('mcrLastPlayer',name);
+ playerSelect.classList.add('hidden');
+ updatePlayerIdentityUI();
+ show('CIAO '+name);
+}
+function showPlayerSelector(force=false){
+ const last=localStorage.getItem('mcrLastPlayer')||'';
+ q('#playerLast').textContent=last?'ULTIMO GIOCATORE SU QUESTO DISPOSITIVO: '+last:'';
+ if(last)document.querySelectorAll('.playerPick').forEach(b=>b.classList.toggle('on',b.dataset.player===last));
+ playerSelect.classList.remove('hidden');
+ if(force)document.exitPointerLock?.();
+}
+function showPlayerSelectorIfNeeded(){
+ const sessionName=sessionStorage.getItem('mcrCurrentPlayer');
+ if(sessionName&&PLAYER_NAMES.includes(sessionName)){currentPlayer=sessionName;updatePlayerIdentityUI();return}
+ if(started){
+   const last=localStorage.getItem('mcrLastPlayer');
+   if(last&&PLAYER_NAMES.includes(last)){currentPlayer=last;sessionStorage.setItem('mcrCurrentPlayer',last);updatePlayerIdentityUI();return}
+ }
+ showPlayerSelector();
+}
+document.querySelectorAll('.playerPick').forEach(btn=>btn.addEventListener('click',()=>choosePlayer(btn.dataset.player)));
+q('#changePlayer').onclick=()=>showPlayerSelector(true);
 
 function fallbackHuman(){
  const skin=mat(0xc88a68,.64,0),shirt=mat(0x7f7f79,.72,.02),pants=mat(0x24262b,.72,.05),shoe=mat(0x202329,.76,.08),hair=mat(0x2b211c,.84,0),blackMat=mat(0x17191d,.68,.08),badgeMat=mat(0xd7d9db,.58,.02),screenBlue=mat(0x233a55,.55,.05);
@@ -840,7 +908,7 @@ function saveRuntimeSession(){
    const state={
      started:true,
      player:{x:player.position.x,y:player.position.y,z:player.position.z},
-     yaw,pitch,cameraMode,damage,destroyed,combo,countdown,countdownOn
+     yaw,pitch,cameraMode,currentPlayer,damage,destroyed,combo,countdown,countdownOn
    };
    sessionStorage.setItem(RUNTIME_SESSION_KEY,JSON.stringify(state));
  }catch(e){console.warn('Sessione gioco non salvata',e)}
@@ -852,7 +920,7 @@ function restoreRuntimeSession(){
    started=true;avatar.visible=false;fpView.visible=true;
    start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();
    if(s.player)player.position.set(Number(s.player.x)||0,Number(s.player.y)||0,Number(s.player.z)||6);
-   if(Number.isFinite(s.yaw))yaw=s.yaw;if(Number.isFinite(s.pitch))pitch=s.pitch;if(s.cameraMode)setCameraMode(s.cameraMode,false);
+   if(Number.isFinite(s.yaw))yaw=s.yaw;if(Number.isFinite(s.pitch))pitch=s.pitch;if(s.currentPlayer&&PLAYER_NAMES.includes(s.currentPlayer)){currentPlayer=s.currentPlayer;sessionStorage.setItem('mcrCurrentPlayer',currentPlayer)}if(s.cameraMode)setCameraMode(s.cameraMode,false);updatePlayerIdentityUI();
    damage=Number(s.damage)||0;destroyed=Number(s.destroyed)||0;combo=Number(s.combo)||1;
    countdown=Number.isFinite(s.countdown)?s.countdown:150;countdownOn=!!s.countdownOn;
    damageEl.textContent='€ '+damage.toLocaleString('it-IT');destroyedEl.textContent=String(destroyed);comboEl.textContent='COMBO x'+combo;
@@ -1106,7 +1174,7 @@ q('#homeHelp').onclick=()=>help.classList.toggle('hidden');
 q('#rotateNow').onclick=requestLandscape;
 q('#rotateDismiss').onclick=()=>q('#rotateHint').classList.add('hidden');
 addEventListener('orientationchange',()=>setTimeout(updateRotateHint,160));
-q('#play').onclick=()=>{started=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();setCameraMode(cameraMode,false);saveRuntimeSession();if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}else renderer.domElement.requestPointerLock?.()};
+q('#play').onclick=()=>{if(!currentPlayer){showPlayerSelector();return}started=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();updatePlayerIdentityUI();setCameraMode(cameraMode,false);saveRuntimeSession();if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}else renderer.domElement.requestPointerLock?.()};
 q('#reset').onclick=resetRoom;
 const jumpAction=()=>{if(grounded){jumpV=4.8;grounded=false}};
 q('#jump').onclick=jumpAction;
