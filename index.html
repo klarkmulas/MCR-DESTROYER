@@ -704,7 +704,7 @@ function animateOffice(dt,speedRatio,run){
  if(moving&&!attacking)walkPhase+=dt*(run?10.4:6.7)*Math.max(.38,speedRatio);
  else if(!attacking)walkPhase+=dt*.65;
  const s=Math.sin(walkPhase),c2=Math.cos(walkPhase),k=1-Math.exp(-16*dt);
- const stride=(run?.78:.50)*speedRatio;
+ const stride=(run ? .78 : .50)*speedRatio;
  const movingS=moving?s:0,opp=-movingS;
 
  let lLegX=movingS*stride,rLegX=opp*stride;
@@ -718,8 +718,8 @@ function animateOffice(dt,speedRatio,run){
  let pelvisY=moving?-movingS*.045*speedRatio:0;
  let pelvisZ=moving?movingS*.055*speedRatio:Math.sin(walkPhase*.5)*.012;
  let headY=moving?-torsoY*.45:Math.sin(walkPhase*.42)*.06;
- let headX=moving?(run?.025:.012)*Math.sin(walkPhase*2):Math.sin(walkPhase*.31)*.018;
- let bodyBob=moving?Math.abs(Math.sin(walkPhase*2))*(run?.027:.016)*speedRatio:Math.sin(walkPhase*.8)*.004;
+ let headX=moving?(run ? .025 : .012)*Math.sin(walkPhase*2):Math.sin(walkPhase*.31)*.018;
+ let bodyBob=moving?Math.abs(Math.sin(walkPhase*2))*(run ? .027 : .016)*speedRatio:Math.sin(walkPhase*.8)*.004;
 
  if(attacking){
    const smooth=t=>t*t*(3-2*t),wind=smooth(Math.min(attackP/.24,1));
