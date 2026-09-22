@@ -1097,7 +1097,7 @@ function applyHit(d,dir){
  }
 }
 function attack(){
- if(!started||editorMode||attacking)return;ensureAudio();soundSwing();attacking=true;attackT=0;hitDone=false
+ if(!started||editorMode||attacking)return;unlockAudio();soundSwing();attacking=true;attackT=0;hitDone=false
 }
 function hit(){
  let origin;
