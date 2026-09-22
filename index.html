@@ -62,6 +62,14 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #soundToggle{position:fixed;left:18px;top:118px;z-index:70;padding:10px 13px;border-radius:12px;background:#07101af2;border:1px solid #65bdff77;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}
 @media(max-width:700px){#viewToggle{bottom:max(116px,calc(env(safe-area-inset-bottom) + 110px));font-size:10px;padding:8px 11px}#soundToggle{left:10px;top:114px;font-size:9px;padding:8px 10px}}
 .homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}
+#objectivePopup{z-index:90;background:rgba(2,5,9,.84);backdrop-filter:blur(10px)}
+.objectiveCard{width:min(650px,94vw);padding:clamp(22px,4vw,36px);border-radius:24px;background:linear-gradient(180deg,#0c1827f5,#050a11fa);border:1px solid #6ab8ff44;box-shadow:0 32px 90px #000c}
+.objectiveCard h2{margin:6px 0 8px;font-size:clamp(30px,5vw,48px);letter-spacing:-.03em}.objectiveCard .missionLead{color:#c6d8e6;line-height:1.5;margin:0 0 16px}
+.objectiveList{display:grid;gap:9px;margin:18px 0}.objectiveItem{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;padding:11px 12px;border-radius:13px;background:#ffffff07;border:1px solid #ffffff0f}.objectiveIcon{font-size:22px;text-align:center}.objectiveItem b{display:block;font-size:12px;margin-bottom:2px}.objectiveItem span{font-size:11px;color:#93aabd;line-height:1.35}
+.relaxBox{margin-top:14px;padding:12px 14px;border-radius:13px;background:linear-gradient(135deg,#123a4f88,#0d274488);border:1px solid #5acbff33;color:#dff5ff;font-size:12px;line-height:1.45}.relaxBox b{color:#7bd6ff}
+.objectiveActions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}.objectiveActions button{padding:13px 18px;border-radius:12px;font-weight:900}.objectiveStart{background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff}.objectiveBack{background:#ffffff0b;border:1px solid #ffffff18;color:#dcecff}
+@media(max-width:520px){.objectiveActions{display:grid}.objectiveActions button{width:100%}}
+
 .homeVisual{position:relative;min-height:430px;border:1px solid #6ab8ff22;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 20%,#17395f 0,#09131f 35%,#020508 78%);box-shadow:inset 0 0 70px #0008,0 30px 90px #0008}
 .homeCeiling{position:absolute;inset:0 0 58% 0;background:repeating-linear-gradient(90deg,transparent 0 10%,#49627555 10.2% 10.45%),repeating-linear-gradient(0deg,transparent 0 28%,#49627544 28.4% 28.8%);transform:perspective(420px) rotateX(56deg);transform-origin:top center}
 .homeWall{position:absolute;left:10%;right:10%;top:19%;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.miniScreen{aspect-ratio:16/10;border:3px solid #05080d;border-radius:3px;background:linear-gradient(135deg,#1c7ec0,#101c38 45%,#7c2c66 47%,#185b42 70%,#d79b2e);box-shadow:0 0 14px #3aa4ff33}.miniScreen:nth-child(2n){background:linear-gradient(135deg,#13283a,#f0f4f8 32%,#175f8f 34%,#0b1622 70%)}.miniScreen:nth-child(3n){background:linear-gradient(135deg,#3b8645,#192b7a 35%,#802851 56%,#162637)}
@@ -104,6 +112,24 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
       <div class="homeBat"></div>
       <div class="homeGlow"></div>
     </section>
+  </div>
+</div>
+<div id="objectivePopup" class="overlay hidden">
+  <div class="objectiveCard">
+    <div class="homeEyebrow">MCR DESTROYER // MISSIONE</div>
+    <h2>OBIETTIVO DELLA PARTITA</h2>
+    <p class="missionLead">Hai <b>2 minuti e 30 secondi</b> prima dell'intervento tecnico. Fai più danni possibile alla control room e prova a migliorare il tuo record.</p>
+    <div class="objectiveList">
+      <div class="objectiveItem"><div class="objectiveIcon">🔨</div><div><b>DISTRUGGI GLI OGGETTI</b><span>Monitor, scrivanie, sedie, tastiere, telefoni, vetri e tutto ciò che è rompibile nella sala.</span></div></div>
+      <div class="objectiveItem"><div class="objectiveIcon">💶</div><div><b>AUMENTA I DANNI</b><span>Ogni oggetto distrutto aumenta il valore dei danni mostrato in alto a sinistra.</span></div></div>
+      <div class="objectiveItem"><div class="objectiveIcon">⚡</div><div><b>FAI COMBO</b><span>Colpisci e distruggi oggetti in sequenza per mantenere alta la combo.</span></div></div>
+      <div class="objectiveItem"><div class="objectiveIcon">⏱️</div><div><b>BATTI IL TEMPO</b><span>Quando parte il conto alla rovescia, continua fino all'arrivo del tecnico.</span></div></div>
+    </div>
+    <div class="relaxBox"><b>MODALITÀ ANTISTRESS VIRTUALE</b><br>È una pausa ludica e simbolica per staccare qualche minuto, scaricare la tensione e tornare al lavoro con la testa più leggera. Tutto quello che spacchi resta rigorosamente nel gioco. 😄</div>
+    <div class="objectiveActions">
+      <button id="objectiveBack" class="objectiveBack">TORNA ALLA HOME</button>
+      <button id="objectiveStart" class="objectiveStart">INIZIA LA PARTITA</button>
+    </div>
   </div>
 </div>
 <div id="hud" class="hidden">
@@ -1259,9 +1285,30 @@ function exitToHome(){
  editorBtn.classList.add('hidden');
  operatorPreviewBtn.classList.add('hidden');
  avatar.visible=false;fpView.visible=false;
+ q('#objectivePopup').classList.add('hidden');
  start.classList.remove('hidden');
 }
-q('#play').onclick=()=>{unlockAudio();started=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();setCameraMode(cameraMode,false);updateSoundUI();setTimeout(()=>{if(audioEnabled)soundTest()},80);saveRuntimeSession();if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}else renderer.domElement.requestPointerLock?.()};
+function beginGameFromObjective(){
+ unlockAudio();
+ q('#objectivePopup').classList.add('hidden');
+ started=true;
+ hud.classList.remove('hidden');
+ adminBtn.classList.remove('hidden');
+ updateAdminUI();
+ setCameraMode(cameraMode,false);
+ updateSoundUI();
+ setTimeout(()=>{if(audioEnabled)soundTest()},80);
+ saveRuntimeSession();
+ if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}
+ else renderer.domElement.requestPointerLock?.();
+}
+q('#play').onclick=()=>{
+ document.exitPointerLock?.();
+ start.classList.add('hidden');
+ q('#objectivePopup').classList.remove('hidden');
+};
+q('#objectiveStart').onclick=beginGameFromObjective;
+q('#objectiveBack').onclick=()=>{q('#objectivePopup').classList.add('hidden');start.classList.remove('hidden')};
 q('#reset').onclick=resetRoom;
 q('#exitHome').onclick=exitToHome;
 const jumpAction=()=>{if(grounded){jumpV=4.8;grounded=false}};
@@ -1272,6 +1319,10 @@ q('#hit').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagatio
 q('#jump').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();jumpAction()},{passive:false});
 q('#hit').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();attack()},{passive:false});
 addEventListener('keydown',e=>{
+ if(!q('#objectivePopup').classList.contains('hidden')){
+   if(e.code==='Enter'){beginGameFromObjective();e.preventDefault();return}
+   if(e.code==='Escape'){q('#objectivePopup').classList.add('hidden');start.classList.remove('hidden');e.preventDefault();return}
+ }
  if(editorMode){
    const mod=e.ctrlKey||e.metaKey;
    if(mod&&e.code==='KeyA'){selectAllObjects();e.preventDefault();return}
