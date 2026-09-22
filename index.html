@@ -153,65 +153,109 @@ let fill1=new THREE.PointLight(0x9bc8f5,10,19,2);fill1.position.set(0,2.5,1.5);s
 buildRoom();totalEl.textContent=destruct.length;
 
 function fallbackHuman(){
- const skin=mat(0xc98d69,.62,0),shirt=mat(0xdde7ef,.62,.02),pants=mat(0x293542,.66,.05),shoe=mat(0x12171c,.75,.06),hair=mat(0x37261b,.82,0),tieMat=mat(0x244b83,.56,.06);
+ const skin=mat(0xc88a68,.64,0),shirt=mat(0x7f7f79,.72,.02),pants=mat(0x24262b,.72,.05),shoe=mat(0x202329,.76,.08),hair=mat(0x2b211c,.84,0),blackMat=mat(0x17191d,.68,.08),badgeMat=mat(0xd7d9db,.58,.02),screenBlue=mat(0x233a55,.55,.05);
  const pelvis=new THREE.Group();pelvis.position.y=.90;avatar.add(pelvis);
- const hip=new THREE.Mesh(new THREE.BoxGeometry(.46,.20,.28),pants);hip.castShadow=true;pelvis.add(hip);
+ const hip=new THREE.Mesh(new THREE.BoxGeometry(.46,.20,.29),pants);hip.castShadow=true;pelvis.add(hip);
 
- const torsoPivot=new THREE.Group();torsoPivot.position.y=.26;pelvis.add(torsoPivot);
- const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.26,.44,6,12),shirt);torso.position.y=.37;torso.scale.set(1.12,1,0.72);torso.castShadow=true;torsoPivot.add(torso);
- const belt=new THREE.Mesh(new THREE.BoxGeometry(.54,.055,.30),shoe);belt.position.y=.04;torsoPivot.add(belt);
- const tie=new THREE.Mesh(new THREE.BoxGeometry(.07,.34,.025),tieMat);tie.position.set(0,.37,.20);torsoPivot.add(tie);
- const neck=new THREE.Mesh(new THREE.CylinderGeometry(.08,.09,.09,12),skin);neck.position.y=.75;torsoPivot.add(neck);
- const head=new THREE.Mesh(new THREE.SphereGeometry(.22,22,18),skin);head.position.set(0,.98,0);head.scale.y=1.09;head.castShadow=true;torsoPivot.add(head);
- const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.225,18,14,0,Math.PI*2,0,Math.PI*.56),hair);hairCap.position.set(0,1.08,0);torsoPivot.add(hairCap);const nose=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),skin);nose.scale.set(.72,.85,1.15);nose.position.set(0,.98,.205);torsoPivot.add(nose);const earL=new THREE.Mesh(new THREE.SphereGeometry(.045,10,8),skin),earR=earL.clone();earL.scale.set(.65,1,.5);earR.scale.copy(earL.scale);earL.position.set(-.22,.98,0);earR.position.set(.22,.98,0);torsoPivot.add(earL,earR);const eyeMat=mat(0x202329,.65,0);const eyeL=new THREE.Mesh(new THREE.SphereGeometry(.018,8,6),eyeMat),eyeR=eyeL.clone();eyeL.position.set(-.075,1.01,.205);eyeR.position.set(.075,1.01,.205);torsoPivot.add(eyeL,eyeR);
+ const torsoPivot=new THREE.Group();torsoPivot.position.y=.25;pelvis.add(torsoPivot);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.245,.42,7,14),shirt);torso.position.y=.35;torso.scale.set(1.16,1.02,.76);torso.castShadow=true;torsoPivot.add(torso);
+ const belt=new THREE.Mesh(new THREE.BoxGeometry(.54,.055,.31),blackMat);belt.position.y=.04;torsoPivot.add(belt);
+ const buckle=new THREE.Mesh(new THREE.BoxGeometry(.08,.055,.035),mat(0x5b6066,.35,.75));buckle.position.set(0,.04,.17);torsoPivot.add(buckle);
 
- function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,5,10),material);m.position.y=-len*.52;m.castShadow=true;p.add(m);return p}
- const lArm=limb(torsoPivot,-.37,.62,shirt,.34,.078),rArm=limb(torsoPivot,.37,.62,shirt,.34,.078);
- const lFore=limb(lArm,0,-.34,skin,.31,.068),rFore=limb(rArm,0,-.34,skin,.31,.068);
- const lHand=new THREE.Mesh(new THREE.SphereGeometry(.07,12,10),skin);lHand.position.y=-.34;lFore.add(lHand);
- const rHand=new THREE.Group();rHand.position.y=-.34;rFore.add(rHand);const rPalm=new THREE.Mesh(new THREE.SphereGeometry(.07,12,10),skin);rHand.add(rPalm);
+ const placket=new THREE.Mesh(new THREE.BoxGeometry(.065,.26,.018),mat(0x696a66,.72,.01));placket.position.set(0,.48,.19);torsoPivot.add(placket);
+ for(let i=0;i<3;i++){const bt=new THREE.Mesh(new THREE.SphereGeometry(.014,8,6),blackMat);bt.position.set(0,.56-i*.075,.205);torsoPivot.add(bt)}
 
- const lLeg=limb(pelvis,-.15,-.04,pants,.42,.10),rLeg=limb(pelvis,.15,-.04,pants,.42,.10);
- const lShin=limb(lLeg,0,-.42,pants,.39,.09),rShin=limb(rLeg,0,-.42,pants,.39,.09);
- const lf=new THREE.Mesh(new THREE.BoxGeometry(.23,.11,.41),shoe);lf.position.set(0,-.40,-.08);lShin.add(lf);
- const rf=lf.clone();rShin.add(rf);
+ const neck=new THREE.Mesh(new THREE.CylinderGeometry(.078,.09,.08,12),skin);neck.position.y=.72;torsoPivot.add(neck);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.21,24,18),skin);head.position.set(0,.94,0);head.scale.set(.96,1.10,.98);head.castShadow=true;torsoPivot.add(head);
+ const jaw=new THREE.Mesh(new THREE.SphereGeometry(.19,18,14),mat(0x6b5042,.82,0));jaw.scale.set(.95,.46,.96);jaw.position.set(0,.84,.012);jaw.material.transparent=true;jaw.material.opacity=.28;torsoPivot.add(jaw);
+ const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.218,20,14,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.045,-.005);hairCap.rotation.x=-.04;torsoPivot.add(hairCap);
+ const nose=new THREE.Mesh(new THREE.SphereGeometry(.04,10,8),skin);nose.scale.set(.7,.9,1.25);nose.position.set(0,.955,.205);torsoPivot.add(nose);
+ const eyeMat=mat(0x1d2024,.65,0);for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.016,8,6),eyeMat);eye.position.set(sx*.073,.99,.205);torsoPivot.add(eye)}
+ const earL=new THREE.Mesh(new THREE.SphereGeometry(.042,10,8),skin),earR=earL.clone();earL.scale.set(.65,1,.5);earR.scale.copy(earL.scale);earL.position.set(-.205,.95,0);earR.position.set(.205,.95,0);torsoPivot.add(earL,earR);
+ const earpiece=new THREE.Mesh(new THREE.SphereGeometry(.025,8,6),blackMat);earpiece.position.set(.218,.97,.015);torsoPivot.add(earpiece);
 
- rHand.add(batPivot);batPivot.position.set(.02,-.02,-.01);batPivot.rotation.set(.08,.12,-2.42);
+ function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,6,12),material);m.position.y=-len*.5;m.castShadow=true;p.add(m);return p}
+ const lArm=limb(torsoPivot,-.35,.59,shirt,.31,.078),rArm=limb(torsoPivot,.35,.59,shirt,.31,.078);
+ const lFore=limb(lArm,0,-.31,skin,.29,.065),rFore=limb(rArm,0,-.31,skin,.29,.065);
+ const cuffMat=shirt;
+ for(const fore of [lFore,rFore]){const cuff=new THREE.Mesh(new THREE.CylinderGeometry(.077,.073,.075,10),cuffMat);cuff.position.y=-.03;fore.add(cuff)}
+ const lHand=new THREE.Mesh(new THREE.SphereGeometry(.065,12,10),skin);lHand.scale.set(.82,1.05,.72);lHand.position.y=-.30;lFore.add(lHand);
+ const rHand=new THREE.Group();rHand.position.y=-.30;rFore.add(rHand);const rPalm=new THREE.Mesh(new THREE.SphereGeometry(.065,12,10),skin);rPalm.scale.set(.82,1.05,.72);rHand.add(rPalm);
+
+ const lLeg=limb(pelvis,-.145,-.04,pants,.38,.10),rLeg=limb(pelvis,.145,-.04,pants,.38,.10);
+ const lShin=limb(lLeg,0,-.38,pants,.38,.09),rShin=limb(rLeg,0,-.38,pants,.38,.09);
+ const lf=new THREE.Mesh(new THREE.BoxGeometry(.235,.12,.42),shoe);lf.position.set(0,-.39,-.08);lShin.add(lf);const rf=lf.clone();rShin.add(rf);
+ const pocketL=new THREE.Mesh(new THREE.BoxGeometry(.16,.20,.035),pants),pocketR=pocketL.clone();pocketL.position.set(-.16,-.22,.11);pocketR.position.set(.16,-.22,.11);pelvis.add(pocketL,pocketR);
+
+ const lanyardL=new THREE.Mesh(new THREE.BoxGeometry(.018,.44,.012),blackMat),lanyardR=lanyardL.clone();lanyardL.position.set(-.06,.47,.205);lanyardR.position.set(.06,.47,.205);lanyardL.rotation.z=-.14;lanyardR.rotation.z=.14;torsoPivot.add(lanyardL,lanyardR);
+ const badge=new THREE.Mesh(new THREE.BoxGeometry(.20,.28,.025),badgeMat);badge.position.set(0,.21,.225);torsoPivot.add(badge);
+ const badgeTop=new THREE.Mesh(new THREE.BoxGeometry(.17,.05,.028),screenBlue);badgeTop.position.set(0,.30,.242);torsoPivot.add(badgeTop);
+ const badgeText=document.createElement('canvas');badgeText.width=128;badgeText.height=160;const bg=badgeText.getContext('2d');bg.fillStyle='#e9ecef';bg.fillRect(0,0,128,160);bg.fillStyle='#1f2b38';bg.font='bold 30px Arial';bg.textAlign='center';bg.fillText('MCR',64,48);bg.font='16px Arial';bg.fillText('OPERATIONS',64,112);const btex=new THREE.CanvasTexture(badgeText);btex.colorSpace=THREE.SRGBColorSpace;const bface=new THREE.Mesh(new THREE.PlaneGeometry(.17,.23),new THREE.MeshBasicMaterial({map:btex,toneMapped:false}));bface.position.set(0,.20,.239);torsoPivot.add(bface);
+
+ const radioBody=new THREE.Mesh(new THREE.BoxGeometry(.12,.24,.07),blackMat);radioBody.position.set(-.33,-.02,.03);torsoPivot.add(radioBody);
+ const antenna=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.23,8),blackMat);antenna.position.set(-.33,.19,.03);torsoPivot.add(antenna);
+
+ const watch=new THREE.Mesh(new THREE.BoxGeometry(.075,.035,.085),blackMat);watch.position.set(-.015,-.21,.075);lFore.add(watch);
+
+ rHand.add(batPivot);batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);
  officeRig={pelvis,torsoPivot,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand};
 }
 function animateOffice(dt,speedRatio,run){
  if(!officeRig)return;
- const moving=speedRatio>.025,attackP=attacking?Math.min(1,attackT/.58):0;
- if(moving&&!attacking)walkPhase+=dt*(run?10.3:7.0)*Math.max(.4,speedRatio);
- const s=moving?Math.sin(walkPhase):0,opp=-s,k=1-Math.exp(-16*dt),stride=(run ? .76 : .52)*speedRatio;
+ const moving=speedRatio>.025,attackP=attacking?Math.min(1,attackT/.62):0;
+ if(moving&&!attacking)walkPhase+=dt*(run?9.8:6.6)*Math.max(.4,speedRatio);
+ const s=moving?Math.sin(walkPhase):0,opp=-s,k=1-Math.exp(-15*dt),stride=(run ? .70 : .47)*speedRatio;
 
- let lLegX=s*stride,rLegX=opp*stride,lArmX=opp*stride*.72,rArmX=s*stride*.62;
- let lKnee=Math.max(0,-s)*.72*speedRatio,rKnee=Math.max(0,-opp)*.72*speedRatio;
- let torsoY=moving?s*.055*speedRatio:0,torsoZ=moving?-s*.025*speedRatio:0,pelvisY=moving?-s*.035*speedRatio:0;
- let lForeX=-.10+Math.max(0,opp)*.14*speedRatio,rForeX=-.14;
+ let lLegX=s*stride,rLegX=opp*stride,lArmX=opp*stride*.66,rArmX=s*stride*.58;
+ let lKnee=Math.max(0,-s)*.64*speedRatio,rKnee=Math.max(0,-opp)*.64*speedRatio;
+ let torsoY=moving?s*.045*speedRatio:0,torsoZ=moving?-s*.018*speedRatio:0,pelvisY=moving?-s*.028*speedRatio:0;
+ let lForeX=-.10+Math.max(0,opp)*.10*speedRatio,rForeX=-.12;
+ let rArmY=0,rArmZ=0,rForeY=0,rForeZ=0,lArmY=0;
 
  if(attacking){
-   const wind=attackP<.28?attackP/.28:1;
-   const strike=attackP<.28?0:Math.min(1,(attackP-.28)/.30);
-   const follow=attackP<.58?0:Math.min(1,(attackP-.58)/.42);
-   const strikeEase=Math.sin(strike*Math.PI*.72);
-   torsoY=-.62*wind+1.18*strikeEase-.45*follow;
-   torsoZ=-.10*wind+.08*strikeEase;
-   pelvisY=-.18*wind+.32*strikeEase;
-   rArmX=-.65*wind-1.15*strikeEase+.35*follow;
-   rForeX=-1.0*wind-.45*strikeEase+.25*follow;
-   lArmX=.40*wind-.20*strikeEase;
-   lForeX=-.20;
-   lLegX*=.35;rLegX*=.35;lKnee*=.35;rKnee*=.35;
+   const wind=THREE.MathUtils.smoothstep(Math.min(attackP/.24,1),0,1);
+   const strike=attackP<.24?0:THREE.MathUtils.smoothstep(Math.min((attackP-.24)/.26,1),0,1);
+   const follow=attackP<.50?0:THREE.MathUtils.smoothstep(Math.min((attackP-.50)/.24,1),0,1);
+   const recover=attackP<.74?0:THREE.MathUtils.smoothstep(Math.min((attackP-.74)/.26,1),0,1);
+
+   torsoY=-.62*wind + 1.20*strike - .38*follow;
+   torsoZ=-.07*wind + .10*strike - .04*follow;
+   pelvisY=-.18*wind + .30*strike - .10*follow;
+
+   rArmX=-.40*wind - .95*strike + .18*follow;
+   rArmY=-.55*wind + 1.05*strike - .28*follow;
+   rArmZ=-.35*wind + .55*strike - .12*follow;
+   rForeX=-1.05*wind + .66*strike + .12*follow;
+   rForeY=-.18*wind + .35*strike;
+   rForeZ=.10*wind -.28*strike;
+
+   lArmX=.26*wind - .18*strike;
+   lArmY=.22*wind - .14*strike;
+   lForeX=-.22;
+
+   lLegX*=.28;rLegX*=.28;lKnee*=.28;rKnee*=.28;
+
+   if(recover>0){
+     torsoY=lerp(torsoY,0,recover);torsoZ=lerp(torsoZ,0,recover);pelvisY=lerp(pelvisY,0,recover);
+     rArmX=lerp(rArmX,0,recover);rArmY=lerp(rArmY,0,recover);rArmZ=lerp(rArmZ,0,recover);
+     rForeX=lerp(rForeX,-.12,recover);rForeY=lerp(rForeY,0,recover);rForeZ=lerp(rForeZ,0,recover);
+     lArmX=lerp(lArmX,0,recover);lArmY=lerp(lArmY,0,recover);lForeX=lerp(lForeX,-.10,recover);
+   }
  }
  const set=(obj,axis,val)=>obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],val,k);
  set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
- set(officeRig.lArm,'x',lArmX);set(officeRig.rArm,'x',rArmX);set(officeRig.lFore,'x',lForeX);set(officeRig.rFore,'x',rForeX);
+ set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);set(officeRig.rArm,'x',rArmX);set(officeRig.rArm,'y',rArmY);set(officeRig.rArm,'z',rArmZ);
+ set(officeRig.lFore,'x',lForeX);set(officeRig.rFore,'x',rForeX);set(officeRig.rFore,'y',rForeY);set(officeRig.rFore,'z',rForeZ);
  set(officeRig.torsoPivot,'y',torsoY);set(officeRig.torsoPivot,'z',torsoZ);set(officeRig.pelvis,'y',pelvisY);
- const bob=moving&&!attacking?Math.abs(Math.sin(walkPhase*2))*(run ? .025 : .015)*speedRatio:0;avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bob,k);
- const batZ=attacking?(-2.42+Math.sin(Math.min(1,attackP)*Math.PI)*2.15):-2.42;
- const batX=attacking?(.08+Math.sin(Math.min(1,attackP)*Math.PI)*.55):.08;
- batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,batZ,k);batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,batX,k);
+ const bob=moving&&!attacking?Math.abs(Math.sin(walkPhase*2))*(run ? .020 : .012)*speedRatio:0;avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bob,k);
+
+ const swing=attacking?Math.sin(Math.min(1,attackP)*Math.PI):0;
+ const batZ=attacking?(-2.38+swing*1.75):-2.38;
+ const batX=attacking?(.08+swing*.44):.08;
+ const batY=attacking?(.10-swing*.38):.10;
+ batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,batZ,k);
+ batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,batX,k);
+ batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,batY,k);
 }
 fallbackHuman();avatar.rotation.y=Math.PI;
 
@@ -283,7 +327,7 @@ function updatePlayer(dt){
  let mx=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0)+mobile.x,mz=(keys.has('KeyS')?1:0)-(keys.has('KeyW')?1:0)+mobile.y;let len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
  const run=keys.has('ShiftLeft')||keys.has('ShiftRight'),maxSpeed=run?5.15:3.15;let wish=new THREE.Vector3(mx,0,mz).applyAxisAngle(up,yaw);if(wish.lengthSq()>.001)wish.normalize();const target=wish.multiplyScalar(maxSpeed),accel=1-Math.exp(-(target.lengthSq()>.001?10:14)*dt);moveVel.x=THREE.MathUtils.lerp(moveVel.x,target.x,accel);moveVel.z=THREE.MathUtils.lerp(moveVel.z,target.z,accel);let np=player.position.clone().addScaledVector(moveVel,dt);resolve(np);player.position.x=np.x;player.position.z=np.z;const speed=Math.hypot(moveVel.x,moveVel.z),ratio=Math.min(1,speed/maxSpeed);if(speed>.08){let a=Math.atan2(-moveVel.x,-moveVel.z),delta=((a-player.rotation.y+Math.PI)%(Math.PI*2))-Math.PI;player.rotation.y+=delta*(1-Math.exp(-10*dt))}
  jumpV-=9.82*dt;player.position.y+=jumpV*dt;if(player.position.y<=0){player.position.y=0;jumpV=0;grounded=true}
- if(attacking)attackT+=dt;animateOffice(dt,ratio,run);if(attacking){let p=Math.min(1,attackT/.58);if(!hitDone&&p>.46){hitDone=true;hit()}if(p>=1){attacking=false;attackT=0;hitDone=false}}
+ if(attacking)attackT+=dt;animateOffice(dt,ratio,run);if(attacking){let p=Math.min(1,attackT/.62);if(!hitDone&&p>.45){hitDone=true;hit()}if(p>=1){attacking=false;attackT=0;hitDone=false}}
 }
 function updateCam(dt){let speed=Math.hypot(moveVel.x,moveVel.z),target=player.position.clone().add(new THREE.Vector3(0,1.28,0)),cp=Math.cos(pitch),back=new THREE.Vector3(Math.sin(yaw)*cp,-Math.sin(pitch),Math.cos(yaw)*cp).multiplyScalar(dist),want=target.clone().add(back);want.y=Math.max(.75,want.y);camera.position.lerp(want,1-Math.exp(-8.5*dt));if(speed>.2&&grounded)camera.position.y+=Math.sin(walkPhase*2)*.012*Math.min(1,speed/5);if(shake>0){shake=Math.max(0,shake-dt);camera.position.x+=(Math.random()-.5)*shake*.23;camera.position.y+=(Math.random()-.5)*shake*.16}camera.lookAt(target)}
 function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];if(d.dead)continue;if(d.fragment){d.life-=dt;if(d.life<=0){scene.remove(d.o);dynamics.splice(i,1);continue}}d.vel.y-=9.82*dt;d.o.position.addScaledVector(d.vel,dt);d.o.rotation.x+=d.spin.x*dt;d.o.rotation.y+=d.spin.y*dt;d.o.rotation.z+=d.spin.z*dt;if(d.o.position.y<.15){d.o.position.y=.15;d.vel.y*=-.25;d.vel.x*=.72;d.vel.z*=.72;d.spin.multiplyScalar(.76)}}}
