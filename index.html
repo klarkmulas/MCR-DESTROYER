@@ -209,8 +209,8 @@ function breakApart(d,dir){
  for(let i=0;i<count;i++){
    const thin=d.type==='monitor'&&i%3===0;
    const fx=Math.max(.035,sz.x*(.09+Math.random()*.15));
-   const fy=Math.max(.025,sz.y*(thin?.035:(.09+Math.random()*.16)));
-   const fz=Math.max(.025,sz.z*(thin?.10:(.09+Math.random()*.16)));
+   const fy=Math.max(.025,sz.y*(thin ? .035 : (.09+Math.random()*.16)));
+   const fz=Math.max(.025,sz.z*(thin ? .10 : (.09+Math.random()*.16)));
    const material=thin
      ? new THREE.MeshPhysicalMaterial({color:0x8ed5ff,transparent:true,opacity:.72,roughness:.08,metalness:.05,transmission:.18})
      : (base.clone?base.clone():base);
