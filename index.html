@@ -520,7 +520,6 @@ function updatePlayer(dt){
 }
 function updateCam(dt){
  const speed=Math.hypot(moveVel.x,moveVel.z),run=keys.has('ShiftLeft')||keys.has('ShiftRight'),ratio=Math.min(1,speed/(run?5.15:3.15));
- if(speed>.05&&grounded)fpWalk+=dt*(run?10.5:7.2)*ratio;
  const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .018 : .010)*ratio:0;
  camera.position.set(player.position.x,player.position.y+1.67+headBob,player.position.z);
  camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;camera.rotation.z=grounded&&speed>.05?Math.sin(fpWalk)*.004*ratio:0;
