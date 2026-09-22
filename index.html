@@ -23,17 +23,17 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){.controls{grid-template-columns:repeat(2,1fr)}.panel{padding:24px 18px}.left{left:9px;top:9px;min-width:145px}.right{right:9px;top:9px;min-width:175px}.big{font-size:22px}#combo{top:83px;font-size:18px}#cross{display:none}}
 #start.posterStart{padding:0;background:#02050a;display:grid;place-items:center}
-#start .posterWrap{position:relative;height:min(96vh,980px);aspect-ratio:320/452;max-width:96vw}
+#start .posterWrap{position:relative;height:min(96vh,980px);aspect-ratio:9/16;max-width:96vw}
 #start .posterImg{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 24px 60px #000a)}
-#start .posterPlay{position:absolute;left:27%;right:27%;bottom:7.5%;height:9.5%;border-radius:18px;background:transparent;border:2px solid transparent;cursor:pointer;z-index:2}
+#start .posterPlay{position:absolute;left:23%;right:23%;bottom:14%;height:10%;border-radius:18px;background:transparent;border:2px solid transparent;cursor:pointer;z-index:2}
 #start .posterPlay:hover,#start .posterPlay:focus-visible{border-color:#58c9ff;box-shadow:0 0 28px #2da9ff99,inset 0 0 22px #2da9ff33;outline:none}
-@media(max-width:700px){#start .posterWrap{height:min(92vh,860px)}#start .posterPlay{left:23%;right:23%;bottom:7%;height:10.5%}}</style>
+@media(max-width:700px){#start .posterWrap{height:min(92vh,860px)}#start .posterPlay{left:20%;right:20%;bottom:13.5%;height:10.5%}}</style>
 </head>
 <body>
 <div id="game"></div>
 <div id="start" class="overlay posterStart">
   <div class="posterWrap">
-    <img class="posterImg" src="./mcr_destroyer_poster.png?v=3" alt="MCR DESTROYER">
+    <img class="posterImg" src="./mcr_destroyer_poster_hd.jpg?v=4" alt="MCR DESTROYER">
     <button id="play" class="posterPlay" aria-label="GIOCA" title="GIOCA"></button>
   </div>
 </div>
