@@ -18,7 +18,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #reset{pointer-events:auto;margin-top:6px;padding:7px 10px;border-radius:8px;color:#fff;background:#ffffff10;border:1px solid #ffffff1a;font-weight:800;font-size:10px}
 #help{position:fixed;z-index:40;left:16px;bottom:16px;padding:12px 14px;border-radius:12px;background:#07101ae8;border:1px solid #77baff33;color:#b1c1d3;font-size:12px;line-height:1.55}
 #touch{position:fixed;inset:0;z-index:30;pointer-events:none}.joy{position:absolute;left:24px;bottom:25px;width:116px;height:116px;border-radius:50%;border:1px solid #ffffff25;background:#ffffff10;pointer-events:auto;touch-action:none}.knob{position:absolute;left:34px;top:34px;width:48px;height:48px;border-radius:50%;background:#5dbdff99}.touchbtns{position:absolute;right:20px;bottom:22px;display:flex;gap:12px;align-items:flex-end;pointer-events:auto}.touchbtns button{width:72px;height:72px;border-radius:50%;background:#ffffff16;border:1px solid #ffffff25;color:white;font-weight:900}.touchbtns .hit{width:90px;height:90px;background:#ff546333}
-#editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}#editorBtn.active{background:#176bb0;border-color:#91d1ff}
+#editorBtn{position:fixed;z-index:45;right:18px;bottom:18px;padding:11px 14px;border-radius:11px;background:#0b1b2bdf;border:1px solid #6ab8ff55;color:#dff1ff;font-weight:900;letter-spacing:.04em;box-shadow:0 10px 30px #0007}#editorBtn.active{background:#176bb0;border-color:#91d1ff}#adminBtn{position:fixed;z-index:45;left:18px;bottom:18px;padding:9px 12px;border-radius:10px;background:#07101acc;border:1px solid #ffffff20;color:#93abc2;font-size:10px;font-weight:900;letter-spacing:.08em}#adminStatus{position:fixed;z-index:45;left:18px;bottom:58px;padding:7px 10px;border-radius:9px;background:#07101ad9;border:1px solid #ffffff16;color:#89d4a4;font-size:10px;font-weight:800}#adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
 #roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){.controls{grid-template-columns:repeat(2,1fr)}.panel{padding:24px 18px}.left{left:9px;top:9px;min-width:145px}.right{right:9px;top:9px;min-width:175px}.big{font-size:22px}#combo{top:83px;font-size:18px}#cross{display:none}}
@@ -46,7 +46,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 </div>
 <div id="help" class="hidden"><b>COMANDI — PRIMA PERSONA</b><br>WASD movimento · Shift corsa · Spazio salto<br>Mouse visuale · Click mazza · R reset · E editor · H chiudi aiuto</div>
 <div id="touch" class="hidden"><div id="joy" class="joy"><div id="knob" class="knob"></div></div><div class="touchbtns"><button id="jump">SALTA</button><button id="hit" class="hit">MAZZA</button></div></div>
-<button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
+<button id="adminBtn" class="hidden">ADMIN</button><div id="adminStatus" class="hidden">ADMIN ATTIVO</div><button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
   <h3>EDITOR MCR</h3>
   <p class="hint"><b>Shift + click</b> seleziona più oggetti · <b>Canc</b> elimina la selezione · trascina per spostare · <b>E</b> apre/chiude l'editor.</p>
@@ -68,6 +68,17 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
   </div>
   <div class="editorBtns"><button id="saveLayout" class="save">SALVA</button><button id="publishLayout" class="save">SALVA PER TUTTI</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
+<div id="adminLogin" class="hidden">
+  <div class="loginCard">
+    <h3>Accesso amministratore</h3>
+    <p>Solo l'amministratore autorizzato può modificare e pubblicare la sala per tutti.</p>
+    <input id="adminEmail" type="email" value="mulas.claudio88@gmail.com" readonly>
+    <input id="adminPassword" type="password" placeholder="Password admin">
+    <div class="loginBtns"><button id="adminSignIn">ACCEDI</button><button id="adminCreate" class="secondary">PRIMO ACCESSO</button></div>
+    <div class="loginBtns"><button id="adminClose" class="secondary">ANNULLA</button><button id="adminLogout" class="danger hidden">ESCI ADMIN</button></div>
+    <p id="adminMessage"></p>
+  </div>
+</div>
 
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
@@ -75,8 +86,15 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 <script type="module">
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile');
+const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
+const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
+const ADMIN_EMAIL='mulas.claudio88@gmail.com';
+const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminSession=null,isAdmin=false;
+
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);
@@ -200,7 +218,7 @@ function applySavedLayout(){
   if(Array.isArray(saved.items))saved.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion)})
  }catch(e){console.warn('Layout non caricato',e)}
 }
-if(!loadLayoutFromUrl())applySavedLayout();
+if(!loadLayoutFromUrl())loadGlobalLayout();
 
 function fallbackHuman(){
  const skin=mat(0xc88a68,.64,0),shirt=mat(0x7f7f79,.72,.02),pants=mat(0x24262b,.72,.05),shoe=mat(0x202329,.76,.08),hair=mat(0x2b211c,.84,0),blackMat=mat(0x17191d,.68,.08),badgeMat=mat(0xd7d9db,.58,.02),screenBlue=mat(0x233a55,.55,.05);
@@ -416,6 +434,7 @@ function setTopView(on){
  topViewMode=on;topViewBtn.classList.toggle('on',on);topViewBtn.textContent=on?'🎮 TORNA 3D':'⬇ VISTA DALL\'ALTO';document.exitPointerLock?.();
 }
 function setEditorMode(on){
+ if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
  editorMode=on;document.body.classList.toggle('editor-active',on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;show('EDITOR SALA ATTIVO');}
  else{editDragging=false;setTopView(false);selectEdit(null);fpView.visible=started;show('EDITOR CHIUSO');}
@@ -458,8 +477,52 @@ function editorPick(clientX,clientY){
 function editorDragPoint(clientX,clientY,y){
  const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());editPlane.constant=-y;return editRay.ray.intersectPlane(editPlane,editPoint)?editPoint.clone():null;
 }
+async function loadGlobalLayout(){
+ try{
+  const {data,error}=await supabase.from('mcr_global_layout').select('layout').eq('id','main').maybeSingle();
+  if(error)throw error;
+  if(data?.layout && Object.keys(data.layout).length){applyLayoutData(data.layout);show('LAYOUT CONDIVISO CARICATO')}
+  else applySavedLayout();
+ }catch(e){console.warn('Layout globale non disponibile',e);applySavedLayout()}
+}
+function updateAdminUI(){
+ isAdmin=adminSession?.user?.email?.toLowerCase()===ADMIN_EMAIL;
+ adminStatus.classList.toggle('hidden',!isAdmin);
+ editorBtn.classList.toggle('hidden',!(started&&isAdmin));
+ q('#adminLogout').classList.toggle('hidden',!isAdmin);
+ adminBtn.textContent=isAdmin?'ADMIN ✓':'ADMIN';
+ if(!isAdmin&&editorMode)setEditorMode(false);
+}
+async function refreshAdminSession(){
+ const {data}=await supabase.auth.getSession();adminSession=data.session;updateAdminUI();
+}
+async function adminSignIn(){
+ adminMessage.textContent='Accesso in corso…';
+ const {data,error}=await supabase.auth.signInWithPassword({email:ADMIN_EMAIL,password:adminPassword.value});
+ if(error){adminMessage.textContent='Accesso non riuscito: '+error.message;return}
+ adminSession=data.session;adminMessage.textContent='Accesso riuscito.';adminLogin.classList.add('hidden');updateAdminUI();
+}
+async function adminCreate(){
+ if(!adminPassword.value||adminPassword.value.length<8){adminMessage.textContent='Scegli una password di almeno 8 caratteri.';return}
+ adminMessage.textContent='Creazione accesso admin…';
+ const {data,error}=await supabase.auth.signUp({email:ADMIN_EMAIL,password:adminPassword.value});
+ if(error){adminMessage.textContent='Creazione non riuscita: '+error.message;return}
+ if(data.session){adminSession=data.session;adminLogin.classList.add('hidden');updateAdminUI();adminMessage.textContent=''}
+ else adminMessage.textContent='Account creato. Controlla la tua email per confermare l’accesso, poi torna qui e premi ACCEDI.';
+}
+async function adminLogout(){
+ await supabase.auth.signOut();adminSession=null;updateAdminUI();adminLogin.classList.add('hidden');show('ADMIN DISCONNESSO');
+}
+supabase.auth.onAuthStateChange((_event,session)=>{adminSession=session;updateAdminUI()});
+refreshAdminSession();
 async function publishLayoutGlobal(){
- show('SALVATAGGIO PER TUTTI: COLLEGA FIREBASE');console.warn('Firebase non configurato: serve un progetto Firebase dedicato per pubblicare il layout a tutti.');
+ if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per pubblicare la sala.';return}
+ const data=layoutData();
+ const {error}=await supabase.from('mcr_global_layout').upsert({id:'main',layout:data,updated_at:new Date().toISOString(),updated_by:ADMIN_EMAIL},{onConflict:'id'});
+ if(error){show('ERRORE SALVATAGGIO');console.error(error);return}
+ destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});
+ localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));
+ show('SALA SALVATA PER TUTTI');
 }
 const SPARK_GEOMETRY=new THREE.BoxGeometry(.035,.035,.055);function spark(p,n=6,color=0xffcf55,size=.035){const sm=new THREE.MeshBasicMaterial({color,toneMapped:false,transparent:true});for(let i=0;i<Math.min(n,6);i++){let m=new THREE.Mesh(SPARK_GEOMETRY,sm);m.position.copy(p);scene.add(m);particles.push({m,v:new THREE.Vector3((Math.random()-.5)*2.3,.7+Math.random()*2,(Math.random()-.5)*2.3),life:.35+Math.random()*.35,spin:new THREE.Vector3(Math.random()*5,Math.random()*5,Math.random()*5)})}}
 function show(t){msg.textContent=t;msg.classList.add('on');clearTimeout(show.t);show.t=setTimeout(()=>msg.classList.remove('on'),1500)}
@@ -574,7 +637,7 @@ function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode){updatePlayer(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera())}loop();
 
-q('#play').onclick=()=>{started=true;avatar.visible=false;fpView.visible=true;start.classList.add('hidden');hud.classList.remove('hidden');editorBtn.classList.remove('hidden');if(matchMedia('(pointer:coarse)').matches)touch.classList.remove('hidden');else renderer.domElement.requestPointerLock?.()};
+q('#play').onclick=()=>{started=true;avatar.visible=false;fpView.visible=true;start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();if(matchMedia('(pointer:coarse)').matches)touch.classList.remove('hidden');else renderer.domElement.requestPointerLock?.()};
 q('#reset').onclick=resetRoom;q('#jump').onclick=()=>{if(grounded){jumpV=4.8;grounded=false}};q('#hit').onclick=attack;
 addEventListener('keydown',e=>{if(editorMode&&(e.code==='Delete'||e.code==='Backspace')){deleteSelectedObject();e.preventDefault();return}if(editorMode&&e.code==='Escape'){selectEdit(null);return}if(editorMode&&e.code==='KeyT'){setTopView(!topViewMode);e.preventDefault();return}keys.add(e.code);if(!editorMode&&e.code==='Space'&&grounded){jumpV=4.8;grounded=false}if(!editorMode&&e.code==='KeyR')resetRoom();if(e.code==='KeyH')help.classList.toggle('hidden')});
 addEventListener('keyup',e=>keys.delete(e.code));
@@ -586,6 +649,12 @@ let joy=q('#joy'),knob=q('#knob'),jid=null;
 joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid)});
 joy.addEventListener('pointermove',e=>{if(e.pointerId!==jid)return;let r=joy.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),l=Math.hypot(x,y),max=40;if(l>max){x=x/l*max;y=y/l*max}knob.style.transform='translate('+x+'px,'+y+'px)';mobile.x=x/max;mobile.y=y/max});
 joy.addEventListener('pointerup',e=>{if(e.pointerId!==jid)return;jid=null;knob.style.transform='';mobile.x=mobile.y=0});
+adminBtn.onclick=()=>{if(isAdmin){setEditorMode(!editorMode)}else{adminLogin.classList.remove('hidden');adminMessage.textContent=''}};
+q('#adminClose').onclick=()=>adminLogin.classList.add('hidden');
+q('#adminSignIn').onclick=adminSignIn;
+q('#adminCreate').onclick=adminCreate;
+q('#adminLogout').onclick=adminLogout;
+adminPassword.addEventListener('keydown',e=>{if(e.key==='Enter')adminSignIn()});
 editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
 topViewBtn.onclick=()=>setTopView(!topViewMode);
