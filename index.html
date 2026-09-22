@@ -327,12 +327,51 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  totalEl.textContent=destruct.length;
  return nd;
 }
+function applyOneLayoutState(d,s){
+ if(!d||!s)return;
+ d.o.position.set(Number(s.x)||0,Number(s.y)||0,Number(s.z)||0);
+ d.o.rotation.y=Number.isFinite(Number(s.ry))?Number(s.ry):0;
+ d.o.scale.set(
+   Number.isFinite(Number(s.sx))?Number(s.sx):1,
+   Number.isFinite(Number(s.sy))?Number(s.sy):1,
+   Number.isFinite(Number(s.sz))?Number(s.sz):1
+ );
+ d.o.visible=s.visible!==false;
+ d.dead=false;d.hp=d.max;
+ d.startVis=d.o.visible;
+ d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startScale.copy(d.o.scale);
+ if(d.type==='monitor'){
+   if(s.screenData)applyMonitorData(d,s.screenData);
+   else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset);
+ }
+}
+function applyStableLayoutItems(items){
+ if(!Array.isArray(items))return;
+ const base=destruct.slice(0,baseObjectCount);
+ const usedBase=new Set();
+ for(const s of items){
+   if(!s)continue;
+   let source=null,d=null;
+   const src=Number.isInteger(s.sourceIndex)?s.sourceIndex:null;
+   if(src!=null)source=base.find(x=>x.sourceIndex===src&&(!s.type||x.type===s.type))||null;
+   if(!source&&s.type)source=base.find(x=>x.type===s.type)||null;
+   if(source&&!usedBase.has(source)){
+     d=source;usedBase.add(source);
+   }else if(source){
+     d=cloneEditorObject(source,null,0,0);
+   }
+   if(!d)continue;
+   applyOneLayoutState(d,s);
+ }
+ totalEl.textContent=destruct.length;
+}
 function ensureLayoutObjects(items){
+ // Compatibilità con vecchie sessioni; il layout condiviso usa sourceIndex stabile.
  if(!Array.isArray(items))return;
  while(destruct.length<items.length){
    const s=items[destruct.length]||{};
    let src=null;
-   if(Number.isInteger(s.sourceIndex)&&s.sourceIndex>=0&&s.sourceIndex<baseObjectCount)src=destruct[s.sourceIndex];
+   if(Number.isInteger(s.sourceIndex)&&s.sourceIndex>=0)src=destruct.slice(0,baseObjectCount).find(d=>d.sourceIndex===s.sourceIndex&&(!s.type||d.type===s.type))||null;
    if(!src&&s.type)src=destruct.slice(0,baseObjectCount).find(d=>d.type===s.type);
    if(!src)src=destruct[0];
    if(!cloneEditorObject(src,s,0,0))break;
@@ -342,7 +381,7 @@ function applySavedLayout(){
  try{
   const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
   if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
-  if(Array.isArray(saved.items)){ensureLayoutObjects(saved.items);saved.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.scale.set(s.sx??1,s.sy??1,s.sz??1);d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startScale.copy(d.o.scale)})}
+  if(Array.isArray(saved.items))applyStableLayoutItems(saved.items);
  }catch(e){console.warn('Layout non caricato',e)}
 }
 if(!loadLayoutFromUrl())loadGlobalLayout();
@@ -656,7 +695,7 @@ function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.strin
 function applyLayoutData(data){
  if(!data)return;
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
- if(Array.isArray(data.items)){ensureLayoutObjects(data.items);data.items.forEach((s,i)=>{const d=destruct[i];if(!d||!s)return;d.o.position.set(s.x,s.y,s.z);d.o.rotation.y=s.ry;d.o.scale.set(s.sx??1,s.sy??1,s.sz??1);d.o.visible=s.visible!==false;d.startVis=d.o.visible;d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startScale.copy(d.o.scale);if(d.type==='monitor'){if(s.screenData)applyMonitorData(d,s.screenData);else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset)}})}
+ if(Array.isArray(data.items))applyStableLayoutItems(data.items);
 }
 function loadLayoutFromUrl(){
  try{const raw=new URLSearchParams(location.search).get('layout');if(!raw)return false;const data=JSON.parse(decodeURIComponent(escape(atob(raw))));applyLayoutData(data);queueMicrotask(restoreRuntimeSession);return true}catch(e){console.warn('Layout URL non valido',e);return false}
@@ -713,13 +752,7 @@ function saveRuntimeSession(){
    const state={
      started:true,
      player:{x:player.position.x,y:player.position.y,z:player.position.z},
-     yaw,pitch,damage,destroyed,combo,countdown,countdownOn,
-     items:destruct.map(d=>({
-       x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,
-       q:[d.o.quaternion.x,d.o.quaternion.y,d.o.quaternion.z,d.o.quaternion.w],
-       s:[d.o.scale.x,d.o.scale.y,d.o.scale.z],
-       visible:d.o.visible,hp:d.hp,dead:d.dead
-     }))
+     yaw,pitch,damage,destroyed,combo,countdown,countdownOn
    };
    sessionStorage.setItem(RUNTIME_SESSION_KEY,JSON.stringify(state));
  }catch(e){console.warn('Sessione gioco non salvata',e)}
@@ -736,21 +769,8 @@ function restoreRuntimeSession(){
    countdown=Number.isFinite(s.countdown)?s.countdown:150;countdownOn=!!s.countdownOn;
    damageEl.textContent='€ '+damage.toLocaleString('it-IT');destroyedEl.textContent=String(destroyed);comboEl.textContent='COMBO x'+combo;
    let mm=Math.floor(countdown/60),ss=Math.floor(countdown%60);timerEl.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-   if(Array.isArray(s.items)){
-     ensureLayoutObjects(s.items);
-     s.items.forEach((it,i)=>{
-       const d=destruct[i];if(!d||!it)return;
-       d.o.position.set(it.x,it.y,it.z);
-       if(Array.isArray(it.q)&&it.q.length===4)d.o.quaternion.set(it.q[0],it.q[1],it.q[2],it.q[3]);
-       if(Array.isArray(it.s)&&it.s.length===3)d.o.scale.set(it.s[0],it.s[1],it.s[2]);
-       d.hp=Number.isFinite(it.hp)?it.hp:d.max;d.dead=!!it.dead;d.o.visible=it.visible!==false&&!d.dead;
-       d.vel.set(0,0,0);d.spin.set(0,0,0);
-       if(d.type==='monitor'&&d.o.userData.screen){
-         d.o.userData.screen.material.map=d.dead?texDead:(d.hp<d.max?texCrack:(d.o.userData.intactMap||texInt));
-         d.o.userData.screen.material.needsUpdate=true;
-       }
-     });
-   }
+   // Importante: la sessione NON sovrascrive più posizione/dimensione degli oggetti.
+   // Il layout globale ADMIN resta sempre la fonte della disposizione della sala.
    if(mobileDevice()){touch.classList.remove('hidden');setTimeout(updateRotateHint,120)}
    show('SESSIONE RIPRISTINATA');
    return true;
