@@ -157,9 +157,9 @@ let adminSession=null,isAdmin=false;
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);
-const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,28,.01);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
-const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[];
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
+const camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
+const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];
 let yaw=0,pitch=-.05,dist=5.3,started=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false;let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
 const avatar=new THREE.Group();player.add(avatar);const batPivot=new THREE.Group();batPivot.position.set(.42,1.25,.05);player.add(batPivot);
@@ -245,10 +245,13 @@ function addGlass(x,z,w){let o=box(w,4,.06,glassMat,x,2.05,z);reg(o,'glass',2,14
 function addBadge(x,z,ry){const c=document.createElement('canvas');c.width=c.height=256;let g=c.getContext('2d');g.strokeStyle='#dbe4eb';g.lineWidth=7;g.beginPath();g.arc(128,128,86,0,Math.PI*2);g.stroke();g.fillStyle='#edf4fa';g.font='bold 52px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('MCR',128,128);let t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;let p=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false}));p.position.set(x,2.5,z);p.rotation.y=ry;scene.add(p)}
 
 function buildRoom(){
- box(28,.25,18,floorMat,0,-.13,0);box(28,.18,18,black,0,5.15,0);box(28,5.2,.25,dark,0,2.5,-8.9);box(.25,5.2,18,dark,-14,2.5,0);box(.25,5.2,18,dark,14,2.5,0);
- for(let x=-12;x<=12;x+=2)box(.03,.045,17.4,steel,x,5.02,0);for(let z=-7.5;z<=7.5;z+=2)box(27.4,.045,.03,steel,0,5.02,z);
+ box(28,.25,18,floorMat,0,-.13,0);
+ const roof=box(28,.18,18,black,0,5.15,0);topViewHidden.push(roof);
+ box(28,5.2,.25,dark,0,2.5,-8.9);box(.25,5.2,18,dark,-14,2.5,0);box(.25,5.2,18,dark,14,2.5,0);
+ for(let x=-12;x<=12;x+=2){const g=box(.03,.045,17.4,steel,x,5.02,0);topViewHidden.push(g)}
+ for(let z=-7.5;z<=7.5;z+=2){const g=box(27.4,.045,.03,steel,0,5.02,z);topViewHidden.push(g)}
  const panelMat=new THREE.MeshStandardMaterial({color:0xffe6c0,emissive:0xffd39a,emissiveIntensity:1.55,roughness:.28});
- for(let x=-10;x<=10;x+=4)for(const z of [-4,0,4])box(.42,.035,.14,panelMat,x,4.91,z);
+ for(let x=-10;x<=10;x+=4)for(const z of [-4,0,4]){const p=box(.42,.035,.14,panelMat,x,4.91,z);topViewHidden.push(p)}
  for(let i=0;i<4;i++){addGlass(-12.6+i*2.1,4.5,1.9);addGlass(12.6-i*2.1,4.5,1.9)}
  box(1.05,5,1.05,dark,-10.8,2.5,4.1);box(1.05,5,1.05,dark,10.8,2.5,4.1);addBadge(-10.8,4.66,0);addBadge(10.8,4.66,Math.PI);addMonitor(-10.8,3.85,4.66,1.45,.82,true);
  box(15.8,4.35,.35,black,0,2.85,-8.35);
@@ -491,7 +494,20 @@ function updateSelectedFromUI(){
  rebuildEditHelpers();refreshEditorFields();
 }
 function setTopView(on){
- topViewMode=on;topViewBtn.classList.toggle('on',on);topViewBtn.textContent=on?'🎮 TORNA 3D':'⬇ VISTA DALL\'ALTO';document.exitPointerLock?.();
+ topViewMode=on;
+ topViewBtn.classList.toggle('on',on);
+ topViewBtn.textContent=on?'🎮 TORNA 3D':'⬇ VISTA DALL\'ALTO';
+ document.exitPointerLock?.();
+ for(const o of topViewHidden)o.visible=!on;
+ scene.fog=on?null:normalSceneFog;
+ if(on){
+   topCamera.position.set(0,24,5.8);
+   topCamera.up.set(0,0,-1);
+   topCamera.lookAt(0,0,0);
+   topCamera.zoom=1.08;
+   topCamera.updateProjectionMatrix();
+   show('VISTA DALL\'ALTO ATTIVA');
+ }
 }
 function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
