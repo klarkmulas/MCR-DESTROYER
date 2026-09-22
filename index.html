@@ -947,7 +947,7 @@ function restoreRuntimeSession(){
    started=true;avatar.visible=false;fpView.visible=true;
    start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();
    if(s.player)player.position.set(Number(s.player.x)||0,Number(s.player.y)||0,Number(s.player.z)||6);
-   if(Number.isFinite(s.yaw))yaw=s.yaw;if(Number.isFinite(s.pitch))pitch=s.pitch;if(s.cameraMode)setCameraMode(s.cameraMode,false);updatePlayerIdentityUI();
+   if(Number.isFinite(s.yaw))yaw=s.yaw;if(Number.isFinite(s.pitch))pitch=s.pitch;if(s.cameraMode)setCameraMode(s.cameraMode,false);updateSoundUI();
    damage=Number(s.damage)||0;destroyed=Number(s.destroyed)||0;combo=Number(s.combo)||1;
    countdown=Number.isFinite(s.countdown)?s.countdown:150;countdownOn=!!s.countdownOn;
    damageEl.textContent='€ '+damage.toLocaleString('it-IT');destroyedEl.textContent=String(destroyed);comboEl.textContent='COMBO x'+combo;
