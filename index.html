@@ -73,6 +73,14 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .objectiveList{display:grid;gap:9px;margin:18px 0}.objectiveItem{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;padding:11px 12px;border-radius:13px;background:#ffffff07;border:1px solid #ffffff0f}.objectiveIcon{font-size:22px;text-align:center}.objectiveItem b{display:block;font-size:12px;margin-bottom:2px}.objectiveItem span{font-size:11px;color:#93aabd;line-height:1.35}
 .relaxBox{margin-top:14px;padding:12px 14px;border-radius:13px;background:linear-gradient(135deg,#123a4f88,#0d274488);border:1px solid #5acbff33;color:#dff5ff;font-size:12px;line-height:1.45}.relaxBox b{color:#7bd6ff}
 .objectiveActions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;position:sticky;bottom:-1px;padding:12px 0 2px;background:linear-gradient(180deg,transparent,#050a11 32%);z-index:3}.objectiveActions button{padding:13px 18px;border-radius:12px;font-weight:900}.objectiveStart{background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff}.objectiveBack{background:#ffffff0b;border:1px solid #ffffff18;color:#dcecff}
+#completePopup{z-index:96;background:rgba(2,5,9,.88);backdrop-filter:blur(12px);padding:12px}
+.completeCard{width:min(620px,94vw);padding:clamp(24px,5vw,42px);border-radius:26px;text-align:center;background:radial-gradient(circle at 50% 0,#12385f66,transparent 45%),linear-gradient(180deg,#0b1827fa,#04080efa);border:1px solid #72c7ff55;box-shadow:0 30px 100px #000d,0 0 45px #209cff22}
+.completeTrophy{font-size:58px;line-height:1;margin-bottom:8px}.completeCard h2{margin:4px 0 10px;font-size:clamp(30px,6vw,52px);letter-spacing:-.035em}.completeCard h2 span{color:#55bfff}
+.completeCard p{margin:0 auto;color:#c7d8e7;line-height:1.55;font-size:14px;max-width:520px}.completeJoke{margin:18px auto 0!important;padding:14px 16px;border-radius:14px;background:#ffffff08;border:1px solid #ffffff12;color:#fff!important;font-size:16px!important;font-weight:900}
+.completeStats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}.completeStat{min-width:135px;padding:12px 14px;border-radius:13px;background:#081522;border:1px solid #ffffff12}.completeStat b{display:block;font-size:24px;color:#fff}.completeStat span{display:block;margin-top:3px;font-size:9px;letter-spacing:.11em;color:#7fa0ba;font-weight:900}
+.completeActions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.completeActions button{padding:14px 16px;border-radius:13px;font-weight:1000;font-size:13px}.completeHome{background:#ffffff0b;border:1px solid #ffffff18;color:#e6f1fa}.completeRestart{background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;box-shadow:0 10px 28px #188fff44}
+@media(max-width:520px){.completeActions{grid-template-columns:1fr}.completeCard{padding:24px 16px}.completeTrophy{font-size:48px}}
+
 @media(max-width:520px){.objectiveActions{display:grid}.objectiveActions button{width:100%}}
 
 .homeVisual{position:relative;min-height:430px;border:1px solid #6ab8ff22;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 20%,#17395f 0,#09131f 35%,#020508 78%);box-shadow:inset 0 0 70px #0008,0 30px 90px #0008}
@@ -182,6 +190,23 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
     </div>
   </div>
 </div>
+<div id="completePopup" class="overlay hidden">
+  <div class="completeCard">
+    <div class="completeTrophy">🏆</div>
+    <div class="homeEyebrow">MCR DESTROYER // MISSIONE COMPLETATA</div>
+    <h2>COMPLIMENTI!<br><span>HAI DISTRUTTO TUTTO</span></h2>
+    <p>Non è rimasto praticamente nulla da rompere nella control room.</p>
+    <p class="completeJoke">Mi raccomando, non farlo veramente! 🤣🤣🤣🤣</p>
+    <div class="completeStats">
+      <div class="completeStat"><b id="completeDamage">€ 0</b><span>DANNI TOTALI</span></div>
+      <div class="completeStat"><b id="completeDestroyed">0</b><span>OGGETTI DISTRUTTI</span></div>
+    </div>
+    <div class="completeActions">
+      <button id="completeHome" class="completeHome">⌂ HOME</button>
+      <button id="completeRestart" class="completeRestart">↻ RINIZIA</button>
+    </div>
+  </div>
+</div>
 <div id="hud" class="hidden">
   <div class="glass left"><div class="label">DANNI</div><div id="damage" class="big">€ 0</div><div class="sub"><span id="destroyed">0</span> / <span id="total">0</span> oggetti distrutti</div></div>
   <div id="combo">COMBO x1</div>
@@ -277,7 +302,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWid
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
 function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
-let yaw=0,pitch=-.05,dist=5.3,started=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;
+let yaw=0,pitch=-.05,dist=5.3,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
 let analyticsSession=sessionStorage.getItem(ANALYTICS_SESSION_KEY);
 if(!analyticsSession){analyticsSession=(crypto.randomUUID?.()||('mcr-'+Date.now()+'-'+Math.random().toString(36).slice(2)));sessionStorage.setItem(ANALYTICS_SESSION_KEY,analyticsSession)}
@@ -475,7 +500,7 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  }
  d.origPos.copy(o.position);d.origQuat.copy(o.quaternion);d.origScale.copy(o.scale);d.startPos.copy(o.position);d.startQuat.copy(o.quaternion);d.startScale.copy(o.scale);d.startVis=o.visible;
  o.userData.d=d;o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=o});
- addCustomObstacle(d,kind);totalEl.textContent=destruct.length;
+ addCustomObstacle(d,kind);totalEl.textContent=activeBreakableCount();
  if(selectIt){selectEdit(d,false);if(topViewMode)buildTopPlanHelpers();show('AGGIUNTO '+editorLabel(d).toUpperCase())}
  return d;
 }
@@ -511,7 +536,7 @@ scene.add(new THREE.HemisphereLight(0xb8cfe6,0x2c1b11,.76));
 const sun=new THREE.DirectionalLight(0xd5e1ed,1.15);sun.position.set(4,9,3);sun.castShadow=false;scene.add(sun);
 for(const x of [-8,-2,4,10]){let l=new THREE.PointLight(0xffd9ad,9,11,2);l.position.set(x,4.55,1);scene.add(l)}
 for(const x of [-4,0,4]){let l=new THREE.PointLight(0x5aa8ef,8,10,2);l.position.set(x,3.2,-6.7);scene.add(l)}
-buildRoom();totalEl.textContent=destruct.length;
+buildRoom();totalEl.textContent=activeBreakableCount();
 const baseObjectCount=destruct.length;
 destruct.forEach((d,i)=>{d.editId=i;d.sourceIndex=i;d.o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=d.o})});
 
@@ -560,7 +585,7 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
    const size=new THREE.Vector3();new THREE.Box3().setFromObject(clone).getSize(size);addObstacle(clone,size.x*.40,size.z*.35);
  }
  if(source.customKind)addCustomObstacle(nd,source.customKind);
- totalEl.textContent=destruct.length;
+ totalEl.textContent=activeBreakableCount();
  return nd;
 }
 function applyOneLayoutState(d,s){
@@ -600,7 +625,7 @@ function applyStableLayoutItems(items){
    if(!d)continue;
    applyOneLayoutState(d,s);
  }
- totalEl.textContent=destruct.length;
+ totalEl.textContent=activeBreakableCount();
 }
 function ensureLayoutObjects(items){
  // Compatibilità con vecchie sessioni; il layout condiviso usa sourceIndex stabile.
@@ -1271,6 +1296,33 @@ function breakApart(d,dir){
  }
  trimFragments();
 }
+function activeBreakableCount(){
+ return destruct.filter(d=>d.startVis!==false).length;
+}
+function checkAllDestroyed(){
+ if(gameCompleted||!started)return;
+ const active=destruct.filter(d=>d.startVis!==false);
+ if(!active.length||!active.every(d=>d.dead))return;
+ gameCompleted=true;
+ countdownOn=false;
+ moveVel.set(0,0,0);mobile.x=0;mobile.y=0;keys.clear();
+ document.exitPointerLock?.();
+ try{speechSynthesis?.cancel?.()}catch(e){}
+ q('#completeDamage').textContent='€ '+damage.toLocaleString('it-IT');
+ q('#completeDestroyed').textContent=String(destroyed);
+ q('#completePopup').classList.remove('hidden');
+ if(mobileDevice())touch.classList.add('hidden');
+ analyticsHeartbeat(false);
+}
+function restartCompletedGame(){
+ q('#completePopup').classList.add('hidden');
+ gameCompleted=false;
+ resetRoom();
+ analyticsHeartbeat(true);
+ if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,60)}
+ else renderer.domElement.requestPointerLock?.();
+ saveRuntimeSession();
+}
 function applyHit(d,dir){
  if(d.dead)return;d.hp--;soundObjectHit(d.type,d.hp<=0);countdownOn=true;shake=.14;let now=performance.now();combo=now<comboUntil?Math.min(9,combo+1):1;comboUntil=now+1200;comboEl.textContent='COMBO x'+combo;comboEl.classList.add('on');setTimeout(()=>{if(performance.now()>comboUntil-150)comboEl.classList.remove('on')},1050);
  damage+=Math.round(d.val*(d.hp<=0?1:.18)*combo);damageEl.textContent='€ '+damage.toLocaleString('it-IT');
@@ -1283,6 +1335,7 @@ function applyHit(d,dir){
    d.o.visible=false;d.vel.set(0,0,0);d.spin.set(0,0,0);
    shake=.24;recoilPitch=.055;recoilYaw=(Math.random()-.5)*.035;recoilRoll=(Math.random()-.5)*.025;impactPulse=.11;
    show(label(d.type)+' FRANTUMATO  +€ '+d.val.toLocaleString('it-IT'));
+   setTimeout(checkAllDestroyed,120);
  }
 }
 function attack(){
@@ -1323,6 +1376,7 @@ function hit(){
  if(best)applyHit(best,fwd)
 }
 function resetRoom(){
+ gameCompleted=false;q('#completePopup')?.classList.add('hidden');
  damage=0;destroyed=0;combo=1;countdown=150;countdownOn=false;damageEl.textContent='€ 0';destroyedEl.textContent='0';timerEl.textContent='02:30';
  for(let i=dynamics.length-1;i>=0;i--){if(dynamics[i].fragment)scene.remove(dynamics[i].o)}
  destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);d.vel.set(0,0,0);d.spin.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
@@ -1403,7 +1457,7 @@ function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];i
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 let lastSessionSave=0;
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode){updatePlayer(dt);updateNpcs(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
+function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
 function applyMobileOrientation(){
@@ -1452,10 +1506,13 @@ function exitToHome(){
  avatar.visible=false;fpView.visible=false;
  sessionStorage.setItem('mcrStayHome','1');
  q('#objectivePopup').classList.add('hidden');
+ q('#completePopup').classList.add('hidden');
+ gameCompleted=false;
  start.classList.remove('hidden');
 }
 function beginGameFromObjective(){
  sessionStorage.removeItem('mcrStayHome');
+ gameCompleted=false;q('#completePopup').classList.add('hidden');
  analyticsHeartbeat(true);
  unlockAudio();
  q('#objectivePopup').classList.add('hidden');
@@ -1481,6 +1538,8 @@ q('#objectiveBack').onclick=()=>{q('#objectivePopup').classList.add('hidden');st
 q('#reset').onclick=resetRoom;
 q('#exitHome').onclick=exitToHome;
 q('#homeGameBtn').onclick=exitToHome;
+q('#completeHome').onclick=exitToHome;
+q('#completeRestart').onclick=restartCompletedGame;
 q('#adminStatsBtn').onclick=openAdminStats;
 q('#statsRefresh').onclick=refreshAdminStats;
 q('#statsClose').onclick=closeAdminStats;
