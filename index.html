@@ -267,6 +267,22 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
     <button id="applyScreenPreset">APPLICA PRESET</button>
     <input id="screenFile" type="file" accept="image/png,image/jpeg,image/webp">
     <button id="applyScreenFile">USA IMMAGINE CARICATA</button>
+    <div class="label" style="margin-top:10px">VIDEO TV</div>
+    <input id="screenVideoUrl" type="url" placeholder="URL diretto video .mp4 / .webm oppure ./video.mp4">
+    <div class="structureGrid">
+      <button id="applyScreenVideoUrl">APPLICA VIDEO URL</button>
+      <button id="clearScreenVideo">RIMUOVI VIDEO</button>
+    </div>
+    <input id="screenVideoFile" type="file" accept="video/mp4,video/webm">
+    <button id="applyScreenVideoFile">PROVA VIDEO LOCALE</button>
+    <div class="structureGrid">
+      <button id="screenVideoPlay">▶ PLAY</button>
+      <button id="screenVideoPause">⏸ PAUSA</button>
+    </div>
+    <label class="checkLine"><input id="screenVideoLoop" type="checkbox" checked> LOOP</label>
+    <label class="checkLine"><input id="screenVideoMuted" type="checkbox" checked> MUTO</label>
+    <div class="sliderRow"><span>Volume</span><input id="screenVideoVolume" type="range" min="0" max="1" step="0.05" value="0"><span id="screenVideoVolumeV" class="editorValue">0%</span></div>
+    <div class="structureHint">Il video da URL viene salvato nel layout condiviso. Il video locale serve solo come prova su questo dispositivo.</div>
   </div>
   <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
@@ -290,7 +306,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -403,6 +419,7 @@ function playSfx(base,volume=1,rate=1){
  }catch(e){}
 }
 function unlockAudio(){
+ for(const d of destruct)if(d.type==='monitor'&&d.screenVideo&&!d.screenVideo.paused)d.screenVideo.play().catch(()=>{});
  if(!audioEnabled)return;
  try{
   const a=sfxImpact.cloneNode(true);a.volume=.001;
@@ -454,7 +471,7 @@ function addMonitor(x,y,z,w=.9,h=.58,wall=false){
  const frame=new THREE.Mesh(new THREE.BoxGeometry(w,h,.11),black);frame.castShadow=true;g.add(frame);
  const intactMap=texVariants[(monitorSeed++)%texVariants.length];const sm=new THREE.MeshBasicMaterial({map:intactMap,toneMapped:false});const s=new THREE.Mesh(new THREE.PlaneGeometry(w*.92,h*.84),sm);s.position.z=.061;g.add(s);g.userData.screen=s;g.userData.intactMap=intactMap;
  if(!wall){const st=new THREE.Mesh(new THREE.BoxGeometry(.06,.37,.06),black);st.position.y=-h*.65;g.add(st);const foot=new THREE.Mesh(new THREE.BoxGeometry(.4,.035,.23),black);foot.position.set(0,-h*.86,.06);g.add(foot)}
- const d=reg(g,'monitor',2,wall?4200:1600,'screen');d.screenPreset=(monitorSeed-1)%texVariants.length;d.origScreenPreset=d.screenPreset;d.screenData=null;return d
+ const d=reg(g,'monitor',2,wall?4200:1600,'screen');d.screenPreset=(monitorSeed-1)%texVariants.length;d.origScreenPreset=d.screenPreset;d.screenData=null;d.screenVideoUrl=null;d.screenVideo=null;d.screenVideoObjectUrl=null;d.screenVideoLoop=true;d.screenVideoMuted=true;d.screenVideoVolume=0;return d
 }
 function addDesk(x,z,w,d){
  const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
@@ -602,7 +619,8 @@ function applyOneLayoutState(d,s){
  d.startVis=d.o.visible;
  d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startScale.copy(d.o.scale);
  if(d.type==='monitor'){
-   if(s.screenData)applyMonitorData(d,s.screenData);
+   if(s.screenVideoUrl)applyMonitorVideo(d,s.screenVideoUrl,{loop:s.screenVideoLoop!==false,muted:s.screenVideoMuted!==false,volume:Number(s.screenVideoVolume||0),persist:true});
+   else if(s.screenData)applyMonitorData(d,s.screenData);
    else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset);
  }
 }
@@ -1255,14 +1273,66 @@ function setEditorMode(on){
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;show('EDITOR SALA ATTIVO');}
  else{editDragging=false;setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
+function stopMonitorVideo(d,restoreMap=false){
+ if(!d||d.type!=='monitor')return;
+ if(d.screenVideo){
+   try{d.screenVideo.pause();d.screenVideo.removeAttribute('src');d.screenVideo.load()}catch(e){}
+   d.screenVideo=null;
+ }
+ if(d.screenVideoObjectUrl){
+   try{URL.revokeObjectURL(d.screenVideoObjectUrl)}catch(e){}
+   d.screenVideoObjectUrl=null;
+ }
+ d.screenVideoUrl=null;
+ if(restoreMap&&d.o.userData.screen){
+   d.o.userData.screen.material.map=d.o.userData.intactMap;
+   d.o.userData.screen.material.needsUpdate=true;
+ }
+}
+function applyMonitorVideo(d,url,opts={}){
+ if(!d||d.type!=='monitor'||!d.o.userData.screen||!url)return false;
+ stopMonitorVideo(d,false);
+ const video=document.createElement('video');
+ video.src=url;
+ video.crossOrigin='anonymous';
+ video.playsInline=true;
+ video.preload='auto';
+ video.loop=opts.loop!==false;
+ video.muted=opts.muted!==false;
+ video.volume=Math.max(0,Math.min(1,Number(opts.volume??0)));
+ video.setAttribute('playsinline','');
+ const tex=new THREE.VideoTexture(video);
+ tex.colorSpace=THREE.SRGBColorSpace;
+ tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
+ d.o.userData.screen.material.map=tex;
+ d.o.userData.screen.material.needsUpdate=true;
+ d.screenVideo=video;
+ d.screenVideoUrl=opts.persist===false?null:url;
+ d.screenVideoLoop=video.loop;
+ d.screenVideoMuted=video.muted;
+ d.screenVideoVolume=video.volume;
+ if(opts.objectUrl)d.screenVideoObjectUrl=opts.objectUrl;
+ const tryPlay=()=>video.play().catch(()=>{});
+ video.addEventListener('canplay',tryPlay,{once:true});
+ tryPlay();
+ return true;
+}
+function applyVideoToSelected(url,opts={}){
+ let n=0;
+ for(const d of selectedEdits){
+   if(d.type==='monitor'&&applyMonitorVideo(d,url,opts))n++;
+ }
+ show(n?('VIDEO APPLICATO A '+n+' SCHERM'+(n===1?'O':'I')):'SELEZIONA ALMENO UN MONITOR');
+ return n;
+}
 function applyMonitorPreset(d,preset){
- if(!d||d.type!=='monitor'||!d.o.userData.screen)return;d.screenPreset=Number(preset)%texVariants.length;d.screenData=null;d.o.userData.intactMap=texVariants[d.screenPreset];d.o.userData.screen.material.map=d.o.userData.intactMap;d.o.userData.screen.material.needsUpdate=true;
+ if(!d||d.type!=='monitor'||!d.o.userData.screen)return;stopMonitorVideo(d,false);d.screenPreset=Number(preset)%texVariants.length;d.screenData=null;d.o.userData.intactMap=texVariants[d.screenPreset];d.o.userData.screen.material.map=d.o.userData.intactMap;d.o.userData.screen.material.needsUpdate=true;
 }
 function applyMonitorData(d,data){
- if(!d||d.type!=='monitor'||!data)return;const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=512;cv.height=288;const gx=cv.getContext('2d');const s=Math.max(512/img.width,288/img.height),w=img.width*s,h=img.height*s;gx.drawImage(img,(512-w)/2,(288-h)/2,w,h);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;d.screenData=data;d.o.userData.intactMap=tex;d.o.userData.screen.material.map=tex;d.o.userData.screen.material.needsUpdate=true};img.src=data;
+ if(!d||d.type!=='monitor'||!data)return;stopMonitorVideo(d,false);const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=512;cv.height=288;const gx=cv.getContext('2d');const s=Math.max(512/img.width,288/img.height),w=img.width*s,h=img.height*s;gx.drawImage(img,(512-w)/2,(288-h)/2,w,h);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;d.screenData=data;d.o.userData.intactMap=tex;d.o.userData.screen.material.map=tex;d.o.userData.screen.material.needsUpdate=true};img.src=data;
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null}))};
+ return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -1308,11 +1378,11 @@ function deleteSelectedObject(){
  if(!selectedEdits.size)return;for(const d of selectedEdits){d.o.visible=false;d.startVis=false}show(selectedEdits.size+' oggetti eliminati');selectEdit(null);if(topViewMode)buildTopPlanHelpers();
 }
 function resetSelectedObjects(){
- for(const d of selectedEdits){d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;if(d.type==='monitor')applyMonitorPreset(d,d.origScreenPreset??0)}
+ for(const d of selectedEdits){d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}}
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 }
 function restoreOriginalLayout(){
- destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);d.startScale.copy(d.origScale);if(d.type==='monitor')applyMonitorPreset(d,d.origScreenPreset??0)});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);if(topViewMode)buildTopPlanHelpers();show('LAYOUT ORIGINALE RIPRISTINATO');
+ destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);d.startScale.copy(d.origScale);if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}});renderer.toneMappingExposure=1.32;editLight.value='1.32';editLightv.textContent='1.32';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);if(topViewMode)buildTopPlanHelpers();show('LAYOUT ORIGINALE RIPRISTINATO');
 }
 function editorPick(clientX,clientY){
  const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());
@@ -1905,6 +1975,28 @@ q('#addWall').onclick=()=>createCustomPrimitive('wall');
 q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
 q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}const fr=new FileReader();fr.onload=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorData(d,fr.result);n++}show(n?('IMMAGINE APPLICATA A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};fr.readAsDataURL(file)};
+q('#applyScreenVideoUrl').onclick=()=>{
+ const url=screenVideoUrl.value.trim();
+ if(!url){show('INSERISCI UN URL VIDEO DIRETTO');return}
+ applyVideoToSelected(url,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:true});
+};
+q('#applyScreenVideoFile').onclick=()=>{
+ const file=screenVideoFile.files?.[0];
+ if(!file){show('SCEGLI PRIMA UN VIDEO');return}
+ const url=URL.createObjectURL(file);
+ let applied=0;
+ for(const d of selectedEdits){
+   if(d.type!=='monitor')continue;
+   if(applyMonitorVideo(d,url,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:false,objectUrl:url}))applied++;
+ }
+ show(applied?('VIDEO LOCALE APPLICATO A '+applied+' SCHERM'+(applied===1?'O':'I')):'SELEZIONA ALMENO UN MONITOR');
+};
+q('#clearScreenVideo').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){stopMonitorVideo(d,true);d.screenData=null;applyMonitorPreset(d,d.screenPreset??0);n++}show(n?('VIDEO RIMOSSO DA '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
+q('#screenVideoPlay').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.play().catch(()=>{});n++}show(n?'VIDEO IN RIPRODUZIONE':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
+q('#screenVideoPause').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.pause();n++}show(n?'VIDEO IN PAUSA':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
+screenVideoLoop.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.loop=screenVideoLoop.checked;d.screenVideoLoop=screenVideoLoop.checked}};
+screenVideoMuted.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.muted=screenVideoMuted.checked;d.screenVideoMuted=screenVideoMuted.checked}};
+screenVideoVolume.oninput=()=>{const v=Number(screenVideoVolume.value);screenVideoVolumeV.textContent=Math.round(v*100)+'%';for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.volume=v;d.screenVideoVolume=v}};
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
 addEventListener('resize',applyMobileOrientation);
 window.addEventListener('error',e=>{
