@@ -808,6 +808,38 @@ function speakNpc(n,text=null,force=false){
    speechSynthesis.speak(u);
  }catch(e){console.warn('Voce NPC non disponibile',e)}
 }
+let ambientAlarmTimer=null,ambientAlarmStep=0;
+function speakAmbientAlarm(){
+ if(!started||gameCompleted||!audioEnabled)return scheduleAmbientAlarm();
+ try{
+   if(!('speechSynthesis' in window))return scheduleAmbientAlarm();
+   if(speechSynthesis.speaking)return scheduleAmbientAlarm();
+   const phrase=ambientAlarmStep%2===0?'Alarm':'Data center alarm';
+   ambientAlarmStep++;
+   const u=new SpeechSynthesisUtterance(phrase);
+   u.lang='en-US';
+   u.rate=.72;
+   u.pitch=.72;
+   u.volume=.92;
+   const voices=speechSynthesis.getVoices?.()||[];
+   u.voice=voices.find(v=>/en-US/i.test(v.lang)&&/female|zira|samantha|aria|jenny/i.test(v.name))
+        ||voices.find(v=>/en-US/i.test(v.lang))
+        ||voices.find(v=>/^en/i.test(v.lang))
+        ||null;
+   speechSynthesis.speak(u);
+ }catch(e){console.warn('Voce allarme MCR non disponibile',e)}
+ scheduleAmbientAlarm();
+}
+function scheduleAmbientAlarm(initial=false){
+ clearTimeout(ambientAlarmTimer);
+ if(!started)return;
+ const delay=initial?(12000+Math.random()*5000):(24000+Math.random()*14000);
+ ambientAlarmTimer=setTimeout(speakAmbientAlarm,delay);
+}
+function stopAmbientAlarm(){
+ clearTimeout(ambientAlarmTimer);
+ ambientAlarmTimer=null;
+}
 function createNpc(kind='office',path=[],opts={}){
  const root=new THREE.Group();root.position.copy(path[0]||new THREE.Vector3());scene.add(root);
  const skin=mat(opts.skin||0xc88a68,.68,0), hair=mat(opts.hair||0x2a211c,.82,0), darkPants=mat(0x242832,.72,.03);
@@ -1234,6 +1266,7 @@ function restoreRuntimeSession(){
    // Importante: la sessione NON sovrascrive più posizione/dimensione degli oggetti.
    // Il layout globale ADMIN resta sempre la fonte della disposizione della sala.
    if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
+   scheduleAmbientAlarm(true);
    show('SESSIONE RIPRISTINATA');
    return true;
  }catch(e){console.warn('Sessione gioco non ripristinata',e);return false}
@@ -1372,6 +1405,7 @@ function checkAllDestroyed(){
  const active=destruct.filter(d=>d.startVis!==false);
  if(!active.length||!active.every(d=>d.dead))return;
  gameCompleted=true;
+ stopAmbientAlarm();
  countdownOn=false;
  moveVel.set(0,0,0);mobile.x=0;mobile.y=0;keys.clear();
  document.exitPointerLock?.();
@@ -1387,6 +1421,7 @@ function restartCompletedGame(){
  gameCompleted=false;
  resetRoom();
  analyticsHeartbeat(true);
+ ambientAlarmStep=0;scheduleAmbientAlarm(true);
  if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,60)}
  else renderer.domElement.requestPointerLock?.();
  saveRuntimeSession();
@@ -1591,6 +1626,7 @@ function exitToHome(){
  if(editorMode)setEditorMode(false);
  document.exitPointerLock?.();
  try{speechSynthesis?.cancel?.()}catch(e){}
+ stopAmbientAlarm();
  started=false;
  keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
  hud.classList.add('hidden');
@@ -1624,6 +1660,7 @@ function beginGameFromObjective(){
  updateSoundUI();
  q('#homeGameBtn').classList.remove('hidden');
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
+ ambientAlarmStep=0;scheduleAmbientAlarm(true);
  saveRuntimeSession();
  if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
  else renderer.domElement.requestPointerLock?.();
