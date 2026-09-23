@@ -39,6 +39,10 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
  #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
  #roomEditor{left:8px;right:8px;top:8px;bottom:8px;width:auto}
 }
+body.mobile-game-fullscreen,body.mobile-game-fullscreen html{width:100%;height:100%;overflow:hidden}
+body.mobile-game-fullscreen{position:fixed;inset:0;margin:0;padding:0;overscroll-behavior:none;background:#000}
+body.mobile-game-fullscreen #game{position:fixed;inset:0;width:100dvw!important;height:100dvh!important}
+body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!important;display:block}
 @media(orientation:landscape) and (max-height:560px){
  .left,.right{top:7px}.left{left:7px}.right{right:7px}.glass{padding:7px 10px}.big{font-size:18px}.label{font-size:7px}.sub{font-size:8px}#combo{top:54px}
  .joy{width:108px;height:108px;left:max(14px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom))}.knob{left:31px;top:31px;width:46px;height:46px}
@@ -1488,7 +1492,7 @@ function restoreRuntimeSession(){
    let mm=Math.floor(countdown/60),ss=Math.floor(countdown%60);timerEl.textContent=String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
    // Importante: la sessione NON sovrascrive più posizione/dimensione degli oggetti.
    // Il layout globale ADMIN resta sempre la fonte della disposizione della sala.
-   if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
+   if(mobileDevice()){touch.classList.remove('hidden');setTimeout(()=>{applyMobileOrientation();if(mobileLandscape())requestMobileFullscreen()},80)}
    scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
    show('SESSIONE RIPRISTINATA');
    return true;
@@ -1645,7 +1649,7 @@ function restartCompletedGame(){
  resetRoom();
  analyticsHeartbeat(true);
  ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
- if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,60)}
+ if(mobileDevice()){touch.classList.remove('hidden');setTimeout(()=>{applyMobileOrientation();if(mobileLandscape())requestMobileFullscreen()},80);setTimeout(applyMobileOrientation,60)}
  else renderer.domElement.requestPointerLock?.();
  saveRuntimeSession();
 }
@@ -1818,16 +1822,39 @@ let lastSessionSave=0;
 function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
+function mobileLandscape(){return mobileDevice()&&innerWidth>innerHeight}
+async function requestMobileFullscreen(){
+ if(!started||!mobileLandscape())return false;
+ document.body.classList.add('mobile-game-fullscreen');
+ const root=document.documentElement;
+ try{
+   if(!document.fullscreenElement&&!document.webkitFullscreenElement){
+     if(root.requestFullscreen)await root.requestFullscreen({navigationUI:'hide'});
+     else if(root.webkitRequestFullscreen)root.webkitRequestFullscreen();
+   }
+   try{await screen.orientation?.lock?.('landscape')}catch(e){}
+   return !!(document.fullscreenElement||document.webkitFullscreenElement);
+ }catch(e){
+   // Safari/iOS può impedire il fullscreen senza un gesto utente:
+   // manteniamo comunque il canvas a 100dvw/100dvh.
+   return false;
+ }
+}
+function leaveMobileFullscreenStyle(){
+ document.body.classList.remove('mobile-game-fullscreen');
+}
 function applyMobileOrientation(){
  const landscape=innerWidth>innerHeight;
  document.body.classList.toggle('phone-landscape',mobileDevice()&&landscape);
  document.body.classList.toggle('phone-portrait',mobileDevice()&&!landscape);
+ document.body.classList.toggle('mobile-game-fullscreen',started&&mobileDevice()&&landscape);
  camera.aspect=innerWidth/innerHeight;
  camera.fov=gameBaseFov();
  camera.updateProjectionMatrix();
  renderer.setSize(innerWidth,innerHeight);
  const aspect=innerWidth/innerHeight,halfH=10;
  topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();
+ if(started&&mobileDevice()&&landscape)requestMobileFullscreen();
 }
 sessionStorage.removeItem('mcrCurrentPlayer');localStorage.removeItem('mcrLastPlayer');
 cameraMode=localStorage.getItem('mcrCameraMode')==='third'?'third':'first';
@@ -1838,8 +1865,10 @@ q('#viewToggle').onclick=toggleCameraMode;
 q('#soundToggle').onclick=()=>{audioEnabled=!audioEnabled;localStorage.setItem('mcrAudioEnabled',audioEnabled?'1':'0');updateSoundUI();if(audioEnabled){unlockAudio();setTimeout(soundTest,30)}else{try{speechSynthesis?.cancel?.()}catch(e){}}};
 q('#testAudioHome').onclick=()=>{audioEnabled=true;localStorage.setItem('mcrAudioEnabled','1');unlockAudio();setTimeout(soundTest,30)};
 q('#homeHelp').onclick=()=>help.classList.toggle('hidden');
-addEventListener('orientationchange',()=>setTimeout(applyMobileOrientation,120));
-addEventListener('resize',()=>setTimeout(applyMobileOrientation,40));
+addEventListener('orientationchange',()=>{
+ setTimeout(()=>{applyMobileOrientation();if(started&&mobileLandscape())requestMobileFullscreen()},180);
+});
+addEventListener('resize',()=>setTimeout(()=>{applyMobileOrientation();if(started&&mobileLandscape())requestMobileFullscreen()},80));
 applyMobileOrientation();
 ['pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{capture:true,passive:true}));
 function exitToHome(){
@@ -1851,6 +1880,12 @@ function exitToHome(){
  try{speechSynthesis?.cancel?.()}catch(e){}
  stopAmbientAlarm();stopHeadEndGuy();
  started=false;
+ leaveMobileFullscreenStyle();
+ try{
+   if(document.fullscreenElement)document.exitFullscreen?.();
+   else if(document.webkitFullscreenElement)document.webkitExitFullscreen?.();
+ }catch(e){}
+ try{screen.orientation?.unlock?.()}catch(e){}
  keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
  hud.classList.add('hidden');
  touch.classList.add('hidden');
@@ -1885,8 +1920,10 @@ function beginGameFromObjective(){
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
  ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
  saveRuntimeSession();
- if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
- else renderer.domElement.requestPointerLock?.();
+ if(mobileDevice()){
+   touch.classList.remove('hidden');
+   setTimeout(()=>{applyMobileOrientation();if(mobileLandscape())requestMobileFullscreen()},80);
+ } else renderer.domElement.requestPointerLock?.();
 }
 q('#play').onclick=()=>{
  document.exitPointerLock?.();
