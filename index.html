@@ -1746,21 +1746,35 @@ function resetRoom(){
  for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;n.pelvis.rotation.set(0,0,0);n.torso.rotation.set(0,0,0);n.head.rotation.set(0,0,0);for(const limb of [n.lArm,n.rArm,n.lFore,n.rFore,n.lLeg,n.rLeg,n.lShin,n.rShin])limb.rotation.set(0,0,0);n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;if(n.path[0])n.root.position.copy(n.path[0])} try{speechSynthesis?.cancel?.()}catch(e){}
  show('SALA RIPRISTINATA')
 }
+const collisionBox=new THREE.Box3();
 function resolve(np){
  np.x=THREE.MathUtils.clamp(np.x,-13.1,13.1);np.z=THREE.MathUtils.clamp(np.z,-8,8);
- const from=player.position,rad=.22;
+ const from=player.position,rad=.18;
+ const playerMinY=player.position.y+.05,playerMaxY=player.position.y+1.62;
  for(const ob of obstacles){
-   if(!ob.o.visible)continue;
-   const hw=ob.w*Math.abs(ob.o.scale.x)+rad,hd=ob.d*Math.abs(ob.o.scale.z)+rad;
-   const nx=np.x-ob.o.position.x,nz=np.z-ob.o.position.z;
-   if(Math.abs(nx)>=hw||Math.abs(nz)>=hd)continue;
-   const ox=from.x-ob.o.position.x,oz=from.z-ob.o.position.z;
-   const wasInside=Math.abs(ox)<hw&&Math.abs(oz)<hd;
+   if(!ob?.o?.visible)continue;
+   const od=ob.o.userData?.d;
+   if(od?.dead)continue;
+
+   // Usa il volume reale attuale dell'oggetto: posizione, scala, rotazione e altezza.
+   collisionBox.setFromObject(ob.o);
+   if(collisionBox.isEmpty())continue;
+
+   // Se l'oggetto è sopra o sotto il giocatore, non deve creare un "muro fantasma".
+   if(collisionBox.max.y<playerMinY||collisionBox.min.y>playerMaxY)continue;
+
+   const minX=collisionBox.min.x-rad,maxX=collisionBox.max.x+rad;
+   const minZ=collisionBox.min.z-rad,maxZ=collisionBox.max.z+rad;
+   if(np.x<=minX||np.x>=maxX||np.z<=minZ||np.z>=maxZ)continue;
+
+   const wasInside=from.x>minX&&from.x<maxX&&from.z>minZ&&from.z<maxZ;
    if(wasInside)continue;
-   const tryX=from.x,tryZ=np.z;
-   if(Math.abs(tryX-ob.o.position.x)>=hw||Math.abs(tryZ-ob.o.position.z)>=hd){np.x=tryX;continue}
-   const tryX2=np.x,tryZ2=from.z;
-   if(Math.abs(tryX2-ob.o.position.x)>=hw||Math.abs(tryZ2-ob.o.position.z)>=hd){np.z=tryZ2;continue}
+
+   // Prova prima a far scorrere il giocatore lungo X o Z invece di bloccarlo del tutto.
+   if(from.x<=minX||from.x>=maxX){np.x=from.x;continue}
+   if(from.z<=minZ||from.z>=maxZ){np.z=from.z;continue}
+
+   // Fallback: annulla solo questo piccolo passo.
    np.x=from.x;np.z=from.z;
  }
 }
