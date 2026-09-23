@@ -302,7 +302,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWid
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
 function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
-let yaw=0,pitch=-.05,dist=5.3,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;
+let yaw=0,pitch=-.05,dist=5.3,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
 let analyticsSession=sessionStorage.getItem(ANALYTICS_SESSION_KEY);
 if(!analyticsSession){analyticsSession=(crypto.randomUUID?.()||('mcr-'+Date.now()+'-'+Math.random().toString(36).slice(2)));sessionStorage.setItem(ANALYTICS_SESSION_KEY,analyticsSession)}
@@ -884,6 +884,72 @@ function createNpc(kind='office',path=[],opts={}){
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
 }
+function createHeadEndGuy(){
+ const V=(x,z)=>new THREE.Vector3(x,0,z);
+ const n=createNpc('office',[
+   V(12.5,5.0),V(9.5,5.0),V(7.2,4.5),V(4.2,3.7),V(1.0,3.6),V(-3.5,4.2),V(-8.5,4.8),V(-12.5,5.0)
+ ],{
+   shirt:0x404850,skin:0xc98b69,speed:.92,
+   voiceProfile:{
+     lang:'it-IT',flag:'🧔',rate:.94,pitch:.88,
+     phrases:[
+       'Ragazzi, head end, tutto bene?',
+       'Oh, tutto ok in head end?',
+       'Head end a posto?',
+       'Ragazzi, in head end tutto tranquillo?'
+     ],
+     hit:'Oh! Piano ragazzi!'
+   }
+ });
+ n.kind='headend';
+ n.specialHeadEnd=true;
+ n.active=false;
+ n.specialSpoken=false;
+ n.root.visible=false;
+ n.target=1;
+ n.nextSpeakAt=Infinity;
+
+ // Corporatura più robusta.
+ n.torso.scale.set(1.38,1.04,1.02);
+ n.torso.position.y=.35;
+ n.pelvis.scale.x=1.08;
+ const belly=new THREE.Mesh(new THREE.SphereGeometry(.25,14,10),mat(0x404850,.68,.02));
+ belly.scale.set(1.24,1.02,.92);belly.position.set(0,.26,.075);n.pelvis.add(belly);
+
+ // Barba.
+ const beardMat=mat(0x30241e,.84,0);
+ const beard=new THREE.Mesh(new THREE.SphereGeometry(.125,12,8),beardMat);
+ beard.scale.set(1.0,.72,.70);beard.position.set(0,.875,.105);n.pelvis.add(beard);
+ const moustache=new THREE.Mesh(new THREE.BoxGeometry(.13,.025,.025),beardMat);
+ moustache.position.set(0,.925,.174);n.pelvis.add(moustache);
+
+ // Capelli un po' più scuri e pieni.
+ const extraHair=new THREE.Mesh(new THREE.SphereGeometry(.19,12,8,0,Math.PI*2,0,Math.PI*.58),beardMat);
+ extraHair.position.set(0,1.025,-.005);extraHair.scale.set(1.03,.92,1.03);n.pelvis.add(extraHair);
+
+ headEndGuy=n;
+ return n;
+}
+function scheduleHeadEndGuy(first=false){
+ clearTimeout(headEndTimer);
+ if(!started)return;
+ const delay=first?(18000+Math.random()*12000):(75000+Math.random()*60000);
+ headEndTimer=setTimeout(activateHeadEndGuy,delay);
+}
+function activateHeadEndGuy(){
+ if(!started||gameCompleted){scheduleHeadEndGuy(false);return}
+ if(!headEndGuy)createHeadEndGuy();
+ const n=headEndGuy;
+ if(n.active){scheduleHeadEndGuy(false);return}
+ n.active=true;n.specialSpoken=false;n.fallen=false;n.fallT=0;n.target=1;n.pauseUntil=0;
+ n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel.set(0,0,0);
+ n.root.position.copy(n.path[0]);n.root.visible=true;
+ n.nextSpeakAt=Infinity;
+}
+function stopHeadEndGuy(){
+ clearTimeout(headEndTimer);headEndTimer=null;
+ if(headEndGuy){headEndGuy.active=false;headEndGuy.root.visible=false}
+}
 function spawnNpcs(){
  const V=(x,z)=>new THREE.Vector3(x,0,z);
  createNpc('office',[V(-11,6),V(-7,6),V(-7,3.4),V(-11,3.4)],{shirt:0x6a737d,speed:1.15});
@@ -904,10 +970,12 @@ function spawnNpcs(){
    phrases:['Осторожно, пол ещё мокрый.','Добрый день, я здесь закончу и пойду дальше.','Кто опять всё здесь разбросал?','Сегодня здесь очень много работы.'],
    hit:'Эй, осторожно!'
  }});
+ createHeadEndGuy();
 }
 function updateNpcs(dt){
  const now=performance.now();
  for(const n of npcs){
+   if(n.specialHeadEnd&&!n.active)continue;
    if(n.fallen){
      n.fallT=Math.min(1,n.fallT+dt*2.35);
      const e=n.fallT*n.fallT*(3-2*n.fallT),settle=1-Math.pow(1-n.fallT,3);
@@ -940,6 +1008,21 @@ function updateNpcs(dt){
    const target=n.path[n.target%n.path.length],delta=target.clone().sub(n.root.position);delta.y=0;
    const d=delta.length();
    if(d<.22){
+     if(n.specialHeadEnd){
+       if(!n.specialSpoken&&n.target>=2){
+         n.specialSpoken=true;
+         const phrase=n.voiceProfile.phrases[Math.floor(Math.random()*n.voiceProfile.phrases.length)];
+         speakNpc(n,phrase,true);
+       }
+       if(n.target>=n.path.length-1){
+         n.active=false;n.root.visible=false;n.target=1;
+         scheduleHeadEndGuy(false);
+         continue;
+       }
+       n.target++;
+       if(Math.random()<.22)n.pauseUntil=now+450+Math.random()*700;
+       continue;
+     }
      n.target=(n.target+1)%n.path.length;
      if(Math.random()<.34)n.pauseUntil=now+650+Math.random()*1500;
      continue;
@@ -973,7 +1056,7 @@ function updateNpcs(dt){
      n.lArm.rotation.x=THREE.MathUtils.lerp(n.lArm.rotation.x,-.62,k);n.rArm.rotation.x=THREE.MathUtils.lerp(n.rArm.rotation.x,-.62,k);
    }
 
-   if(n.voiceProfile&&started&&now>=n.nextSpeakAt){
+   if(!n.specialHeadEnd&&n.voiceProfile&&started&&now>=n.nextSpeakAt){
      if(n.root.position.distanceTo(player.position)<7.5)speakNpc(n);
      n.nextSpeakAt=now+14000+Math.random()*12000;
    }
@@ -1266,7 +1349,7 @@ function restoreRuntimeSession(){
    // Importante: la sessione NON sovrascrive più posizione/dimensione degli oggetti.
    // Il layout globale ADMIN resta sempre la fonte della disposizione della sala.
    if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
-   scheduleAmbientAlarm(true);
+   scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
    show('SESSIONE RIPRISTINATA');
    return true;
  }catch(e){console.warn('Sessione gioco non ripristinata',e);return false}
@@ -1405,7 +1488,7 @@ function checkAllDestroyed(){
  const active=destruct.filter(d=>d.startVis!==false);
  if(!active.length||!active.every(d=>d.dead))return;
  gameCompleted=true;
- stopAmbientAlarm();
+ stopAmbientAlarm();stopHeadEndGuy();
  countdownOn=false;
  moveVel.set(0,0,0);mobile.x=0;mobile.y=0;keys.clear();
  document.exitPointerLock?.();
@@ -1421,7 +1504,7 @@ function restartCompletedGame(){
  gameCompleted=false;
  resetRoom();
  analyticsHeartbeat(true);
- ambientAlarmStep=0;scheduleAmbientAlarm(true);
+ ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
  if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,60)}
  else renderer.domElement.requestPointerLock?.();
  saveRuntimeSession();
@@ -1626,7 +1709,7 @@ function exitToHome(){
  if(editorMode)setEditorMode(false);
  document.exitPointerLock?.();
  try{speechSynthesis?.cancel?.()}catch(e){}
- stopAmbientAlarm();
+ stopAmbientAlarm();stopHeadEndGuy();
  started=false;
  keys.clear();mobile.x=0;mobile.y=0;moveVel.set(0,0,0);
  hud.classList.add('hidden');
@@ -1660,7 +1743,7 @@ function beginGameFromObjective(){
  updateSoundUI();
  q('#homeGameBtn').classList.remove('hidden');
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
- ambientAlarmStep=0;scheduleAmbientAlarm(true);
+ ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
  saveRuntimeSession();
  if(mobileDevice()){touch.classList.remove('hidden');setTimeout(applyMobileOrientation,80)}
  else renderer.domElement.requestPointerLock?.();
