@@ -795,7 +795,8 @@ function animateOffice(dt,speedRatio,run){
 
  const swing=attacking?Math.sin(Math.min(1,attackP)*Math.PI):0;
  batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,attacking?(-2.38+swing*1.82):-2.38,k);
- batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,attacking?(.08+swing*.50):.08,k);
+ const aimLift=(cameraMode==='third'?thirdPersonPitch:0);
+ batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,attacking?(.08+swing*.50-aimLift*.75):.08,k);
  batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,attacking?(.10-swing*.42):.10,k);
 }
 fallbackHuman();avatar.rotation.y=Math.PI;avatar.visible=false;
@@ -1714,13 +1715,15 @@ function hit(){
  let origin;
  if(cameraMode==='third'){
    origin=player.position.clone().add(new THREE.Vector3(0,1.28,0));
-   fwd.set(0,0,-1).applyEuler(new THREE.Euler(pitch,yaw,0,'YXZ')).normalize();
+   // Colpisce esattamente verso il centro della visuale, anche in alto/basso.
+   camera.getWorldDirection(fwd);
+   fwd.normalize();
  }else{
    camera.getWorldDirection(fwd);fwd.normalize();origin=camera.getWorldPosition(new THREE.Vector3());
  }
  const objectTargets=destruct.filter(d=>!d.dead&&d.o.visible).map(d=>d.o);
  const npcTargets=npcs.filter(n=>!n.fallen).map(n=>n.root);
- const ray=new THREE.Raycaster(origin,fwd,0,3.0);
+ const ray=new THREE.Raycaster(origin,fwd,0,3.6);
  const hits=ray.intersectObjects([...objectTargets,...npcTargets],true);
  for(const h of hits){
    let node=h.object,npc=null,d=null;
@@ -1741,7 +1744,18 @@ function hit(){
  }
  if(bestNpc){knockDownNpc(bestNpc,fwd);return}
  let best=null,score=99;
- destruct.forEach(d=>{if(d.dead||!d.o.visible)return;let p=d.o.getWorldPosition(tmp);let delta=p.clone().sub(origin),dd=delta.length();if(dd>2.7)return;delta.normalize();let face=fwd.dot(delta);if(face<.35)return;let s=dd-face*.8;if(s<score){score=s;best=d}});
+ destruct.forEach(d=>{
+   if(d.dead||!d.o.visible)return;
+   collisionBox.setFromObject(d.o);
+   let p=collisionBox.isEmpty()?d.o.getWorldPosition(tmp):collisionBox.getCenter(tmp);
+   let delta=p.clone().sub(origin),dd=delta.length();
+   if(dd>3.35)return;
+   delta.normalize();
+   let face=fwd.dot(delta);
+   if(face<.28)return;
+   let s=dd-face*.85;
+   if(s<score){score=s;best=d}
+ });
  if(best)applyHit(best,fwd)
 }
 function resetRoom(){
@@ -1787,7 +1801,9 @@ function resolve(np){
 }
 let mobile={x:0,y:0};
 function updatePlayer(dt){
- let mx=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0)+mobile.x,mz=(keys.has('KeyS')?1:0)-(keys.has('KeyW')?1:0)+mobile.y;let len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
+ let mx=((keys.has('KeyD')||keys.has('ArrowRight'))?1:0)-((keys.has('KeyA')||keys.has('ArrowLeft'))?1:0)+mobile.x,
+     mz=((keys.has('KeyS')||keys.has('ArrowDown'))?1:0)-((keys.has('KeyW')||keys.has('ArrowUp'))?1:0)+mobile.y;
+ let len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
  const run=keys.has('ShiftLeft')||keys.has('ShiftRight')||(mobileDevice()&&Math.hypot(mobile.x,mobile.y)>.82),maxSpeed=run?5.15:3.15;
  let wish=new THREE.Vector3(mx,0,mz).applyAxisAngle(up,yaw);if(wish.lengthSq()>.001)wish.normalize();
  const target=wish.multiplyScalar(maxSpeed),accel=1-Math.exp(-(target.lengthSq()>.001?11:15)*dt);
@@ -2054,6 +2070,7 @@ addEventListener('keydown',e=>{
    if(e.code==='PageDown'){moveSelection(0,e.shiftKey?-.5:-.1,0);e.preventDefault();return}
  }
  keys.add(e.code);
+ if(!editorMode&&started&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
  if(!editorMode&&e.code==='Space'&&grounded){jumpV=4.8;grounded=false}
  if(!editorMode&&e.code==='KeyR')resetRoom();
  if(!editorMode&&e.code==='KeyV'){toggleCameraMode();e.preventDefault()}
