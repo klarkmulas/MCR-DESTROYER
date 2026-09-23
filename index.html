@@ -357,8 +357,82 @@ document.addEventListener('visibilitychange',()=>analyticsHeartbeat(document.hid
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
 const avatar=new THREE.Group();player.add(avatar);
 const characterModelRoot=new THREE.Group();player.add(characterModelRoot);characterModelRoot.visible=false;
-let characterModel=null,characterMixer=null,characterReady=false,characterLoadFailed=false;
+let characterModel=null,characterMixer=null,characterReady=false,characterLoadFailed=false,characterBones=null,characterWalkPhase=0;
 const CHARACTER_URL='./mcr_character.glb.glb?v=1';
+function mapCharacterBones(model){
+ const bones={};
+ const all=[];
+ model.traverse(o=>{if(o.isBone)all.push(o)});
+ const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ const pick=(...terms)=>all.find(b=>terms.some(t=>norm(b.name).includes(norm(t))));
+ bones.hips=pick('hips','pelvis');
+ bones.spine=pick('spine2','spine1','spine');
+ bones.chest=pick('chest','spine2');
+ bones.head=pick('head');
+ bones.lUpperArm=pick('leftarm','upperarm_l','lupperarm');
+ bones.rUpperArm=pick('rightarm','upperarm_r','rupperarm');
+ bones.lForeArm=pick('leftforearm','lowerarm_l','lforearm');
+ bones.rForeArm=pick('rightforearm','lowerarm_r','rforearm');
+ bones.lThigh=pick('leftupleg','thigh_l','lthigh');
+ bones.rThigh=pick('rightupleg','thigh_r','rthigh');
+ bones.lShin=pick('leftleg','calf_l','lshin');
+ bones.rShin=pick('rightleg','calf_r','rshin');
+ bones.lFoot=pick('leftfoot','foot_l');
+ bones.rFoot=pick('rightfoot','foot_r');
+ for(const b of Object.values(bones)){
+   if(b&&!b.userData.mcrRest){
+     b.userData.mcrRest={x:b.rotation.x,y:b.rotation.y,z:b.rotation.z,px:b.position.x,py:b.position.y,pz:b.position.z};
+   }
+ }
+ return bones;
+}
+function setBoneRot(b,x=0,y=0,z=0,k=1){
+ if(!b||!b.userData.mcrRest)return;
+ const r=b.userData.mcrRest;
+ b.rotation.x=THREE.MathUtils.lerp(b.rotation.x,r.x+x,k);
+ b.rotation.y=THREE.MathUtils.lerp(b.rotation.y,r.y+y,k);
+ b.rotation.z=THREE.MathUtils.lerp(b.rotation.z,r.z+z,k);
+}
+function animateCharacterHD(dt,speedRatio,run){
+ if(!characterBones)return;
+ const moving=speedRatio>.04;
+ characterWalkPhase+=dt*(moving?(run?10.5:6.8):1.2);
+ const s=Math.sin(characterWalkPhase),c2=Math.cos(characterWalkPhase);
+ const k=1-Math.exp(-12*dt);
+ const stride=(run ? .72 : .46)*speedRatio;
+ const armSwing=(run ? .52 : .34)*speedRatio;
+
+ // Lower the arms from the imported T-pose, then add walk swing.
+ setBoneRot(characterBones.lUpperArm, moving?-s*armSwing:0,0,-1.10,k);
+ setBoneRot(characterBones.rUpperArm, moving?s*armSwing:0,0,1.10,k);
+ setBoneRot(characterBones.lForeArm, moving?Math.max(0,s)*.18:-.10,0,-.08,k);
+ setBoneRot(characterBones.rForeArm, moving?Math.max(0,-s)*.18:-.10,0,.08,k);
+
+ setBoneRot(characterBones.lThigh, s*stride,0,0,k);
+ setBoneRot(characterBones.rThigh,-s*stride,0,0,k);
+ setBoneRot(characterBones.lShin,Math.max(0,-s)*.72*speedRatio,0,0,k);
+ setBoneRot(characterBones.rShin,Math.max(0,s)*.72*speedRatio,0,0,k);
+ setBoneRot(characterBones.lFoot,-Math.max(0,-s)*.22*speedRatio,0,0,k);
+ setBoneRot(characterBones.rFoot,-Math.max(0,s)*.22*speedRatio,0,0,k);
+
+ setBoneRot(characterBones.spine,run?-.08*speedRatio:-.035*speedRatio, moving?-s*.055*speedRatio:Math.sin(characterWalkPhase*.35)*.015, moving?s*.018*speedRatio:0,k);
+ setBoneRot(characterBones.chest,0,moving?s*.045*speedRatio:0,0,k);
+ setBoneRot(characterBones.head,0,moving?-s*.025*speedRatio:Math.sin(characterWalkPhase*.22)*.025,0,k);
+
+ if(characterBones.hips?.userData.mcrRest){
+   const r=characterBones.hips.userData.mcrRest;
+   const bob=moving?Math.abs(Math.sin(characterWalkPhase*2))*(run ? .025 : .014)*speedRatio:Math.sin(characterWalkPhase*.5)*.004;
+   characterBones.hips.position.y=THREE.MathUtils.lerp(characterBones.hips.position.y,r.py+bob,k);
+ }
+
+ if(attacking){
+   const p=Math.min(1,attackT/.62),swing=Math.sin(p*Math.PI);
+   setBoneRot(characterBones.spine,-.12+swing*.28,-.25+swing*.75,0,k);
+   setBoneRot(characterBones.rUpperArm,-.45-swing*.9,.18+swing*.4,.9-swing*.65,k);
+   setBoneRot(characterBones.rForeArm,-.75+swing*.55,0,.05,k);
+   setBoneRot(characterBones.lUpperArm,-.15+swing*.25,0,-.82+swing*.2,k);
+ }
+}
 function prepareCharacterModel(gltf){
  const model=gltf.scene;
  model.traverse(o=>{
@@ -384,7 +458,7 @@ function prepareCharacterModel(gltf){
  // Most Mixamo-style exports need a 180° turn relative to this game's forward axis.
  model.rotation.y=Math.PI;
  characterModelRoot.add(model);
- characterModel=model;characterReady=true;
+ characterModel=model;characterBones=mapCharacterBones(model);characterReady=true;
  characterModelRoot.visible=started&&cameraMode==='third'&&!editorMode;
  avatar.visible=false;
  if(gltf.animations?.length){
@@ -1581,6 +1655,7 @@ function updateCam(dt){
      characterModelRoot.rotation.y=yaw;
      characterModelRoot.visible=started&&!editorMode;
      avatar.visible=false;
+     animateCharacterHD(dt,ratio,run);
      if(characterMixer)characterMixer.update(dt);
    }else{
      animateOffice(dt,ratio,run);
