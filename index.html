@@ -409,10 +409,10 @@ function animateCharacterHD(dt,speedRatio,run){
  const armSwing=(run ? .52 : .34)*speedRatio;
 
  // Lower the arms from the imported T-pose, then add walk swing.
- setBoneRot(characterBones.lUpperArm, moving?-s*armSwing:0,0,-1.10,k);
- setBoneRot(characterBones.rUpperArm, moving?s*armSwing:0,0,1.10,k);
- setBoneRot(characterBones.lForeArm, moving?Math.max(0,s)*.18:-.10,0,-.08,k);
- setBoneRot(characterBones.rForeArm, moving?Math.max(0,-s)*.18:-.10,0,.08,k);
+ setBoneRot(characterBones.lUpperArm, moving?-s*armSwing:0,0,1.10,k);
+ setBoneRot(characterBones.rUpperArm, moving?s*armSwing:0,0,-1.10,k);
+ setBoneRot(characterBones.lForeArm, moving?Math.max(0,s)*.18:-.10,0,.08,k);
+ setBoneRot(characterBones.rForeArm, moving?Math.max(0,-s)*.18:-.10,0,-.08,k);
 
  setBoneRot(characterBones.lThigh, s*stride,0,0,k);
  setBoneRot(characterBones.rThigh,-s*stride,0,0,k);
@@ -434,9 +434,9 @@ function animateCharacterHD(dt,speedRatio,run){
  if(attacking){
    const p=Math.min(1,attackT/.62),swing=Math.sin(p*Math.PI);
    setBoneRot(characterBones.spine,-.12+swing*.28,-.25+swing*.75,0,k);
-   setBoneRot(characterBones.rUpperArm,-.45-swing*.9,.18+swing*.4,.9-swing*.65,k);
-   setBoneRot(characterBones.rForeArm,-.75+swing*.55,0,.05,k);
-   setBoneRot(characterBones.lUpperArm,-.15+swing*.25,0,-.82+swing*.2,k);
+   setBoneRot(characterBones.rUpperArm,-.45-swing*.9,.18+swing*.4,-.9+swing*.65,k);
+   setBoneRot(characterBones.rForeArm,-.75+swing*.55,0,-.05,k);
+   setBoneRot(characterBones.lUpperArm,-.15+swing*.25,0,.82-swing*.2,k);
  }
 }
 function prepareCharacterModel(gltf){
@@ -461,8 +461,8 @@ function prepareCharacterModel(gltf){
  model.position.x-=center2.x;
  model.position.z-=center2.z;
  model.position.y-=box2.min.y;
- // Most Mixamo-style exports need a 180° turn relative to this game's forward axis.
- model.rotation.y=Math.PI;
+ // This exported character already faces the game's forward axis.
+ model.rotation.y=0;
  characterModelRoot.add(model);
  characterModel=model;characterBones=mapCharacterBones(model);
  characterHasBones=!!(characterBones?.hips||characterBones?.lUpperArm||characterBones?.lThigh);
