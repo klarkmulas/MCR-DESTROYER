@@ -321,7 +321,8 @@ let adminSession=null,isAdmin=false,adminOperatorPreview=sessionStorage.getItem(
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
-function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
+function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}
+function thirdPersonBaseFov(){const touchLike=mobileDevice();return touchLike?(innerWidth>innerHeight?96:92):86}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
 let yaw=0,pitch=-.05,dist=5.3,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
@@ -376,6 +377,7 @@ initAnalytics();
 document.addEventListener('visibilitychange',()=>analyticsHeartbeat(document.hidden?false:null));
 
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
+const thirdCamRay=new THREE.Raycaster(),thirdCamDir=new THREE.Vector3(),thirdCamLook=new THREE.Vector3(),thirdCamDesired=new THREE.Vector3(),thirdCamOffset=new THREE.Vector3();
 const avatar=new THREE.Group();player.add(avatar);const batPivot=new THREE.Group();batPivot.position.set(.42,1.25,.05);player.add(batPivot);
 const metalMat=new THREE.MeshStandardMaterial({color:0x545e68,roughness:.28,metalness:.8});
 const bat=new THREE.Mesh(new THREE.CylinderGeometry(.055,.085,1.18,14),metalMat);bat.rotation.z=-.55;bat.position.set(.22,.18,0);bat.castShadow=true;batPivot.rotation.z=-.55;batPivot.rotation.x=.2;batPivot.add(bat);
@@ -1781,7 +1783,7 @@ function resolve(np){
 let mobile={x:0,y:0};
 function updatePlayer(dt){
  let mx=(keys.has('KeyD')?1:0)-(keys.has('KeyA')?1:0)+mobile.x,mz=(keys.has('KeyS')?1:0)-(keys.has('KeyW')?1:0)+mobile.y;let len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
- const run=keys.has('ShiftLeft')||keys.has('ShiftRight'),maxSpeed=run?5.15:3.15;
+ const run=keys.has('ShiftLeft')||keys.has('ShiftRight')||(mobileDevice()&&Math.hypot(mobile.x,mobile.y)>.82),maxSpeed=run?5.15:3.15;
  let wish=new THREE.Vector3(mx,0,mz).applyAxisAngle(up,yaw);if(wish.lengthSq()>.001)wish.normalize();
  const target=wish.multiplyScalar(maxSpeed),accel=1-Math.exp(-(target.lengthSq()>.001?11:15)*dt);
  moveVel.x=THREE.MathUtils.lerp(moveVel.x,target.x,accel);moveVel.z=THREE.MathUtils.lerp(moveVel.z,target.z,accel);
@@ -1800,18 +1802,57 @@ function setCameraMode(mode,announce=true){
  q('#chooseThird')?.classList.toggle('on',cameraMode==='third');
  const vt=q('#viewToggle');if(vt){vt.textContent=cameraMode==='first'?'🎮 TERZA PERSONA':'👁 PRIMA PERSONA';vt.classList.toggle('hidden',!started||editorMode)}
  localStorage.setItem('mcrCameraMode',cameraMode);
+ if(cameraMode==='third'){camera.fov=thirdPersonBaseFov();camera.updateProjectionMatrix()}
+ else{camera.fov=gameBaseFov();camera.updateProjectionMatrix()}
  if(announce&&started)show(cameraMode==='first'?'PRIMA PERSONA':'TERZA PERSONA');
 }
 function toggleCameraMode(){setCameraMode(cameraMode==='first'?'third':'first')}
+function thirdPersonCameraBlockedPosition(look,desired){
+ thirdCamDir.copy(desired).sub(look);
+ const maxDist=thirdCamDir.length();
+ if(maxDist<.05)return desired;
+ thirdCamDir.normalize();
+ thirdCamRay.set(look,thirdCamDir);
+ thirdCamRay.near=.12;thirdCamRay.far=maxDist;
+ const hits=thirdCamRay.intersectObjects(scene.children,true);
+ for(const h of hits){
+   let o=h.object,skip=false,p=o;
+   while(p){
+     if(p===player||p.userData?.npc||p.userData?.editorHelper){skip=true;break}
+     p=p.parent;
+   }
+   if(skip||!o.visible)continue;
+   const m=Array.isArray(o.material)?o.material[0]:o.material;
+   if(m&&m.transparent&&m.opacity<.22)continue;
+   if(h.distance<.2)continue;
+   return look.clone().addScaledVector(thirdCamDir,Math.max(.28,h.distance-.22));
+ }
+ return desired;
+}
 function updateCam(dt){
- const speed=Math.hypot(moveVel.x,moveVel.z),run=keys.has('ShiftLeft')||keys.has('ShiftRight'),ratio=Math.min(1,speed/(run?5.15:3.15));
+ const speed=Math.hypot(moveVel.x,moveVel.z),run=keys.has('ShiftLeft')||keys.has('ShiftRight')||(mobileDevice()&&Math.hypot(mobile.x,mobile.y)>.82),ratio=Math.min(1,speed/(run?5.15:3.15));
  if(cameraMode==='third'){
    animateOffice(dt,ratio,run);
-   const back=new THREE.Vector3(0,1.95,4.45).applyAxisAngle(up,yaw);
-   const desired=player.position.clone().add(back);
-   camera.position.lerp(desired,1-Math.exp(-10*dt));
-   const look=player.position.clone().add(new THREE.Vector3(0,1.18+pitch*.9,0));
-   camera.lookAt(look);
+
+   // Camera "over the shoulder": più leggibile, meno personaggio al centro dello schermo.
+   const side=mobileDevice()?.62:.72;
+   const height=mobileDevice()?1.72:1.78;
+   const distance=run?4.45:4.05;
+   thirdCamOffset.set(side,height,distance).applyAxisAngle(up,yaw);
+   thirdCamDesired.copy(player.position).add(thirdCamOffset);
+
+   // Punto di mira leggermente davanti al personaggio: rende movimento e mazzate più naturali.
+   const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(up,yaw);
+   thirdCamLook.copy(player.position)
+     .add(new THREE.Vector3(0,1.16+pitch*.72,0))
+     .addScaledVector(forward,.55);
+
+   // Evita che la camera attraversi scrivanie, pareti e altri oggetti.
+   const safeDesired=thirdPersonCameraBlockedPosition(thirdCamLook,thirdCamDesired);
+   const camSmooth=1-Math.exp(-(safeDesired.distanceTo(camera.position)<1.1?15:10)*dt);
+   camera.position.lerp(safeDesired,camSmooth);
+   camera.lookAt(thirdCamLook);
+
    avatar.visible=started&&!editorMode;fpView.visible=false;
  }else{
    const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .016 : .009)*ratio:0;
@@ -1827,7 +1868,10 @@ function updateCam(dt){
  recoilYaw=THREE.MathUtils.lerp(recoilYaw,0,1-Math.exp(-20*dt));
  recoilRoll=THREE.MathUtils.lerp(recoilRoll,0,1-Math.exp(-20*dt));
  impactPulse=Math.max(0,impactPulse-dt);
- const baseFov=gameBaseFov(),targetFov=impactPulse>0?baseFov+3:baseFov;if(Math.abs(camera.fov-targetFov)>.02){camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-24*dt));camera.updateProjectionMatrix()}
+ const baseFov=cameraMode==='third'?thirdPersonBaseFov():gameBaseFov();
+ const runBoost=cameraMode==='third'&&run?3.5:0;
+ const targetFov=baseFov+runBoost+(impactPulse>0?3:0);
+ if(Math.abs(camera.fov-targetFov)>.02){camera.fov=THREE.MathUtils.lerp(camera.fov,targetFov,1-Math.exp(-18*dt));camera.updateProjectionMatrix()}
 }
 function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];if(d.dead)continue;if(d.fragment){d.life-=dt;if(d.life<=0){disposeFragment(d);dynamics.splice(i,1);continue}}d.vel.y-=9.82*dt;d.o.position.addScaledVector(d.vel,dt);d.o.rotation.x+=d.spin.x*dt;d.o.rotation.y+=d.spin.y*dt;d.o.rotation.z+=d.spin.z*dt;if(d.o.position.y<.15){d.o.position.y=.15;d.vel.y*=-.22;d.vel.x*=.68;d.vel.z*=.68;d.spin.multiplyScalar(.72)}}}
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
