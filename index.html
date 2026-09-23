@@ -33,7 +33,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 @media(max-width:700px){#adminStatsBtn{right:10px;top:10px;font-size:9px;padding:8px 10px}#adminStats{left:8px;right:8px;top:52px;width:auto;max-width:360px;margin:auto}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
 #adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
 #roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
-#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
+#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){
  .controls{grid-template-columns:repeat(2,1fr)}.panel{padding:22px 16px}.left{left:8px;top:8px;min-width:142px}.right{right:8px;top:8px;min-width:160px;max-width:45vw}.glass{padding:9px 11px}.big{font-size:21px}.sub{font-size:9px}.label{font-size:8px}#combo{top:72px;font-size:16px}#cross{display:block;transform:translate(-50%,-50%) scale(.78)}
  #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
@@ -282,6 +282,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
     <label class="checkLine"><input id="screenVideoLoop" type="checkbox" checked> LOOP</label>
     <label class="checkLine"><input id="screenVideoMuted" type="checkbox" checked> MUTO</label>
     <div class="sliderRow"><span>Volume</span><input id="screenVideoVolume" type="range" min="0" max="1" step="0.05" value="0"><span id="screenVideoVolumeV" class="editorValue">0%</span></div>
+    <div id="screenMediaStatus" class="structureHint">Seleziona un monitor nella sala, poi scegli immagine o video.</div>
     <div class="structureHint">Il video da URL viene salvato nel layout condiviso. Il video locale serve solo come prova su questo dispositivo.</div>
   </div>
   <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
@@ -306,7 +307,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -1165,13 +1166,14 @@ function clearEditHelpers(){for(const h of editHelpers)scene.remove(h);editHelpe
 function rebuildEditHelpers(){clearEditHelpers();for(const d of selectedEdits){const h=new THREE.BoxHelper(d.o,d===selectedEdit?0x55bbff:0xffc857);scene.add(h);editHelpers.push(h)}}
 function refreshEditorFields(){
  selectionCount.textContent=selectedEdits.size+' oggett'+(selectedEdits.size===1?'o':'i')+' selezionat'+(selectedEdits.size===1?'o':'i');
- if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';return}
+ if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';updateScreenMediaStatus();return}
  const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit)+(selectedEdits.size>1?'  + altri '+(selectedEdits.size-1):'');
  editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);
  editSX.value=o.scale.x;editSY.value=o.scale.y;editSZ.value=o.scale.z;
  editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';
  editSXv.textContent=o.scale.x.toFixed(2)+'×';editSYv.textContent=o.scale.y.toFixed(2)+'×';editSZv.textContent=o.scale.z.toFixed(2)+'×';
  if(selectedEdit.type==='monitor'&&selectedEdit.screenPreset!=null)screenPreset.value=String(selectedEdit.screenPreset);
+ updateScreenMediaStatus();
 }
 function selectEdit(d,additive=false){
  if(!additive)selectedEdits.clear();
@@ -1273,6 +1275,16 @@ function setEditorMode(on){
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;show('EDITOR SALA ATTIVO');}
  else{editDragging=false;setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
+function selectedMonitorTargets(){
+ const list=[...selectedEdits].filter(d=>d?.type==='monitor'&&d.o?.visible&&!d.dead);
+ if(!list.length&&selectedEdit?.type==='monitor'&&selectedEdit.o?.visible&&!selectedEdit.dead)return [selectedEdit];
+ return list;
+}
+function updateScreenMediaStatus(extra=''){
+ const n=selectedMonitorTargets().length;
+ if(!screenMediaStatus)return;
+ screenMediaStatus.textContent=(n?('Monitor selezionati: '+n):'Nessun monitor selezionato')+(extra?(' · '+extra):'');
+}
 function stopMonitorVideo(d,restoreMap=false){
  if(!d||d.type!=='monitor')return;
  if(d.screenVideo){
@@ -1312,24 +1324,67 @@ function applyMonitorVideo(d,url,opts={}){
  d.screenVideoMuted=video.muted;
  d.screenVideoVolume=video.volume;
  if(opts.objectUrl)d.screenVideoObjectUrl=opts.objectUrl;
- const tryPlay=()=>video.play().catch(()=>{});
+ const tryPlay=()=>video.play().catch(err=>{console.warn('Autoplay video bloccato',err);updateScreenMediaStatus('premi PLAY per avviare')});
  video.addEventListener('canplay',tryPlay,{once:true});
+ video.addEventListener('error',()=>{console.warn('Errore video monitor',video.error);show('ERRORE VIDEO: CONTROLLA FILE/URL');updateScreenMediaStatus('errore video')});
  tryPlay();
  return true;
 }
 function applyVideoToSelected(url,opts={}){
+ const targets=selectedMonitorTargets();
  let n=0;
- for(const d of selectedEdits){
-   if(d.type==='monitor'&&applyMonitorVideo(d,url,opts))n++;
- }
- show(n?('VIDEO APPLICATO A '+n+' SCHERM'+(n===1?'O':'I')):'SELEZIONA ALMENO UN MONITOR');
+ for(const d of targets)if(applyMonitorVideo(d,url,opts))n++;
+ show(n?('VIDEO APPLICATO A '+n+' SCHERM'+(n===1?'O':'I')):'SELEZIONA PRIMA UN MONITOR');
+ updateScreenMediaStatus(n?'video applicato':'nessun video applicato');
  return n;
 }
 function applyMonitorPreset(d,preset){
  if(!d||d.type!=='monitor'||!d.o.userData.screen)return;stopMonitorVideo(d,false);d.screenPreset=Number(preset)%texVariants.length;d.screenData=null;d.o.userData.intactMap=texVariants[d.screenPreset];d.o.userData.screen.material.map=d.o.userData.intactMap;d.o.userData.screen.material.needsUpdate=true;
 }
+function applyMonitorCanvas(d,cv,persistData=null){
+ if(!d||d.type!=='monitor'||!d.o.userData.screen||!cv)return false;
+ stopMonitorVideo(d,false);
+ const tex=new THREE.CanvasTexture(cv);
+ tex.colorSpace=THREE.SRGBColorSpace;tex.minFilter=THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
+ d.screenData=persistData;
+ d.o.userData.intactMap=tex;
+ d.o.userData.screen.material.map=tex;
+ d.o.userData.screen.material.needsUpdate=true;
+ return true;
+}
 function applyMonitorData(d,data){
- if(!d||d.type!=='monitor'||!data)return;stopMonitorVideo(d,false);const img=new Image();img.onload=()=>{const cv=document.createElement('canvas');cv.width=512;cv.height=288;const gx=cv.getContext('2d');const s=Math.max(512/img.width,288/img.height),w=img.width*s,h=img.height*s;gx.drawImage(img,(512-w)/2,(288-h)/2,w,h);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;d.screenData=data;d.o.userData.intactMap=tex;d.o.userData.screen.material.map=tex;d.o.userData.screen.material.needsUpdate=true};img.src=data;
+ if(!d||d.type!=='monitor'||!data)return;
+ const img=new Image();
+ img.onload=()=>{
+   const cv=document.createElement('canvas');cv.width=512;cv.height=288;
+   const gx=cv.getContext('2d'),s=Math.max(512/img.width,288/img.height),w=img.width*s,h=img.height*s;
+   gx.fillStyle='#000';gx.fillRect(0,0,512,288);gx.drawImage(img,(512-w)/2,(288-h)/2,w,h);
+   const compressed=cv.toDataURL('image/jpeg',.88);
+   applyMonitorCanvas(d,cv,compressed);
+ };
+ img.onerror=()=>{show('ERRORE CARICAMENTO IMMAGINE');updateScreenMediaStatus('errore immagine')};
+ img.src=data;
+}
+async function applyImageFileToSelected(file){
+ const targets=selectedMonitorTargets();
+ if(!targets.length){show('SELEZIONA PRIMA UN MONITOR');updateScreenMediaStatus();return 0}
+ try{
+   const bitmap=await createImageBitmap(file);
+   const cv=document.createElement('canvas');cv.width=512;cv.height=288;
+   const gx=cv.getContext('2d'),s=Math.max(512/bitmap.width,288/bitmap.height),w=bitmap.width*s,h=bitmap.height*s;
+   gx.fillStyle='#000';gx.fillRect(0,0,512,288);gx.drawImage(bitmap,(512-w)/2,(288-h)/2,w,h);
+   const persist=cv.toDataURL('image/jpeg',.88);
+   let n=0;for(const d of targets)if(applyMonitorCanvas(d,cv,persist))n++;
+   bitmap.close?.();
+   show('IMMAGINE APPLICATA A '+n+' SCHERM'+(n===1?'O':'I'));
+   updateScreenMediaStatus('immagine caricata');
+   return n;
+ }catch(e){
+   console.error('Errore immagine monitor',e);
+   show('ERRORE CARICAMENTO IMMAGINE');
+   updateScreenMediaStatus('errore immagine');
+   return 0;
+ }
 }
 function layoutData(){
  return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
@@ -1974,31 +2029,35 @@ q('#addGlassPanel').onclick=()=>createCustomPrimitive('glassPanel');
 q('#addWall').onclick=()=>createCustomPrimitive('wall');
 q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
-q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}const fr=new FileReader();fr.onload=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorData(d,fr.result);n++}show(n?('IMMAGINE APPLICATA A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};fr.readAsDataURL(file)};
+q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}applyImageFileToSelected(file)};
+screenFile.addEventListener('change',()=>{const file=screenFile.files?.[0];if(file)applyImageFileToSelected(file)});
 q('#applyScreenVideoUrl').onclick=()=>{
  const url=screenVideoUrl.value.trim();
  if(!url){show('INSERISCI UN URL VIDEO DIRETTO');return}
  applyVideoToSelected(url,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:true});
 };
-q('#applyScreenVideoFile').onclick=()=>{
- const file=screenVideoFile.files?.[0];
- if(!file){show('SCEGLI PRIMA UN VIDEO');return}
- const url=URL.createObjectURL(file);
+async function applyLocalVideoFile(file){
+ const targets=selectedMonitorTargets();
+ if(!targets.length){show('SELEZIONA PRIMA UN MONITOR');updateScreenMediaStatus();return}
  let applied=0;
- for(const d of selectedEdits){
-   if(d.type!=='monitor')continue;
-   if(applyMonitorVideo(d,url,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:false,objectUrl:url}))applied++;
+ for(const d of targets){
+   const objectUrl=URL.createObjectURL(file);
+   if(applyMonitorVideo(d,objectUrl,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:false,objectUrl}))applied++;
  }
- show(applied?('VIDEO LOCALE APPLICATO A '+applied+' SCHERM'+(applied===1?'O':'I')):'SELEZIONA ALMENO UN MONITOR');
-};
+ show(applied?('VIDEO LOCALE APPLICATO A '+applied+' SCHERM'+(applied===1?'O':'I')):'VIDEO NON APPLICATO');
+ updateScreenMediaStatus(applied?'video locale caricato':'errore video');
+}
+q('#applyScreenVideoFile').onclick=()=>{const file=screenVideoFile.files?.[0];if(!file){show('SCEGLI PRIMA UN VIDEO');return}applyLocalVideoFile(file)};
+screenVideoFile.addEventListener('change',()=>{const file=screenVideoFile.files?.[0];if(file)applyLocalVideoFile(file)});
 q('#clearScreenVideo').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){stopMonitorVideo(d,true);d.screenData=null;applyMonitorPreset(d,d.screenPreset??0);n++}show(n?('VIDEO RIMOSSO DA '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
-q('#screenVideoPlay').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.play().catch(()=>{});n++}show(n?'VIDEO IN RIPRODUZIONE':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
-q('#screenVideoPause').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.pause();n++}show(n?'VIDEO IN PAUSA':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
+q('#screenVideoPlay').onclick=()=>{let n=0;for(const d of selectedMonitorTargets())if(d.screenVideo){d.screenVideo.play().catch(()=>{});n++}show(n?'VIDEO IN RIPRODUZIONE':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
+q('#screenVideoPause').onclick=()=>{let n=0;for(const d of selectedMonitorTargets())if(d.screenVideo){d.screenVideo.pause();n++}show(n?'VIDEO IN PAUSA':'NESSUN VIDEO NEGLI SCHERMI SELEZIONATI')};
 screenVideoLoop.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.loop=screenVideoLoop.checked;d.screenVideoLoop=screenVideoLoop.checked}};
 screenVideoMuted.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.muted=screenVideoMuted.checked;d.screenVideoMuted=screenVideoMuted.checked}};
 screenVideoVolume.oninput=()=>{const v=Number(screenVideoVolume.value);screenVideoVolumeV.textContent=Math.round(v*100)+'%';for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.volume=v;d.screenVideoVolume=v}};
 addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
 addEventListener('resize',applyMobileOrientation);
+window.addEventListener('unhandledrejection',e=>{console.warn('Promise non gestita',e.reason)});
 window.addEventListener('error',e=>{
   console.error(e.error||e.message);
   const old=document.getElementById('runtimeError');
