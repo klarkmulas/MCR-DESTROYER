@@ -322,9 +322,9 @@ const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-per
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.32;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
 function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}
-function thirdPersonBaseFov(){const touchLike=mobileDevice();return touchLike?(innerWidth>innerHeight?96:92):86}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
+function thirdPersonBaseFov(){const touchLike=mobileDevice();return touchLike?(innerWidth>innerHeight?88:86):78}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
-let yaw=0,pitch=-.05,dist=5.3,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
+let yaw=0,pitch=-.05,dist=5.3,thirdPersonDistance=4.8,thirdPersonYaw=0,thirdPersonPitch=-.12,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
 let analyticsSession=sessionStorage.getItem(ANALYTICS_SESSION_KEY);
 if(!analyticsSession){analyticsSession=(crypto.randomUUID?.()||('mcr-'+Date.now()+'-'+Math.random().toString(36).slice(2)));sessionStorage.setItem(ANALYTICS_SESSION_KEY,analyticsSession)}
@@ -1474,7 +1474,7 @@ function saveRuntimeSession(){
    const state={
      started:true,
      player:{x:player.position.x,y:player.position.y,z:player.position.z},
-     yaw,pitch,cameraMode,damage,destroyed,combo,countdown,countdownOn
+     yaw,pitch,thirdPersonYaw,thirdPersonPitch,thirdPersonDistance,cameraMode,damage,destroyed,combo,countdown,countdownOn
    };
    sessionStorage.setItem(RUNTIME_SESSION_KEY,JSON.stringify(state));
  }catch(e){console.warn('Sessione gioco non salvata',e)}
@@ -1487,7 +1487,12 @@ function restoreRuntimeSession(){
    started=true;analyticsHeartbeat(true);avatar.visible=false;fpView.visible=true;
    start.classList.add('hidden');hud.classList.remove('hidden');adminBtn.classList.remove('hidden');updateAdminUI();
    if(s.player)player.position.set(Number(s.player.x)||0,Number(s.player.y)||0,Number(s.player.z)||6);
-   if(Number.isFinite(s.yaw))yaw=s.yaw;if(Number.isFinite(s.pitch))pitch=s.pitch;if(s.cameraMode)setCameraMode(s.cameraMode,false);updateSoundUI();q('#homeGameBtn').classList.remove('hidden');
+   if(Number.isFinite(s.yaw))yaw=s.yaw;
+   if(Number.isFinite(s.pitch))pitch=s.pitch;
+   if(Number.isFinite(s.thirdPersonYaw))thirdPersonYaw=s.thirdPersonYaw;
+   if(Number.isFinite(s.thirdPersonPitch))thirdPersonPitch=s.thirdPersonPitch;
+   if(Number.isFinite(s.thirdPersonDistance))thirdPersonDistance=s.thirdPersonDistance;
+   if(s.cameraMode)setCameraMode(s.cameraMode,false);updateSoundUI();q('#homeGameBtn').classList.remove('hidden');
    damage=Number(s.damage)||0;destroyed=Number(s.destroyed)||0;combo=Number(s.combo)||1;
    countdown=Number.isFinite(s.countdown)?s.countdown:150;countdownOn=!!s.countdownOn;
    damageEl.textContent='€ '+damage.toLocaleString('it-IT');destroyedEl.textContent=String(destroyed);comboEl.textContent='COMBO x'+combo;
@@ -1787,7 +1792,18 @@ function updatePlayer(dt){
  let wish=new THREE.Vector3(mx,0,mz).applyAxisAngle(up,yaw);if(wish.lengthSq()>.001)wish.normalize();
  const target=wish.multiplyScalar(maxSpeed),accel=1-Math.exp(-(target.lengthSq()>.001?11:15)*dt);
  moveVel.x=THREE.MathUtils.lerp(moveVel.x,target.x,accel);moveVel.z=THREE.MathUtils.lerp(moveVel.z,target.z,accel);
- let np=player.position.clone().addScaledVector(moveVel,dt);resolve(np);player.position.x=np.x;player.position.z=np.z;player.rotation.y=yaw;
+ let np=player.position.clone().addScaledVector(moveVel,dt);resolve(np);player.position.x=np.x;player.position.z=np.z;
+ if(cameraMode==='third'){
+   const planarSpeed=Math.hypot(moveVel.x,moveVel.z);
+   if(attacking){
+     const d=Math.atan2(Math.sin(thirdPersonYaw-player.rotation.y),Math.cos(thirdPersonYaw-player.rotation.y));
+     player.rotation.y+=d*(1-Math.exp(-16*dt));
+   }else if(planarSpeed>.12){
+     const want=Math.atan2(moveVel.x,moveVel.z)+Math.PI;
+     const d=Math.atan2(Math.sin(want-player.rotation.y),Math.cos(want-player.rotation.y));
+     player.rotation.y+=d*(1-Math.exp(-12*dt));
+   }
+ }else player.rotation.y=yaw;
  const speed=Math.hypot(moveVel.x,moveVel.z),ratio=Math.min(1,speed/maxSpeed);
  jumpV-=9.82*dt;player.position.y+=jumpV*dt;if(player.position.y<=0){player.position.y=0;jumpV=0;grounded=true}
  if(grounded&&speed>.35){footstepTimer-=dt;if(footstepTimer<=0){soundFootstep(run);footstepTimer=run ? .25 : .39}}else footstepTimer=0;
@@ -1796,6 +1812,12 @@ function updatePlayer(dt){
 }
 function setCameraMode(mode,announce=true){
  cameraMode=mode==='third'?'third':'first';
+ if(cameraMode==='third'){
+   thirdPersonYaw=yaw;
+   thirdPersonPitch=THREE.MathUtils.clamp(pitch*.45,-.55,.28);
+ }else{
+   yaw=thirdPersonYaw;
+ }
  avatar.visible=started&&cameraMode==='third'&&!editorMode;
  fpView.visible=started&&cameraMode==='first'&&!editorMode;
  q('#chooseFirst')?.classList.toggle('on',cameraMode==='first');
@@ -1834,22 +1856,24 @@ function updateCam(dt){
  if(cameraMode==='third'){
    animateOffice(dt,ratio,run);
 
-   // Camera "over the shoulder": più leggibile, meno personaggio al centro dello schermo.
-   const side=mobileDevice()?.62:.72;
-   const height=mobileDevice()?1.72:1.78;
-   const distance=run?4.45:4.05;
-   thirdCamOffset.set(side,height,distance).applyAxisAngle(up,yaw);
+   // GTA-style follow camera: centrata dietro il personaggio, con orbita libera.
+   yaw=thirdPersonYaw;
+   const horiz=Math.cos(thirdPersonPitch)*thirdPersonDistance;
+   const vert=1.55-Math.sin(thirdPersonPitch)*thirdPersonDistance*.62;
+   thirdCamOffset.set(
+     Math.sin(thirdPersonYaw)*horiz,
+     vert,
+     Math.cos(thirdPersonYaw)*horiz
+   );
    thirdCamDesired.copy(player.position).add(thirdCamOffset);
 
-   // Punto di mira leggermente davanti al personaggio: rende movimento e mazzate più naturali.
-   const forward=new THREE.Vector3(0,0,-1).applyAxisAngle(up,yaw);
+   const forward=new THREE.Vector3(-Math.sin(thirdPersonYaw),0,-Math.cos(thirdPersonYaw));
    thirdCamLook.copy(player.position)
-     .add(new THREE.Vector3(0,1.16+pitch*.72,0))
-     .addScaledVector(forward,.55);
+     .add(new THREE.Vector3(0,1.18,0))
+     .addScaledVector(forward,.72);
 
-   // Evita che la camera attraversi scrivanie, pareti e altri oggetti.
    const safeDesired=thirdPersonCameraBlockedPosition(thirdCamLook,thirdCamDesired);
-   const camSmooth=1-Math.exp(-(safeDesired.distanceTo(camera.position)<1.1?15:10)*dt);
+   const camSmooth=1-Math.exp(-(safeDesired.distanceTo(camera.position)<1.0?18:9.5)*dt);
    camera.position.lerp(safeDesired,camSmooth);
    camera.lookAt(thirdCamLook);
 
@@ -2037,7 +2061,17 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>keys.delete(e.code));
 document.addEventListener('pointerlockchange',()=>pointer=document.pointerLockElement===renderer.domElement);
-addEventListener('mousemove',e=>{if(editorMode||!pointer)return;yaw-=e.movementX*.00225;pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0019,-1.20,1.15)});
+addEventListener('mousemove',e=>{
+ if(editorMode||!pointer)return;
+ if(cameraMode==='third'){
+   thirdPersonYaw-=e.movementX*.00225;
+   thirdPersonPitch=THREE.MathUtils.clamp(thirdPersonPitch-e.movementY*.0019,-.72,.42);
+   yaw=thirdPersonYaw;
+ }else{
+   yaw-=e.movementX*.00225;
+   pitch=THREE.MathUtils.clamp(pitch-e.movementY*.0019,-1.20,1.15);
+ }
+});
 function endEditorDrag(){
  editDragging=false;dragStartPoint=null;dragStartPositions.clear();dragTargets=[];dragPointerId=null;
 }
@@ -2096,7 +2130,16 @@ renderer.domElement.addEventListener('mousedown',e=>{
  if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();
  attack()
 });
-renderer.domElement.addEventListener('wheel',e=>{if(editorMode&&topViewMode){topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);topCamera.updateProjectionMatrix()}},{passive:true});
+renderer.domElement.addEventListener('wheel',e=>{
+ if(editorMode&&topViewMode){
+   topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);
+   topCamera.updateProjectionMatrix();
+   return;
+ }
+ if(started&&!editorMode&&cameraMode==='third'){
+   thirdPersonDistance=THREE.MathUtils.clamp(thirdPersonDistance+Math.sign(e.deltaY)*.35,3.6,6.0);
+ }
+},{passive:true});
 let joy=q('#joy'),knob=q('#knob'),jid=null;
 function resetJoy(){jid=null;knob.style.transform='';mobile.x=mobile.y=0}
 joy.addEventListener('pointerdown',e=>{e.preventDefault();jid=e.pointerId;joy.setPointerCapture?.(jid)},{passive:false});
@@ -2106,7 +2149,18 @@ joy.addEventListener('pointercancel',resetJoy);joy.addEventListener('lostpointer
 
 let lookzone=q('#lookzone'),lookId=null,lastLookX=0,lastLookY=0;
 lookzone.addEventListener('pointerdown',e=>{e.preventDefault();lookId=e.pointerId;lastLookX=e.clientX;lastLookY=e.clientY;lookzone.setPointerCapture?.(lookId)},{passive:false});
-lookzone.addEventListener('pointermove',e=>{if(e.pointerId!==lookId)return;e.preventDefault();const dx=e.clientX-lastLookX,dy=e.clientY-lastLookY;lastLookX=e.clientX;lastLookY=e.clientY;yaw-=dx*.0052;pitch=THREE.MathUtils.clamp(pitch-dy*.0042,-1.20,1.15)});
+lookzone.addEventListener('pointermove',e=>{
+ if(e.pointerId!==lookId)return;e.preventDefault();
+ const dx=e.clientX-lastLookX,dy=e.clientY-lastLookY;lastLookX=e.clientX;lastLookY=e.clientY;
+ if(cameraMode==='third'){
+   thirdPersonYaw-=dx*.0052;
+   thirdPersonPitch=THREE.MathUtils.clamp(thirdPersonPitch-dy*.0042,-.72,.42);
+   yaw=thirdPersonYaw;
+ }else{
+   yaw-=dx*.0052;
+   pitch=THREE.MathUtils.clamp(pitch-dy*.0042,-1.20,1.15);
+ }
+});
 function resetLook(e){if(!e||e.pointerId===lookId)lookId=null}
 lookzone.addEventListener('pointerup',resetLook);lookzone.addEventListener('pointercancel',resetLook);lookzone.addEventListener('lostpointercapture',resetLook);
 adminBtn.onclick=()=>{if(isAdmin){setEditorMode(!editorMode)}else if(adminSession?.user?.email?.toLowerCase()===ADMIN_EMAIL){adminOperatorPreview=false;sessionStorage.setItem('mcrAdminOperatorPreview','0');updateAdminUI();show('MODALITÀ ADMIN RIPRISTINATA')}else{adminLogin.classList.remove('hidden');adminMessage.textContent=''}};
