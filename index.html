@@ -357,24 +357,24 @@ document.addEventListener('visibilitychange',()=>analyticsHeartbeat(document.hid
 const player=new THREE.Group();player.position.set(0,0,6);scene.add(player);const moveVel=new THREE.Vector3();
 const avatar=new THREE.Group();player.add(avatar);
 const characterModelRoot=new THREE.Group();player.add(characterModelRoot);characterModelRoot.visible=false;
-let characterModel=null,characterMixer=null,characterReady=false,characterLoadFailed=false,characterBones=null,characterWalkPhase=0;
+let characterModel=null,characterMixer=null,characterReady=false,characterLoadFailed=false,characterBones=null,characterWalkPhase=0,characterAction=null,characterHasBones=false,characterHasAnimations=false;
 const CHARACTER_URL='./mcr_character.glb.glb?v=1';
 function mapCharacterBones(model){
  const bones={};
  const all=[];
- model.traverse(o=>{if(o.isBone)all.push(o)});
+ model.traverse(o=>{if(o.isBone||/bone|mixamorig|armature/i.test(o.type||'')||/hips|spine|arm|leg|head|foot/i.test(o.name||''))all.push(o)});
  const norm=s=>(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');
  const pick=(...terms)=>all.find(b=>terms.some(t=>norm(b.name).includes(norm(t))));
  bones.hips=pick('hips','pelvis');
  bones.spine=pick('spine2','spine1','spine');
  bones.chest=pick('chest','spine2');
  bones.head=pick('head');
- bones.lUpperArm=pick('leftarm','upperarm_l','lupperarm');
- bones.rUpperArm=pick('rightarm','upperarm_r','rupperarm');
- bones.lForeArm=pick('leftforearm','lowerarm_l','lforearm');
- bones.rForeArm=pick('rightforearm','lowerarm_r','rforearm');
- bones.lThigh=pick('leftupleg','thigh_l','lthigh');
- bones.rThigh=pick('rightupleg','thigh_r','rthigh');
+ bones.lUpperArm=pick('leftarm','upperarm_l','lupperarm','mixamorigleftarm','arm_l');
+ bones.rUpperArm=pick('rightarm','upperarm_r','rupperarm','mixamorigrightarm','arm_r');
+ bones.lForeArm=pick('leftforearm','lowerarm_l','lforearm','mixamorigleftforearm','forearm_l');
+ bones.rForeArm=pick('rightforearm','lowerarm_r','rforearm','mixamorigrightforearm','forearm_r');
+ bones.lThigh=pick('leftupleg','thigh_l','lthigh','mixamorigleftupleg','upleg_l');
+ bones.rThigh=pick('rightupleg','thigh_r','rthigh','mixamorigrightupleg','upleg_r');
  bones.lShin=pick('leftleg','calf_l','lshin');
  bones.rShin=pick('rightleg','calf_r','rshin');
  bones.lFoot=pick('leftfoot','foot_l');
@@ -394,7 +394,13 @@ function setBoneRot(b,x=0,y=0,z=0,k=1){
  b.rotation.z=THREE.MathUtils.lerp(b.rotation.z,r.z+z,k);
 }
 function animateCharacterHD(dt,speedRatio,run){
- if(!characterBones)return;
+ if(characterAction&&characterHasAnimations){
+   const shouldPlay=speedRatio>.03||attacking;
+   characterAction.paused=!shouldPlay;
+   characterAction.timeScale=run?1.15:.85;
+   if(shouldPlay&&characterMixer)characterMixer.update(dt);
+ }
+ if(!characterHasBones)return;
  const moving=speedRatio>.04;
  characterWalkPhase+=dt*(moving?(run?10.5:6.8):1.2);
  const s=Math.sin(characterWalkPhase),c2=Math.cos(characterWalkPhase);
@@ -458,12 +464,26 @@ function prepareCharacterModel(gltf){
  // Most Mixamo-style exports need a 180° turn relative to this game's forward axis.
  model.rotation.y=Math.PI;
  characterModelRoot.add(model);
- characterModel=model;characterBones=mapCharacterBones(model);characterReady=true;
+ characterModel=model;characterBones=mapCharacterBones(model);
+ characterHasBones=!!(characterBones?.hips||characterBones?.lUpperArm||characterBones?.lThigh);
+ characterHasAnimations=!!gltf.animations?.length;
+ characterReady=true;
  characterModelRoot.visible=started&&cameraMode==='third'&&!editorMode;
  avatar.visible=false;
  if(gltf.animations?.length){
    characterMixer=new THREE.AnimationMixer(model);
-   // Keep animation available, but do not autoplay the uploaded knee/punch combo as locomotion.
+   characterAction=characterMixer.clipAction(gltf.animations[0]);
+   characterAction.enabled=true;
+   characterAction.setLoop(THREE.LoopRepeat,Infinity);
+   characterAction.play();
+   characterAction.paused=true;
+ }
+ if(!characterHasBones&&characterHasAnimations){
+   console.warn('Scheletro non rilevato per animazione procedurale: uso la clip inclusa nel GLB.');
+ }
+ if(!characterHasBones&&!characterHasAnimations){
+   console.warn('Il GLB non contiene né scheletro utilizzabile né animazioni.');
+   show('MODELLO SENZA SCHELETRO/ANIMAZIONI');
  }
  show('PERSONAGGIO HD CARICATO');
 }
@@ -1656,7 +1676,6 @@ function updateCam(dt){
      characterModelRoot.visible=started&&!editorMode;
      avatar.visible=false;
      animateCharacterHD(dt,ratio,run);
-     if(characterMixer)characterMixer.update(dt);
    }else{
      animateOffice(dt,ratio,run);
      avatar.visible=started&&!editorMode;
