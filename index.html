@@ -283,7 +283,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
     <label class="checkLine"><input id="screenVideoMuted" type="checkbox" checked> MUTO</label>
     <div class="sliderRow"><span>Volume</span><input id="screenVideoVolume" type="range" min="0" max="1" step="0.05" value="0"><span id="screenVideoVolumeV" class="editorValue">0%</span></div>
     <div id="screenMediaStatus" class="structureHint">Seleziona un monitor nella sala, poi scegli immagine o video.</div>
-    <div class="structureHint">Il video da URL viene salvato nel layout condiviso. Il video locale serve solo come prova su questo dispositivo.</div>
+    <div class="structureHint">Video e immagini caricati dall’ADMIN vengono messi online. Dopo averli applicati, premi SALVA PER TUTTI per renderli visibili a tutti.</div>
   </div>
   <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
@@ -1365,6 +1365,21 @@ function applyMonitorData(d,data){
  img.onerror=()=>{show('ERRORE CARICAMENTO IMMAGINE');updateScreenMediaStatus('errore immagine')};
  img.src=data;
 }
+async function uploadSharedMedia(file,folder='videos'){
+ if(!isAdmin)throw new Error('Accesso ADMIN richiesto per caricare file condivisi');
+ const raw=(file.name||'media').replace(/[^a-zA-Z0-9._-]+/g,'_');
+ const id=(crypto.randomUUID?.()||Math.random().toString(36).slice(2));
+ const path=folder+'/'+Date.now()+'-'+id+'-'+raw;
+ const {error}=await supabase.storage.from('mcr-media').upload(path,file,{
+   contentType:file.type||undefined,
+   cacheControl:'3600',
+   upsert:false
+ });
+ if(error)throw error;
+ const {data}=supabase.storage.from('mcr-media').getPublicUrl(path);
+ if(!data?.publicUrl)throw new Error('URL pubblico non disponibile');
+ return data.publicUrl;
+}
 async function applyImageFileToSelected(file){
  const targets=selectedMonitorTargets();
  if(!targets.length){show('SELEZIONA PRIMA UN MONITOR');updateScreenMediaStatus();return 0}
@@ -2039,13 +2054,28 @@ q('#applyScreenVideoUrl').onclick=()=>{
 async function applyLocalVideoFile(file){
  const targets=selectedMonitorTargets();
  if(!targets.length){show('SELEZIONA PRIMA UN MONITOR');updateScreenMediaStatus();return}
- let applied=0;
- for(const d of targets){
-   const objectUrl=URL.createObjectURL(file);
-   if(applyMonitorVideo(d,objectUrl,{loop:screenVideoLoop.checked,muted:screenVideoMuted.checked,volume:Number(screenVideoVolume.value),persist:false,objectUrl}))applied++;
+ if(!isAdmin){show('SOLO ADMIN PUÒ CARICARE VIDEO CONDIVISI');updateScreenMediaStatus('accesso admin richiesto');return}
+ try{
+   show('CARICAMENTO VIDEO PER TUTTI…');
+   updateScreenMediaStatus('upload in corso…');
+   const publicUrl=await uploadSharedMedia(file,'videos');
+   let applied=0;
+   for(const d of targets){
+     if(applyMonitorVideo(d,publicUrl,{
+       loop:screenVideoLoop.checked,
+       muted:screenVideoMuted.checked,
+       volume:Number(screenVideoVolume.value),
+       persist:true
+     }))applied++;
+   }
+   screenVideoUrl.value=publicUrl;
+   show(applied?('VIDEO ONLINE APPLICATO A '+applied+' SCHERM'+(applied===1?'O':'I')):'VIDEO NON APPLICATO');
+   updateScreenMediaStatus(applied?'video condiviso pronto · premi SALVA PER TUTTI':'errore video');
+ }catch(e){
+   console.error('Upload video condiviso fallito',e);
+   show('ERRORE UPLOAD VIDEO');
+   updateScreenMediaStatus('upload fallito');
  }
- show(applied?('VIDEO LOCALE APPLICATO A '+applied+' SCHERM'+(applied===1?'O':'I')):'VIDEO NON APPLICATO');
- updateScreenMediaStatus(applied?'video locale caricato':'errore video');
 }
 q('#applyScreenVideoFile').onclick=()=>{const file=screenVideoFile.files?.[0];if(!file){show('SCEGLI PRIMA UN VIDEO');return}applyLocalVideoFile(file)};
 screenVideoFile.addEventListener('change',()=>{const file=screenVideoFile.files?.[0];if(file)applyLocalVideoFile(file)});
