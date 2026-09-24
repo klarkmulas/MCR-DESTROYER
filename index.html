@@ -4,6 +4,126 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>MCR DESTROYER</title>
+<meta name="theme-color" content="#07101a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MCR DESTROYER">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
+<script>
+(()=>{
+ const PWA_VERSION='2026.09.24.1';
+ let deferredInstallPrompt=null;
+ const readyKey='mcrOfflineReady:'+PWA_VERSION;
+ const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
+ const byId=id=>document.getElementById(id);
+ const standalone=()=>matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+
+ function setStatus(text,state=''){
+   const el=byId('offlineStatus');if(!el)return;
+   el.textContent=text;
+   el.dataset.state=state;
+ }
+ function setDownloadButton(text,ready=false){
+   const b=byId('downloadOffline');if(!b)return;
+   b.textContent=text;
+   b.classList.toggle('offlineReady',!!ready);
+   b.disabled=false;
+ }
+ function refreshStatus(){
+   const isReady=localStorage.getItem(readyKey)==='1';
+   if(!navigator.onLine)setStatus(isReady?'✈ OFFLINE • gioco disponibile':'✈ OFFLINE • pacchetto non completato',isReady?'ready':'warning');
+   else if(isReady)setStatus('✓ OFFLINE PRONTO • puoi giocare senza Internet','ready');
+   else setStatus('🌐 ONLINE • premi SCARICA OFFLINE una volta','');
+   setDownloadButton(isReady?'✓ OFFLINE PRONTO':'⬇ SCARICA OFFLINE',isReady);
+   const ib=byId('installApp');
+   if(ib&&standalone())ib.classList.add('hidden');
+ }
+ async function requestOfflineDownload(){
+   if(!('serviceWorker' in navigator)){
+     setStatus('Offline non supportato da questo browser','warning');return;
+   }
+   const btn=byId('downloadOffline');
+   if(btn){btn.disabled=true;btn.textContent='PREPARAZIONE…';}
+   setStatus('Preparazione modalità offline…');
+   try{
+     const reg=await navigator.serviceWorker.ready;
+     if(localStorage.getItem(primedKey)!=='1'){
+       localStorage.setItem(primedKey,'1');
+       sessionStorage.setItem('mcrOfflinePending',PWA_VERSION);
+       setStatus('Ottimizzo le librerie per l’offline… la pagina si riapre una volta.');
+       location.reload();
+       return;
+     }
+     const worker=navigator.serviceWorker.controller||reg.active;
+     if(!worker)throw new Error('Service Worker non attivo');
+     worker.postMessage({type:'DOWNLOAD_OFFLINE',version:PWA_VERSION});
+   }catch(err){
+     console.warn('MCR offline setup error',err);
+     setStatus('Download offline non riuscito: controlla la connessione','warning');
+     setDownloadButton('↻ RIPROVA OFFLINE');
+   }
+ }
+ window.mcrRequestOfflineDownload=requestOfflineDownload;
+
+ window.addEventListener('beforeinstallprompt',e=>{
+   e.preventDefault();
+   deferredInstallPrompt=e;
+   const b=byId('installApp');if(b&&!standalone())b.classList.remove('hidden');
+ });
+ window.addEventListener('appinstalled',()=>{
+   deferredInstallPrompt=null;
+   const b=byId('installApp');if(b)b.classList.add('hidden');
+   setStatus('✓ APP INSTALLATA • modalità offline disponibile dopo il download','ready');
+ });
+
+ if('serviceWorker' in navigator){
+   navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(err=>console.warn('Service worker non registrato',err));
+   navigator.serviceWorker.addEventListener('message',event=>{
+     const d=event.data||{};
+     if(d.type==='OFFLINE_PROGRESS'){
+       const pct=Math.round((d.done/Math.max(1,d.total))*100);
+       setStatus('Download offline '+pct+'%'+(d.failures?' • '+d.failures+' file da riprovare':''));
+       const b=byId('downloadOffline');if(b)b.textContent='⬇ OFFLINE '+pct+'%';
+     }else if(d.type==='OFFLINE_READY'){
+       localStorage.setItem(readyKey,'1');
+       setStatus('✓ OFFLINE PRONTO • puoi attivare la modalità aereo','ready');
+       setDownloadButton('✓ OFFLINE PRONTO',true);
+     }else if(d.type==='OFFLINE_PARTIAL'){
+       localStorage.removeItem(readyKey);
+       setStatus('Download parziale: '+(d.failures?.length||0)+' risorse non scaricate. Premi per riprovare.','warning');
+       setDownloadButton('↻ COMPLETA OFFLINE');
+     }
+   });
+ }
+
+ document.addEventListener('DOMContentLoaded',()=>{
+   refreshStatus();
+   const db=byId('downloadOffline');if(db)db.addEventListener('click',requestOfflineDownload);
+   const ib=byId('installApp');if(ib)ib.addEventListener('click',async()=>{
+     if(deferredInstallPrompt){
+       deferredInstallPrompt.prompt();
+       try{await deferredInstallPrompt.userChoice}catch(e){}
+       deferredInstallPrompt=null;
+       ib.classList.add('hidden');
+     }else{
+       setStatus('Per installare: menu del browser → Aggiungi a schermata Home / Installa app','');
+     }
+   });
+   addEventListener('online',refreshStatus);
+   addEventListener('offline',refreshStatus);
+ });
+
+ window.addEventListener('load',async()=>{
+   if(sessionStorage.getItem('mcrOfflinePending')===PWA_VERSION){
+     sessionStorage.removeItem('mcrOfflinePending');
+     try{await navigator.serviceWorker.ready}catch(e){}
+     setTimeout(()=>requestOfflineDownload(),700);
+   }
+ });
+})();
+</script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body,#game{margin:0;width:100%;height:100%;overflow:hidden;background:#020406;color:#eef6ff;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;overscroll-behavior:none}body{touch-action:none}canvas{display:block;touch-action:none}
 .overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(27,70,120,.38),rgba(2,5,9,.96) 60%);padding:24px}.hidden{display:none!important}
@@ -70,7 +190,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 #viewToggle{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:26;padding:10px 15px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff55;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#exitHome{background:#6f2730!important;border-color:#a94a57!important;color:#fff!important}#exitHome:hover{background:#8b303c!important}
 #soundToggle{position:fixed;left:18px;top:118px;z-index:70;padding:10px 13px;border-radius:12px;background:#07101af2;border:1px solid #65bdff77;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}#homeGameBtn{position:fixed;right:18px;top:118px;z-index:80;padding:10px 14px;border-radius:12px;background:#762c35f2;border:1px solid #d96774aa;color:#fff;font-weight:1000;letter-spacing:.05em;box-shadow:0 12px 35px #0008;pointer-events:auto;touch-action:manipulation}
 @media(max-width:700px){#viewToggle{bottom:max(116px,calc(env(safe-area-inset-bottom) + 110px));font-size:10px;padding:8px 11px}#soundToggle{left:10px;top:96px;font-size:9px;padding:8px 10px}#homeGameBtn{right:10px;top:96px;font-size:10px;padding:9px 12px}}
-.homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}
+.homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}.offlineStatus{display:inline-flex;align-items:center;min-height:28px;margin-top:10px;padding:6px 10px;border-radius:999px;background:#ffffff07;border:1px solid #ffffff12;color:#8ea8bd;font-size:10px;font-weight:800;line-height:1.25}.offlineStatus[data-state="ready"]{color:#a8f5c7;border-color:#52df8b55;background:#0c392355}.offlineStatus[data-state="warning"]{color:#ffd38a;border-color:#ffb84a55;background:#4a2f0b55}.homeSecondary.offlineReady{color:#b8ffd4;border-color:#52df8b77;background:#0b382455}.homeSecondary:disabled{opacity:.65;cursor:wait}
 #objectivePopup{z-index:90;background:rgba(2,5,9,.84);backdrop-filter:blur(10px);overflow:auto;align-items:start;padding:10px}
 .objectiveCard{width:min(650px,94vw);max-height:calc(100dvh - 20px);overflow:auto;margin:auto;padding:clamp(22px,4vw,36px);border-radius:24px;background:linear-gradient(180deg,#0c1827f5,#050a11fa);border:1px solid #6ab8ff44;box-shadow:0 32px 90px #000c}
 .objectiveCard h2{margin:6px 0 8px;font-size:clamp(30px,5vw,48px);letter-spacing:-.03em}.objectiveCard .missionLead{color:#c6d8e6;line-height:1.5;margin:0 0 16px}
@@ -164,8 +284,11 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
         <button id="play" class="homePlay">GIOCA ORA</button>
         <button id="testAudioHome" class="homeSecondary">🔊 TEST AUDIO</button>
         <button id="homeHelp" class="homeSecondary">COMANDI</button>
+        <button id="downloadOffline" class="homeSecondary">⬇ SCARICA OFFLINE</button>
+        <button id="installApp" class="homeSecondary hidden">📲 INSTALLA APP</button>
       </div>
       <div class="homeNote">PC: WASD + mouse. Smartphone: puoi muoverti e dare la mazzata contemporaneamente. Ruota il telefono in orizzontale per l'esperienza migliore.</div>
+      <div id="offlineStatus" class="offlineStatus" aria-live="polite">🌐 ONLINE • verifica modalità offline…</div>
     </section>
     <section class="homeVisual" aria-hidden="true">
       <div class="homeCeiling"></div>
@@ -1509,11 +1632,22 @@ function restoreRuntimeSession(){
 addEventListener('pagehide',()=>{saveRuntimeSession();analyticsHeartbeat(false)});
 addEventListener('beforeunload',saveRuntimeSession);
 async function loadGlobalLayout(){
+ if(!navigator.onLine){
+  applySavedLayout();
+  restoreRuntimeSession();
+  return;
+ }
  try{
   const {data,error}=await supabase.from('mcr_global_layout').select('layout').eq('id','main').maybeSingle();
   if(error)throw error;
-  if(data?.layout && Object.keys(data.layout).length){applyLayoutData(data.layout);show('LAYOUT CONDIVISO CARICATO')}
-  else applySavedLayout();
+  if(data?.layout && Object.keys(data.layout).length){
+   applyLayoutData(data.layout);
+   try{
+    localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data.layout));
+    localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data.layout));
+   }catch(storageError){console.warn('Layout globale non memorizzato offline',storageError)}
+   show('LAYOUT CONDIVISO CARICATO');
+  }else applySavedLayout();
  }catch(e){console.warn('Layout globale non disponibile',e);applySavedLayout()}
  restoreRuntimeSession();
 }
