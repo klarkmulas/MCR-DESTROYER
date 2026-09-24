@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="70%">
+      <stop offset="0" stop-color="#163d62"/>
+      <stop offset="0.58" stop-color="#081522"/>
+      <stop offset="1" stop-color="#020406"/>
+    </radialGradient>
+    <linearGradient id="blue" x1="0" x2="1">
+      <stop stop-color="#2588ff"/>
+      <stop offset="1" stop-color="#59d8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="92" fill="url(#bg)"/>
+  <rect x="28" y="28" width="456" height="456" rx="78" fill="none" stroke="#54bfff" stroke-width="10" opacity=".9"/>
+  <g transform="translate(256 170) rotate(-10)">
+    <rect x="-92" y="-28" width="184" height="56" rx="16" fill="url(#blue)"/>
+    <path d="M-14 26 L31 26 L10 150 L-35 150 Z" fill="#e7f5ff"/>
+  </g>
+  <text x="256" y="360" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="98" font-weight="900" fill="#f4f9ff">MCR</text>
+  <text x="256" y="420" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="38" font-weight="900" letter-spacing="4" fill="#59c9ff">DESTROYER</text>
+</svg>
