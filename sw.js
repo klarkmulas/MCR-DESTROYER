@@ -1,4 +1,4 @@
-const VERSION='2026.09.24.1';
+const VERSION='2026.09.27.2';
 const PREFIX='mcr-destroyer-';
 const SHELL_CACHE=PREFIX+'shell-'+VERSION;
 const RUNTIME_CACHE=PREFIX+'runtime-'+VERSION;
@@ -24,6 +24,7 @@ const OFFLINE_URLS=[
   './sfx_impact.wav?v=2',
   'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js',
   'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js',
+  'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/FBXLoader.js',
   'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/utils/BufferGeometryUtils.js',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 ];
