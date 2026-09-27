@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.27.4';
+ const PWA_VERSION='2026.09.27.5';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -954,14 +954,33 @@ const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.15,
 function normalizedBoneName(name=''){
  return name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^mixamorig/,'');
 }
-function findMixamoBone(root,suffixes){
- const wanted=suffixes.map(normalizedBoneName);let found=null;
+function collectRigCandidates(root){
+ const out=[],seen=new Set();
  root.traverse(o=>{
-   if(found||!o.isBone)return;
-   const n=normalizedBoneName(o.name);
-   if(wanted.some(w=>n===w||n.endsWith(w)))found=o;
+   if(o?.name&&!seen.has(o)){seen.add(o);out.push(o)}
+   if(o?.isSkinnedMesh&&o.skeleton?.bones){
+     for(const b of o.skeleton.bones||[]){
+       if(b&&!seen.has(b)){seen.add(b);out.push(b)}
+     }
+   }
  });
- return found;
+ return out;
+}
+function findMixamoBone(root,suffixes){
+ const wanted=suffixes.map(normalizedBoneName);
+ const nodes=collectRigCandidates(root);
+ let exactBone=null,exactAny=null,suffixBone=null,suffixAny=null;
+ for(const o of nodes){
+   const n=normalizedBoneName(o.name||'');
+   if(!n)continue;
+   const exact=wanted.some(w=>n===w);
+   const suffix=wanted.some(w=>n.endsWith(w)||n.startsWith(w));
+   if(exact&&o.isBone&&!exactBone)exactBone=o;
+   else if(exact&&!exactAny)exactAny=o;
+   else if(suffix&&o.isBone&&!suffixBone)suffixBone=o;
+   else if(suffix&&!suffixAny)suffixAny=o;
+ }
+ return exactBone||exactAny||suffixBone||suffixAny||null;
 }
 function captureRigBase(rig){
  const base=new Map(),pose=new Map();
@@ -1023,21 +1042,30 @@ async function loadCustomFbxCharacter(url){
        for(const m of mats){if(m){m.needsUpdate=true;if(m.map)m.map.colorSpace=THREE.SRGBColorSpace}}
      }
    });
-   const hips=findMixamoBone(model,['Hips']);
-   const spine=findMixamoBone(model,['Spine2','Spine1','Spine']);
-   const head=findMixamoBone(model,['Head']);
-   const lArm=findMixamoBone(model,['LeftArm']);
-   const rArm=findMixamoBone(model,['RightArm']);
-   const lFore=findMixamoBone(model,['LeftForeArm']);
-   const rFore=findMixamoBone(model,['RightForeArm']);
-   const lLeg=findMixamoBone(model,['LeftUpLeg']);
-   const rLeg=findMixamoBone(model,['RightUpLeg']);
-   const lShin=findMixamoBone(model,['LeftLeg']);
-   const rShin=findMixamoBone(model,['RightLeg']);
-   const rHand=findMixamoBone(model,['RightHand']);
-   if(!hips||!spine||!head||!lArm||!rArm||!lFore||!rFore||!lLeg||!rLeg||!lShin||!rShin||!rHand){
-     throw new Error('Rig Mixamo incompleto');
+   const rigMap={
+     hips:findMixamoBone(model,['Hips']),
+     spine:findMixamoBone(model,['Spine2','Spine1','Spine']),
+     head:findMixamoBone(model,['Head']),
+     lArm:findMixamoBone(model,['LeftArm']),
+     rArm:findMixamoBone(model,['RightArm']),
+     lFore:findMixamoBone(model,['LeftForeArm']),
+     rFore:findMixamoBone(model,['RightForeArm']),
+     lLeg:findMixamoBone(model,['LeftUpLeg']),
+     rLeg:findMixamoBone(model,['RightUpLeg']),
+     lShin:findMixamoBone(model,['LeftLeg']),
+     rShin:findMixamoBone(model,['RightLeg']),
+     rHand:findMixamoBone(model,['RightHand'])
+   };
+   const missing=Object.entries(rigMap).filter(([,v])=>!v).map(([k])=>k);
+   if(missing.length){
+     const available=collectRigCandidates(model)
+       .map(o=>o.name).filter(Boolean)
+       .filter(n=>/mixamo|hips|spine|arm|leg|hand|head/i.test(n))
+       .slice(0,45);
+     console.warn('Rig FBX: ossa mancanti',missing,'Disponibili:',available);
+     throw new Error('Ossa mancanti: '+missing.join(', '));
    }
+   const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand}=rigMap;
    officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand});
    if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
    if(batPivot.parent!==player)player.add(batPivot);
@@ -1063,7 +1091,7 @@ async function uploadAndPublishCharacter(){
  try{
    const url=await uploadSharedMedia(file,'characters');
    const ok=await loadCustomFbxCharacter(url);
-   if(!ok)throw new Error('Il rig non è stato riconosciuto');
+   if(!ok)return;
    await publishLayoutGlobal();
    if(characterStatus)characterStatus.textContent='✓ Personaggio pubblicato per tutti.';
  }catch(e){
