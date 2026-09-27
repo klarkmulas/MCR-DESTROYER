@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.24.1';
+ const PWA_VERSION='2026.09.27.2';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -412,6 +412,15 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     <div id="screenMediaStatus" class="structureHint">Seleziona un monitor nella sala, poi scegli immagine o video.</div>
     <div class="structureHint">Video e immagini caricati dall’ADMIN vengono messi online. Dopo averli applicati, premi SALVA PER TUTTI per renderli visibili a tutti.</div>
   </div>
+  <div class="screenBox characterBox">
+    <div class="label">PERSONAGGIO 3ª PERSONA</div>
+    <input id="characterFile" type="file" accept=".fbx,model/fbx,application/octet-stream">
+    <div class="structureGrid">
+      <button id="uploadCharacterFile">CARICA E PUBBLICA FBX</button>
+      <button id="removeCharacterModel">RIPRISTINA PERSONAGGIO</button>
+    </div>
+    <div id="characterStatus" class="structureHint">Puoi caricare un personaggio FBX riggato Mixamo. Il modello viene salvato nello Storage MCR e usato da tutti.</div>
+  </div>
   <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
 <div id="adminLogin" class="hidden">
@@ -432,9 +441,11 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 <script type="module">
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
+const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -905,7 +916,13 @@ function animateOffice(dt,speedRatio,run){
    }
  }
 
- const set=(obj,axis,val)=>obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],val,k);
+ const set=(obj,axis,val)=>{
+   if(!obj)return;
+   const base=officeRig.base?.get(obj);
+   const pose=officeRig.pose?.get(obj);
+   const target=(base?base[axis]:0)+(pose?.[axis]||0)+val;
+   obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],target,k);
+ };
  set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);
  set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
  set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);
@@ -916,13 +933,154 @@ function animateOffice(dt,speedRatio,run){
  set(officeRig.head,'y',headY);set(officeRig.head,'x',headX);
  avatar.position.y=THREE.MathUtils.lerp(avatar.position.y,bodyBob,k);
 
- const swing=attacking?Math.sin(Math.min(1,attackP)*Math.PI):0;
- batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,attacking?(-2.38+swing*1.82):-2.38,k);
- const aimLift=(cameraMode==='third'?thirdPersonPitch:0);
- batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,attacking?(.08+swing*.50-aimLift*.75):.08,k);
- batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,attacking?(.10-swing*.42):.10,k);
+ if(officeRig.custom){
+   customBatFollowHand();
+ }else{
+   const swing=attacking?Math.sin(Math.min(1,attackP)*Math.PI):0;
+   batPivot.rotation.z=THREE.MathUtils.lerp(batPivot.rotation.z,attacking?(-2.38+swing*1.82):-2.38,k);
+   const aimLift=(cameraMode==='third'?thirdPersonPitch:0);
+   batPivot.rotation.x=THREE.MathUtils.lerp(batPivot.rotation.x,attacking?(.08+swing*.50-aimLift*.75):.08,k);
+   batPivot.rotation.y=THREE.MathUtils.lerp(batPivot.rotation.y,attacking?(.10-swing*.42):.10,k);
+ }
 }
-fallbackHuman();avatar.rotation.y=Math.PI;avatar.visible=false;
+fallbackHuman();
+const fallbackOfficeRig=officeRig;
+const fallbackBodyRoot=avatar.children[0]||null;
+let playerModelUrl=null,customAvatarRoot=null,customAvatarLoadingUrl=null;
+const fbxLoader=new FBXLoader();
+const _customBatPos=new THREE.Vector3(),_customBatWorldQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_customBatQ=new THREE.Quaternion();
+const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.15,.10,-1.48,'XYZ'));
+
+function normalizedBoneName(name=''){
+ return name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^mixamorig/,'');
+}
+function findMixamoBone(root,suffixes){
+ const wanted=suffixes.map(normalizedBoneName);let found=null;
+ root.traverse(o=>{
+   if(found||!o.isBone)return;
+   const n=normalizedBoneName(o.name);
+   if(wanted.some(w=>n===w||n.endsWith(w)))found=o;
+ });
+ return found;
+}
+function captureRigBase(rig){
+ const base=new Map(),pose=new Map();
+ for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lLeg','rLeg','lShin','rShin','rHand']){
+   const o=rig[key];if(o&&!base.has(o))base.set(o,o.rotation.clone());
+ }
+ // Porta le braccia del bind-pose Mixamo dalla T-pose a una postura rilassata.
+ if(rig.lArm)pose.set(rig.lArm,{z:1.16,x:.06});
+ if(rig.rArm)pose.set(rig.rArm,{z:-1.16,x:.06});
+ if(rig.lFore)pose.set(rig.lFore,{x:-.18});
+ if(rig.rFore)pose.set(rig.rFore,{x:-.20});
+ rig.base=base;rig.pose=pose;rig.custom=true;
+ return rig;
+}
+function setFallbackCharacter(){
+ if(customAvatarRoot){avatar.remove(customAvatarRoot);customAvatarRoot=null}
+ officeRig=fallbackOfficeRig;
+ if(fallbackBodyRoot)fallbackBodyRoot.visible=true;
+ if(batPivot.parent!==fallbackOfficeRig.rHand)fallbackOfficeRig.rHand.add(batPivot);
+ batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);batPivot.scale.set(1,1,1);batPivot.visible=true;
+ playerModelUrl=null;
+ if(characterStatus)characterStatus.textContent='Personaggio originale attivo.';
+}
+function customBatFollowHand(){
+ if(!officeRig?.custom||!officeRig.rHand)return;
+ officeRig.rHand.updateWorldMatrix(true,false);
+ officeRig.rHand.getWorldPosition(_customBatPos);
+ officeRig.rHand.getWorldQuaternion(_customBatWorldQ);
+ player.getWorldQuaternion(_playerWorldQ);
+ _playerWorldQ.invert();
+ _customBatQ.copy(_playerWorldQ).multiply(_customBatWorldQ).multiply(_customBatOffsetQ);
+ player.worldToLocal(_customBatPos);
+ batPivot.position.copy(_customBatPos);
+ batPivot.quaternion.copy(_customBatQ);
+ batPivot.scale.set(1,1,1);
+}
+async function loadCustomFbxCharacter(url){
+ if(!url){setFallbackCharacter();return false}
+ if(customAvatarLoadingUrl===url)return false;
+ customAvatarLoadingUrl=url;
+ if(characterStatus)characterStatus.textContent='Caricamento personaggio umano…';
+ try{
+   const model=await fbxLoader.loadAsync(url);
+   if(customAvatarRoot)avatar.remove(customAvatarRoot);
+   const holder=new THREE.Group();holder.name='MCR_CustomHuman';
+   holder.add(model);avatar.add(holder);
+   model.updateMatrixWorld(true);
+   let box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3());
+   if(!Number.isFinite(size.y)||size.y<=0)throw new Error('Dimensioni modello non valide');
+   const scale=1.76/size.y;
+   model.scale.setScalar(scale);model.updateMatrixWorld(true);
+   box=new THREE.Box3().setFromObject(model);
+   model.position.y-=box.min.y;
+   model.traverse(o=>{
+     if(o.isMesh||o.isSkinnedMesh){
+       o.castShadow=true;o.receiveShadow=true;o.frustumCulled=true;
+       if(o.isSkinnedMesh)o.normalizeSkinWeights?.();
+       const mats=Array.isArray(o.material)?o.material:[o.material];
+       for(const m of mats){if(m){m.needsUpdate=true;if(m.map)m.map.colorSpace=THREE.SRGBColorSpace}}
+     }
+   });
+   const hips=findMixamoBone(model,['Hips']);
+   const spine=findMixamoBone(model,['Spine2','Spine1','Spine']);
+   const head=findMixamoBone(model,['Head']);
+   const lArm=findMixamoBone(model,['LeftArm']);
+   const rArm=findMixamoBone(model,['RightArm']);
+   const lFore=findMixamoBone(model,['LeftForeArm']);
+   const rFore=findMixamoBone(model,['RightForeArm']);
+   const lLeg=findMixamoBone(model,['LeftUpLeg']);
+   const rLeg=findMixamoBone(model,['RightUpLeg']);
+   const lShin=findMixamoBone(model,['LeftLeg']);
+   const rShin=findMixamoBone(model,['RightLeg']);
+   const rHand=findMixamoBone(model,['RightHand']);
+   if(!hips||!spine||!head||!lArm||!rArm||!lFore||!rFore||!lLeg||!rLeg||!lShin||!rShin||!rHand){
+     throw new Error('Rig Mixamo incompleto');
+   }
+   officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand});
+   if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
+   if(batPivot.parent!==player)player.add(batPivot);
+   customAvatarRoot=holder;
+   playerModelUrl=url;
+   customBatFollowHand();
+   if(characterStatus)characterStatus.textContent='✓ Personaggio umano caricato e rig Mixamo riconosciuto.';
+   show('PERSONAGGIO UMANO CARICATO');
+   return true;
+ }catch(e){
+   console.error('Errore personaggio FBX',e);
+   setFallbackCharacter();
+   if(characterStatus)characterStatus.textContent='Errore FBX: '+(e?.message||'modello non compatibile');
+   return false;
+ }finally{customAvatarLoadingUrl=null}
+}
+async function uploadAndPublishCharacter(){
+ if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per cambiare personaggio.';return}
+ const file=characterFile?.files?.[0];
+ if(!file){show('SELEZIONA UN FILE FBX');return}
+ if(!/\.fbx$/i.test(file.name)){show('SERVE UN FILE .FBX');return}
+ if(characterStatus)characterStatus.textContent='Upload personaggio in corso…';
+ try{
+   const url=await uploadSharedMedia(file,'characters');
+   const ok=await loadCustomFbxCharacter(url);
+   if(!ok)throw new Error('Il rig non è stato riconosciuto');
+   await publishLayoutGlobal();
+   if(characterStatus)characterStatus.textContent='✓ Personaggio pubblicato per tutti.';
+ }catch(e){
+   console.error(e);
+   if(characterStatus)characterStatus.textContent='Upload non riuscito: '+(e?.message||'errore');
+   show('ERRORE PERSONAGGIO');
+ }
+}
+async function removeAndPublishCharacter(){
+ if(!isAdmin){adminLogin.classList.remove('hidden');return}
+ setFallbackCharacter();
+ await publishLayoutGlobal();
+ show('PERSONAGGIO ORIGINALE RIPRISTINATO');
+}
+uploadCharacterFile?.addEventListener('click',uploadAndPublishCharacter);
+removeCharacterModel?.addEventListener('click',removeAndPublishCharacter);
+avatar.rotation.y=Math.PI;avatar.visible=false;
 
 
 let npcSpeechLast=0;
@@ -1532,7 +1690,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -1542,6 +1700,8 @@ function applyLayoutData(data){
  if(!data)return;
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
  if(Array.isArray(data.items))applyStableLayoutItems(data.items);
+ if(data.playerModelUrl && data.playerModelUrl!==playerModelUrl)loadCustomFbxCharacter(data.playerModelUrl);
+ else if(!data.playerModelUrl && playerModelUrl)setFallbackCharacter();
 }
 function loadLayoutFromUrl(){
  try{const raw=new URLSearchParams(location.search).get('layout');if(!raw)return false;const data=JSON.parse(decodeURIComponent(escape(atob(raw))));applyLayoutData(data);queueMicrotask(restoreRuntimeSession);return true}catch(e){console.warn('Layout URL non valido',e);return false}
