@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.27.2';
+ const PWA_VERSION='2026.09.27.3';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1658,8 +1658,10 @@ async function uploadSharedMedia(file,folder='videos'){
  const raw=(file.name||'media').replace(/[^a-zA-Z0-9._-]+/g,'_');
  const id=(crypto.randomUUID?.()||Math.random().toString(36).slice(2));
  const path=folder+'/'+Date.now()+'-'+id+'-'+raw;
+ const isFbx=/\.fbx$/i.test(file.name||'')||folder==='characters';
+ const uploadType=isFbx?'model/fbx':(file.type||undefined);
  const {error}=await supabase.storage.from('mcr-media').upload(path,file,{
-   contentType:file.type||undefined,
+   contentType:uploadType,
    cacheControl:'3600',
    upsert:false
  });
