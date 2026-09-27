@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.27.3';
+ const PWA_VERSION='2026.09.27.4';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1659,8 +1659,22 @@ async function uploadSharedMedia(file,folder='videos'){
  const id=(crypto.randomUUID?.()||Math.random().toString(36).slice(2));
  const path=folder+'/'+Date.now()+'-'+id+'-'+raw;
  const isFbx=/\.fbx$/i.test(file.name||'')||folder==='characters';
- const uploadType=isFbx?'model/fbx':(file.type||undefined);
- const {error}=await supabase.storage.from('mcr-media').upload(path,file,{
+ let uploadBody=file;
+ let uploadType=file.type||undefined;
+ if(isFbx){
+   uploadType='model/fbx';
+   // Alcuni browser etichettano gli FBX come application/octet-stream.
+   // Ricreiamo fisicamente il File con il MIME corretto prima dell'upload.
+   try{
+     uploadBody=new File([await file.arrayBuffer()],file.name||'character.fbx',{
+       type:'model/fbx',
+       lastModified:file.lastModified||Date.now()
+     });
+   }catch(e){
+     uploadBody=new Blob([await file.arrayBuffer()],{type:'model/fbx'});
+   }
+ }
+ const {error}=await supabase.storage.from('mcr-media').upload(path,uploadBody,{
    contentType:uploadType,
    cacheControl:'3600',
    upsert:false
