@@ -1,4 +1,4 @@
-const VERSION='2026.09.27.4';
+const VERSION='2026.09.27.5';
 const PREFIX='mcr-destroyer-';
 const SHELL_CACHE=PREFIX+'shell-'+VERSION;
 const RUNTIME_CACHE=PREFIX+'runtime-'+VERSION;
