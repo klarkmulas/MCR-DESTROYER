@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.1';
+ const PWA_VERSION='2026.09.28.2';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -154,8 +154,8 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .onlineDot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#425466;box-shadow:0 0 0 0 transparent}.onlineDot.on{background:#52df8b;box-shadow:0 0 12px #52df8b88}.statsFoot{margin-top:9px;font-size:9px;color:#708aa2;line-height:1.4}
 @media(max-width:700px){#adminStatsBtn{right:10px;top:10px;font-size:9px;padding:8px 10px}#adminStats{left:8px;right:8px;top:52px;width:auto;max-width:360px;margin:auto}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
 #adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
-#roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(360px,94vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
-#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
+#roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(520px,96vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
+#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){
  .controls{grid-template-columns:repeat(2,1fr)}.panel{padding:22px 16px}.left{left:8px;top:8px;min-width:142px}.right{right:8px;top:8px;min-width:160px;max-width:45vw}.glass{padding:9px 11px}.big{font-size:21px}.sub{font-size:9px}.label{font-size:8px}#combo{top:72px;font-size:16px}#cross{display:block;transform:translate(-50%,-50%) scale(.78)}
  #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
@@ -370,15 +370,57 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
   <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="selectAll">SELEZIONA TUTTI</button><button id="moveAll">SPOSTA TUTTI</button><button id="clearSelection">DESELEZIONA</button></div>
   <div id="selectedName">Nessun oggetto selezionato</div>
   <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
-  <div class="editorRow"><label>X</label><input id="editX" type="range" min="-13" max="13" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
-  <div class="editorRow"><label>Y / altezza</label><input id="editY" type="range" min="0" max="5" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
-  <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-8" max="8" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
+  <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
+  <div class="editorRow"><label>Y / altezza</label><input id="editY" type="range" min="-2" max="12" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
+  <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-38" max="38" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
   <div class="editorRow"><label>Rotazione</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
-  <div class="editorRow"><label>Larghezza X</label><input id="editSX" type="range" min="0.20" max="4.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
-  <div class="editorRow"><label>Altezza Y</label><input id="editSY" type="range" min="0.20" max="4.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
-  <div class="editorRow"><label>Profondità Z</label><input id="editSZ" type="range" min="0.20" max="4.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
+  <div class="editorRow"><label>Larghezza X</label><input id="editSX" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
+  <div class="editorRow"><label>Altezza Y</label><input id="editSY" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
+  <div class="editorRow"><label>Profondità Z</label><input id="editSZ" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
   <div class="nudge"><button id="nudgeLeft">X−</button><button id="nudgeRight">X+</button><button id="nudgeBack">Z−</button><button id="nudgeFront">Z+</button></div>
   <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.45" max="3.0" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
+  <div class="screenBox" id="mapProBox">
+    <div class="proBadge">🏗 EDITOR MAPPA PRO v1</div>
+    <div class="label">NUOVO AMBIENTE</div>
+    <input id="roomNameInput" type="text" maxlength="40" placeholder="Nome ambiente (es. Data Center)">
+    <div class="proGrid three">
+      <div class="proField"><span>LARGHEZZA</span><input id="roomWidthInput" type="number" min="3" max="20" step="0.5" value="8"></div>
+      <div class="proField"><span>PROFONDITÀ</span><input id="roomDepthInput" type="number" min="3" max="20" step="0.5" value="6"></div>
+      <div class="proField"><span>ALTEZZA</span><input id="roomHeightInput" type="number" min="2.4" max="6" step="0.1" value="3"></div>
+    </div>
+    <button id="createRoomKit">＋ CREA STANZA COMPLETA</button>
+    <div class="structureHint">Crea pavimento, soffitto, pareti e una porta automatica. La stanza viene generata davanti al giocatore e resta modificabile pezzo per pezzo.</div>
+
+    <div class="label" style="margin-top:12px">ELEMENTI ARCHITETTONICI</div>
+    <div class="structureGrid">
+      <button id="addFloor">＋ PAVIMENTO</button>
+      <button id="addCeiling">＋ SOFFITTO</button>
+      <button id="addDoor">＋ PORTA</button>
+      <button id="addLight">＋ LUCE</button>
+      <button id="addPicture">＋ PANNELLO IMMAGINE</button>
+      <button id="addWallPro">＋ PARETE PRO</button>
+    </div>
+
+    <div class="label" style="margin-top:12px">ASPETTO OGGETTI SELEZIONATI</div>
+    <div class="appearanceRow"><label>Colore</label><input id="surfaceColor" type="color" value="#445566"></div>
+    <div class="appearanceRow"><label>Materiale</label>
+      <select id="surfaceMaterial">
+        <option value="matte">Opaco</option>
+        <option value="plastic">Plastica</option>
+        <option value="metal">Metallo</option>
+        <option value="glass">Vetro</option>
+      </select>
+    </div>
+    <div class="structureGrid">
+      <button id="applySurfaceStyle">APPLICA COLORE / MATERIALE</button>
+      <button id="clearSurfaceTexture">RIMUOVI IMMAGINE</button>
+    </div>
+    <input id="surfaceImageFile" type="file" accept="image/png,image/jpeg,image/webp">
+    <button id="applySurfaceImage">USA IMMAGINE COME TEXTURE</button>
+    <div class="appearanceRow"><label>Intensità luce</label><input id="lightIntensity" type="range" min="0" max="20" step="0.5" value="8"></div>
+    <div class="structureHint">Colore e texture vengono salvati nel layout globale. La regolazione luce agisce sugli elementi LUCE selezionati.</div>
+  </div>
+
   <div class="structureBox">
     <div class="label">AGGIUNGI STRUTTURA</div>
     <div class="structureGrid">
@@ -448,6 +490,7 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 
 const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
+const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -459,6 +502,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio,1.0));renderer.setSize(innerWid
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0c1117);scene.fog=new THREE.FogExp2(0x0c1117,.009);const normalSceneFog=scene.fog;
 function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}
 function thirdPersonBaseFov(){const touchLike=mobileDevice();return touchLike?(innerWidth>innerHeight?88:86):78}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
+const WORLD_LIMIT=38;
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
 let yaw=0,pitch=-.05,dist=5.3,thirdPersonDistance=4.8,thirdPersonYaw=0,thirdPersonPitch=-.12,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
@@ -642,7 +686,55 @@ function addCustomObstacle(d,kind){
  if(!d?.o)return;
  if(kind==='cube')addObstacle(d.o,.44,.44);
  else if(kind==='column')addObstacle(d.o,.34,.34);
- else if(kind==='wall')addObstacle(d.o,1.05,.08);
+ else if(kind==='wall'||kind==='roomWall')addObstacle(d.o,1.05,.08);
+}
+const textureLoader=new THREE.TextureLoader();
+function editableMeshes(d){
+ const out=[];
+ d?.o?.traverse(ch=>{
+   if(!ch.isMesh||!ch.material)return;
+   if(d.type==='monitor'&&ch===d.o.userData?.screen)return;
+   out.push(ch);
+ });
+ return out;
+}
+function applyAppearanceState(d,state={}){
+ if(!d?.o)return;
+ if(state.roomName!=null)d.roomName=state.roomName;
+ if(state.styleColor)d.styleColor=state.styleColor;
+ if(state.materialPreset)d.materialPreset=state.materialPreset;
+ if(state.textureUrl!==undefined)d.textureUrl=state.textureUrl||null;
+ if(state.lightIntensity!=null)d.lightIntensity=Number(state.lightIntensity);
+ if(state.lightColor)d.lightColor=state.lightColor;
+ const preset=d.materialPreset||'matte',color=d.styleColor||null;
+ for(const mesh of editableMeshes(d)){
+   const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+   const next=mats.map(m=>{
+     const nm=m.clone();
+     if(color&&nm.color)nm.color.set(color);
+     if('roughness' in nm)nm.roughness=preset==='metal'?.26:preset==='plastic'?.38:preset==='glass'?.12:.78;
+     if('metalness' in nm)nm.metalness=preset==='metal'?.85:preset==='plastic'?.08:0;
+     if(preset==='glass'){nm.transparent=true;nm.opacity=.32;nm.depthWrite=false}
+     else if(d.customKind!=='glassPanel'){nm.transparent=false;nm.opacity=1;nm.depthWrite=true}
+     if(!d.textureUrl)nm.map=null;
+     nm.needsUpdate=true;
+     return nm;
+   });
+   mesh.material=Array.isArray(mesh.material)?next:next[0];
+ }
+ if(d.textureUrl){
+   textureLoader.load(d.textureUrl,tex=>{
+     tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=4;
+     for(const mesh of editableMeshes(d)){
+       const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+       for(const m of mats){m.map=tex;m.needsUpdate=true}
+     }
+   },undefined,e=>console.warn('Texture superficie non caricata',e));
+ }
+ if(d.pointLight){
+   if(d.lightColor)d.pointLight.color.set(d.lightColor);
+   d.pointLight.intensity=Number.isFinite(d.lightIntensity)?d.lightIntensity:8;
+ }
 }
 function createCustomPrimitive(kind,state=null,selectIt=true){
  let o,d,type,val=900,hp=3,mode='static',baseY=.5;
@@ -650,19 +742,87 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  if(kind==='cube'){type='cube';o=box(1,1,1,mat(0x4e5965,.62,.16),p.x,.5,p.z);baseY=.5;val=900;hp=3}
  else if(kind==='column'){type='column';o=cyl(.38,.38,2.7,mat(0x69737c,.58,.18),p.x,1.35,p.z);baseY=1.35;val=2200;hp=5}
  else if(kind==='glassPanel'){type='glass';o=box(2.0,2.45,.08,glassMat.clone(),p.x,1.225,p.z);baseY=1.225;val=1600;hp=2;mode='glass'}
- else if(kind==='wall'){type='wall';o=box(2.6,2.5,.16,mat(0x222b33,.72,.05),p.x,1.25,p.z);baseY=1.25;val=2600;hp=6}
+ else if(kind==='wall'||kind==='roomWall'){type='wall';o=box(2.6,2.5,.16,mat(0x222b33,.72,.05),p.x,1.25,p.z);baseY=1.25;val=2600;hp=6}
  else if(kind==='panel'){type='panel';o=box(1.8,1.5,.09,mat(0x31583b,.67,.03),p.x,.75,p.z);baseY=.75;val=1200;hp=3}
+ else if(kind==='floor'){type='floor';o=box(4,.12,4,mat(0x49515a,.88,.02),p.x,-.06,p.z);baseY=-.06;val=2000;hp=8}
+ else if(kind==='ceiling'){type='ceiling';o=box(4,.12,4,mat(0xd3d7da,.82,.01),p.x,2.94,p.z);baseY=2.94;val=1800;hp=7}
+ else if(kind==='picture'){
+   type='picture';o=box(1.8,1.1,.06,mat(0xe6e6e6,.7,.01),p.x,1.4,p.z);baseY=1.4;val=600;hp=2;
+ }
+ else if(kind==='door'){
+   type='door';baseY=0;val=1800;hp=5;
+   o=new THREE.Group();o.position.set(p.x,0,p.z);scene.add(o);
+   const fm=mat(0x252c34,.55,.35),dm=mat(0x644832,.62,.08);
+   const lp=new THREE.Mesh(new THREE.BoxGeometry(.12,2.2,.16),fm),rp=lp.clone(),top=new THREE.Mesh(new THREE.BoxGeometry(1.32,.14,.16),fm);
+   lp.position.set(-.66,1.1,0);rp.position.set(.66,1.1,0);top.position.set(0,2.18,0);o.add(lp,rp,top);
+   const pivot=new THREE.Group();pivot.position.set(-.56,0,0);o.add(pivot);
+   const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.08,2.02,.08),dm);leaf.position.set(.54,1.01,0);pivot.add(leaf);
+   o.userData.doorPivot=pivot;
+ }
+ else if(kind==='light'){
+   type='light';baseY=2.6;val=900;hp=2;
+   o=new THREE.Group();o.position.set(p.x,2.6,p.z);scene.add(o);
+   const fixture=new THREE.Mesh(new THREE.CylinderGeometry(.16,.22,.12,16),mat(0xe6e0d8,.28,.35));fixture.rotation.x=Math.PI/2;o.add(fixture);
+   const bulb=new THREE.Mesh(new THREE.SphereGeometry(.10,12,10),new THREE.MeshBasicMaterial({color:0xffe0b3,toneMapped:false}));bulb.position.y=-.08;o.add(bulb);
+   const pl=new THREE.PointLight(0xffd7a6,8,10,2);pl.position.y=-.18;o.add(pl);o.userData.pointLight=pl;
+ }
  else return null;
  d=reg(o,type,hp,val,mode);d.customKind=kind;d.sourceIndex=-1;d.editId=destruct.length-1;
+ if(kind==='door')d.doorPivot=o.userData.doorPivot;
+ if(kind==='light')d.pointLight=o.userData.pointLight;
  if(state){
    o.position.set(Number(state.x)||0,Number.isFinite(Number(state.y))?Number(state.y):baseY,Number(state.z)||0);
    o.rotation.y=Number(state.ry)||0;o.scale.set(Number(state.sx)||1,Number(state.sy)||1,Number(state.sz)||1);o.visible=state.visible!==false;
  }
+ d.roomName=state?.roomName||null;d.styleColor=state?.styleColor||null;d.materialPreset=state?.materialPreset||'matte';d.textureUrl=state?.textureUrl||null;
+ d.lightIntensity=Number.isFinite(Number(state?.lightIntensity))?Number(state.lightIntensity):8;d.lightColor=state?.lightColor||null;
+ applyAppearanceState(d,state||{});
  d.origPos.copy(o.position);d.origQuat.copy(o.quaternion);d.origScale.copy(o.scale);d.startPos.copy(o.position);d.startQuat.copy(o.quaternion);d.startScale.copy(o.scale);d.startVis=o.visible;
  o.userData.d=d;o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=o});
  addCustomObstacle(d,kind);totalEl.textContent=activeBreakableCount();
  if(selectIt){selectEdit(d,false);if(topViewMode)buildTopPlanHelpers();show('AGGIUNTO '+editorLabel(d).toUpperCase())}
  return d;
+}
+function roomAnchorPoint(depth=6){
+ const dir=new THREE.Vector3(0,0,-1).applyAxisAngle(up,yaw);
+ const dist=Math.max(5,depth*.5+3.5);
+ const p=player.position.clone().addScaledVector(dir,dist);
+ p.x=THREE.MathUtils.clamp(p.x,-WORLD_LIMIT+3,WORLD_LIMIT-3);
+ p.z=THREE.MathUtils.clamp(p.z,-WORLD_LIMIT+3,WORLD_LIMIT-3);
+ p.y=0;return p;
+}
+function createRoomKit(){
+ const name=(roomNameInput?.value||'').trim()||('Ambiente '+(destruct.filter(d=>d.roomName).length+1));
+ const w=THREE.MathUtils.clamp(Number(roomWidthInput?.value)||8,3,20);
+ const dep=THREE.MathUtils.clamp(Number(roomDepthInput?.value)||6,3,20);
+ const h=THREE.MathUtils.clamp(Number(roomHeightInput?.value)||3,2.4,6);
+ const doorW=Math.min(1.2,w*.36),doorH=Math.min(2.2,h*.78);
+ const p=roomAnchorPoint(dep),created=[];
+ const mk=(kind,state)=>{const d=createCustomPrimitive(kind,{...state,roomName:name},false);if(d)created.push(d);return d};
+ mk('floor',{x:p.x,y:-.06,z:p.z,sx:w/4,sy:1,sz:dep/4,styleColor:'#4b535c',materialPreset:'matte'});
+ mk('ceiling',{x:p.x,y:h+.06,z:p.z,sx:w/4,sy:1,sz:dep/4,styleColor:'#d7d9da',materialPreset:'matte'});
+ mk('roomWall',{x:p.x,y:h/2,z:p.z-dep/2,ry:0,sx:w/2.6,sy:h/2.5,sz:1,styleColor:'#303943'});
+ mk('roomWall',{x:p.x-w/2,y:h/2,z:p.z,ry:Math.PI/2,sx:dep/2.6,sy:h/2.5,sz:1,styleColor:'#303943'});
+ mk('roomWall',{x:p.x+w/2,y:h/2,z:p.z,ry:Math.PI/2,sx:dep/2.6,sy:h/2.5,sz:1,styleColor:'#303943'});
+ const side=(w-doorW)/2;
+ if(side>.12){
+   mk('roomWall',{x:p.x-(doorW/2+side/2),y:h/2,z:p.z+dep/2,ry:0,sx:side/2.6,sy:h/2.5,sz:1,styleColor:'#303943'});
+   mk('roomWall',{x:p.x+(doorW/2+side/2),y:h/2,z:p.z+dep/2,ry:0,sx:side/2.6,sy:h/2.5,sz:1,styleColor:'#303943'});
+ }
+ if(h-doorH>.15)mk('roomWall',{x:p.x,y:doorH+(h-doorH)/2,z:p.z+dep/2,ry:0,sx:doorW/2.6,sy:(h-doorH)/2.5,sz:1,styleColor:'#303943'});
+ mk('door',{x:p.x,y:0,z:p.z+dep/2+.02,ry:0,sx:doorW/1.32,sy:doorH/2.2,sz:1,styleColor:'#684a34',materialPreset:'matte'});
+ mk('light',{x:p.x,y:Math.max(2.25,h-.22),z:p.z,roomName:name,lightIntensity:9,lightColor:'#ffd7a6'});
+ selectedEdits=new Set(created);selectedEdit=created.at(-1)||null;rebuildEditHelpers();refreshEditorFields();if(topViewMode)buildTopPlanHelpers();
+ show('STANZA "'+name.toUpperCase()+'" CREATA');
+}
+function updateDoors(dt){
+ for(const d of destruct){
+   if(d.customKind!=='door'||!d.doorPivot||!d.o.visible||d.dead)continue;
+   const dx=player.position.x-d.o.position.x,dz=player.position.z-d.o.position.z;
+   const open=started&&!editorMode&&(dx*dx+dz*dz)<3.3;
+   const target=open?Math.PI*.48:0;
+   d.doorPivot.rotation.y=THREE.MathUtils.lerp(d.doorPivot.rotation.y,target,1-Math.exp(-7*dt));
+ }
 }
 function addBadge(x,z,ry){const c=document.createElement('canvas');c.width=c.height=256;let g=c.getContext('2d');g.strokeStyle='#dbe4eb';g.lineWidth=7;g.beginPath();g.arc(128,128,86,0,Math.PI*2);g.stroke();g.fillStyle='#edf4fa';g.font='bold 52px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('MCR',128,128);let t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;let p=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false}));p.position.set(x,2.5,z);p.rotation.y=ry;scene.add(p)}
 
@@ -717,6 +877,14 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  nd.editId=destruct.length-1;
  nd.sourceIndex=Number.isInteger(source.sourceIndex)?source.sourceIndex:(Number.isInteger(source.editId)?source.editId:0);
  nd.customKind=source.customKind||null;
+ nd.roomName=state?.roomName??source.roomName??null;
+ nd.styleColor=state?.styleColor??source.styleColor??null;
+ nd.materialPreset=state?.materialPreset??source.materialPreset??'matte';
+ nd.textureUrl=state?.textureUrl??source.textureUrl??null;
+ nd.lightIntensity=Number.isFinite(Number(state?.lightIntensity))?Number(state.lightIntensity):(source.lightIntensity??8);
+ nd.lightColor=state?.lightColor??source.lightColor??null;
+ if(nd.customKind==='door'){nd.doorPivot=clone.userData.doorPivot||null}
+ if(nd.customKind==='light'){nd.pointLight=clone.userData.pointLight||null}
  nd.max=source.max;nd.hp=source.max;nd.val=source.val;nd.mode=source.mode;nd.dead=false;
  clone.position.copy(source.o.position);clone.quaternion.copy(source.o.quaternion);clone.scale.copy(source.o.scale);clone.visible=true;
  if(state){
@@ -725,12 +893,15 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
    clone.scale.set(state.sx??clone.scale.x,state.sy??clone.scale.y,state.sz??clone.scale.z);
    clone.visible=state.visible!==false;
  }else{
-   clone.position.x=THREE.MathUtils.clamp(clone.position.x+offsetX,-13,13);
-   clone.position.z=THREE.MathUtils.clamp(clone.position.z+offsetZ,-8,8);
+   clone.position.x=THREE.MathUtils.clamp(clone.position.x+offsetX,-WORLD_LIMIT,WORLD_LIMIT);
+   clone.position.z=THREE.MathUtils.clamp(clone.position.z+offsetZ,-WORLD_LIMIT,WORLD_LIMIT);
  }
  nd.origPos.copy(clone.position);nd.origQuat.copy(clone.quaternion);nd.origScale.copy(clone.scale);nd.startPos.copy(clone.position);nd.startQuat.copy(clone.quaternion);nd.startScale.copy(clone.scale);nd.startVis=clone.visible;
  clone.userData.d=nd;
+ if(nd.customKind==='door'&&!nd.doorPivot){nd.doorPivot=clone.children.find(ch=>ch.type==='Group')||null}
+ if(nd.customKind==='light'&&!nd.pointLight){clone.traverse(ch=>{if(!nd.pointLight&&ch.isPointLight)nd.pointLight=ch})}
  clone.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=clone});
+ applyAppearanceState(nd,state||source);
  if(source.type==='monitor'){
    let screen=null;clone.traverse(ch=>{if(!screen&&ch.isMesh&&ch.geometry?.type==='PlaneGeometry')screen=ch});
    if(screen){
@@ -766,6 +937,7 @@ function applyOneLayoutState(d,s){
    else if(s.screenData)applyMonitorData(d,s.screenData);
    else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset);
  }
+ if(d.customKind||s.styleColor||s.textureUrl||s.materialPreset)applyAppearanceState(d,s);
 }
 function applyStableLayoutItems(items){
  if(!Array.isArray(items))return;
@@ -1478,7 +1650,7 @@ function updateFirstPersonView(dt,speedRatio,run){
  fpRig.weapon.rotation.y=THREE.MathUtils.lerp(fpRig.weapon.rotation.y,weaponY,k);
  fpRig.weapon.rotation.z=THREE.MathUtils.lerp(fpRig.weapon.rotation.z,weaponZ,k);
 }
-function editorLabel(d){return ({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1)}
+function editorLabel(d){const base=({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete',floor:'Pavimento',ceiling:'Soffitto',door:'Porta',light:'Luce',picture:'Pannello immagine'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1);return d?.roomName?base+' · '+d.roomName:base}
 function activeCamera(){return editorMode&&topViewMode?topCamera:camera}
 function clearEditHelpers(){for(const h of editHelpers)scene.remove(h);editHelpers=[]}
 function rebuildEditHelpers(){clearEditHelpers();for(const d of selectedEdits){const h=new THREE.BoxHelper(d.o,d===selectedEdit?0x55bbff:0xffc857);scene.add(h);editHelpers.push(h)}}
@@ -1491,6 +1663,9 @@ function refreshEditorFields(){
  editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';
  editSXv.textContent=o.scale.x.toFixed(2)+'×';editSYv.textContent=o.scale.y.toFixed(2)+'×';editSZv.textContent=o.scale.z.toFixed(2)+'×';
  if(selectedEdit.type==='monitor'&&selectedEdit.screenPreset!=null)screenPreset.value=String(selectedEdit.screenPreset);
+ if(surfaceColor&&selectedEdit.styleColor)surfaceColor.value=selectedEdit.styleColor;
+ if(surfaceMaterial&&selectedEdit.materialPreset)surfaceMaterial.value=selectedEdit.materialPreset;
+ if(lightIntensity&&selectedEdit.type==='light')lightIntensity.value=String(selectedEdit.lightIntensity??8);
  updateScreenMediaStatus();
 }
 function selectEdit(d,additive=false){
@@ -1522,7 +1697,7 @@ function setMoveAllMode(on){
 }
 
 function moveSelection(dx,dy,dz){
- for(const d of selectedEdits){d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-13,13);d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,0,5);d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-8,8)}
+ for(const d of selectedEdits){d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-WORLD_LIMIT,WORLD_LIMIT);d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,-2,12);d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-WORLD_LIMIT,WORLD_LIMIT)}
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 }
 function updateSelectedFromUI(){
@@ -1541,9 +1716,9 @@ function updateSelectedFromUI(){
  for(const d of selectedEdits){
    d.o.position.add(delta);
    d.o.scale.set(
-     THREE.MathUtils.clamp(d.o.scale.x*ratio.x,.20,4),
-     THREE.MathUtils.clamp(d.o.scale.y*ratio.y,.20,4),
-     THREE.MathUtils.clamp(d.o.scale.z*ratio.z,.20,4)
+     THREE.MathUtils.clamp(d.o.scale.x*ratio.x,.20,12),
+     THREE.MathUtils.clamp(d.o.scale.y*ratio.y,.20,12),
+     THREE.MathUtils.clamp(d.o.scale.z*ratio.z,.20,12)
    );
  }
  anchor.rotation.y=THREE.MathUtils.degToRad(parseFloat(editRot.value));
@@ -1559,7 +1734,7 @@ function buildTopPlanHelpers(){
  grid.position.y=.03;
  grid.material.transparent=true;grid.material.opacity=.72;grid.material.depthTest=false;grid.renderOrder=980;
  scene.add(grid);topPlanHelpers.push(grid);
- const colors={monitor:0x42c9ff,desk:0xffa43c,chair:0x54df7b,keyboard:0xffee58,phone:0xff66cc,rack:0xff5e5e,glass:0xa9edff,panel:0x58e06f,extinguisher:0xff3333,cube:0xb9c6d2,column:0xb7a8ff,wall:0x9aa7b4};
+ const colors={monitor:0x42c9ff,desk:0xffa43c,chair:0x54df7b,keyboard:0xffee58,phone:0xff66cc,rack:0xff5e5e,glass:0xa9edff,panel:0x58e06f,extinguisher:0xff3333,cube:0xb9c6d2,column:0xb7a8ff,wall:0x9aa7b4,floor:0x607080,ceiling:0xdde8ef,door:0xd49352,light:0xffe28c,picture:0xd36cff};
  for(const d of destruct){
    if(!d.o.visible)continue;
    const h=new THREE.BoxHelper(d.o,colors[d.type]||0xffffff);
@@ -1575,10 +1750,12 @@ function setTopView(on){
  for(const o of topViewHidden)o.visible=!on;
  scene.fog=on?null:normalSceneFog;
  if(on){
+   const a=innerWidth/innerHeight,halfH=42;
+   topCamera.left=-halfH*a;topCamera.right=halfH*a;topCamera.top=halfH;topCamera.bottom=-halfH;
    topCamera.position.set(0,36,.001);
    topCamera.up.set(0,0,-1);
    topCamera.lookAt(0,0,0);
-   topCamera.zoom=.76;
+   topCamera.zoom=1;
    topCamera.near=.1;topCamera.far=100;
    topCamera.updateProjectionMatrix();
    buildTopPlanHelpers();
@@ -1736,7 +1913,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -2109,7 +2286,7 @@ function resetRoom(){
 }
 const collisionBox=new THREE.Box3();
 function resolve(np){
- np.x=THREE.MathUtils.clamp(np.x,-13.1,13.1);np.z=THREE.MathUtils.clamp(np.z,-8,8);
+ np.x=THREE.MathUtils.clamp(np.x,-WORLD_LIMIT,WORLD_LIMIT);np.z=THREE.MathUtils.clamp(np.z,-WORLD_LIMIT,WORLD_LIMIT);
  const from=player.position,rad=.18;
  const playerMinY=player.position.y+.05,playerMaxY=player.position.y+1.62;
  for(const ob of obstacles){
@@ -2257,7 +2434,7 @@ function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];i
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 let lastSessionSave=0;
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
+function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
 function mobileLandscape(){return mobileDevice()&&innerWidth>innerHeight}
@@ -2290,7 +2467,7 @@ function applyMobileOrientation(){
  camera.fov=gameBaseFov();
  camera.updateProjectionMatrix();
  renderer.setSize(innerWidth,innerHeight);
- const aspect=innerWidth/innerHeight,halfH=10;
+ const aspect=innerWidth/innerHeight,halfH=topViewMode?42:10;
  topCamera.left=-halfH*aspect;topCamera.right=halfH*aspect;topCamera.top=halfH;topCamera.bottom=-halfH;topCamera.updateProjectionMatrix();
  if(started&&mobileDevice()&&landscape)requestMobileFullscreen();
 }
@@ -2474,8 +2651,8 @@ renderer.domElement.addEventListener('pointermove',e=>{
  if(!p)return;
  const dx=p.x-dragStartPoint.x,dz=p.z-dragStartPoint.z;
  for(const [d,pos] of dragStartPositions){
-   d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-13,13);
-   d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-8,8);
+   d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-WORLD_LIMIT,WORLD_LIMIT);
+   d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-WORLD_LIMIT,WORLD_LIMIT);
  }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 },{passive:false});
@@ -2544,6 +2721,40 @@ q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+
 [editX,editY,editZ,editRot,editSX,editSY,editSZ].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
 q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>moveSelection(.2,0,0);q('#nudgeBack').onclick=()=>moveSelection(0,0,-.2);q('#nudgeFront').onclick=()=>moveSelection(0,0,.2);
+q('#createRoomKit').onclick=createRoomKit;
+q('#addFloor').onclick=()=>createCustomPrimitive('floor');
+q('#addCeiling').onclick=()=>createCustomPrimitive('ceiling');
+q('#addDoor').onclick=()=>createCustomPrimitive('door');
+q('#addLight').onclick=()=>createCustomPrimitive('light');
+q('#addPicture').onclick=()=>createCustomPrimitive('picture');
+q('#addWallPro').onclick=()=>createCustomPrimitive('roomWall');
+q('#applySurfaceStyle').onclick=()=>{
+ if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
+ const color=surfaceColor.value,preset=surfaceMaterial.value;
+ for(const d of selectedEdits){d.styleColor=color;d.materialPreset=preset;if(d.type==='light')d.lightColor=color;applyAppearanceState(d,{styleColor:color,materialPreset:preset,lightColor:d.type==='light'?color:d.lightColor})}
+ show('ASPETTO APPLICATO A '+selectedEdits.size+' OGGETTI');
+};
+async function applySurfaceImageFile(file){
+ if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
+ if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}
+ try{
+   show('CARICAMENTO TEXTURE…');
+   const url=await uploadSharedMedia(file,'textures');
+   for(const d of selectedEdits){d.textureUrl=url;applyAppearanceState(d,{textureUrl:url})}
+   show('IMMAGINE APPLICATA A '+selectedEdits.size+' OGGETTI');
+ }catch(e){console.error('Texture upload error',e);show('ERRORE CARICAMENTO TEXTURE')}
+}
+q('#applySurfaceImage').onclick=()=>applySurfaceImageFile(surfaceImageFile.files?.[0]);
+surfaceImageFile.addEventListener('change',()=>{const file=surfaceImageFile.files?.[0];if(file)applySurfaceImageFile(file)});
+q('#clearSurfaceTexture').onclick=()=>{
+ if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
+ for(const d of selectedEdits){d.textureUrl=null;applyAppearanceState(d,{textureUrl:null})}
+ show('IMMAGINE RIMOSSA');
+};
+lightIntensity.addEventListener('input',()=>{
+ const v=Number(lightIntensity.value);
+ for(const d of selectedEdits)if(d.type==='light'){d.lightIntensity=v;applyAppearanceState(d,{lightIntensity:v})}
+});
 q('#addCube').onclick=()=>createCustomPrimitive('cube');
 q('#addColumn').onclick=()=>createCustomPrimitive('column');
 q('#addGlassPanel').onclick=()=>createCustomPrimitive('glassPanel');
