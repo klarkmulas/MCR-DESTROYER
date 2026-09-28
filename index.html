@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.16';
+ const PWA_VERSION='2026.09.28.17';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -133,17 +133,23 @@
 .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:800;color:#68b8ff}.panel h1{font-size:clamp(42px,8vw,82px);line-height:.9;letter-spacing:-.06em;margin:8px 0}.panel h1 span{color:#4ab6ff;text-shadow:0 0 30px #3aa4ff66}.panel p{color:#a6b8cc;line-height:1.5}
 button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border-radius:12px;background:linear-gradient(135deg,#2588ff,#5cd8ff);color:#fff;font-weight:900;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}
 .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:28px}.controls div{padding:10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.controls b{display:block;font-size:13px}.controls span{display:block;margin-top:2px;font-size:10px;color:#8296ad}
-#hud{position:fixed;inset:0;z-index:35;pointer-events:none;color:#f4f6f7}
-.blackoutBrand{position:absolute;left:max(14px,env(safe-area-inset-left));top:18px;z-index:4;display:flex;align-items:center;gap:16px;text-shadow:0 1px 4px #0008}
-.blackoutLogo{width:58px;height:52px;display:grid;place-items:center;border:1px solid #d9e0e522;background:#aeb7ba12;font-size:21px;font-weight:1000;letter-spacing:-.05em;backdrop-filter:blur(6px)}
-.blackoutBrandText{display:flex;flex-direction:column;gap:5px}.blackoutBrandText b{font-size:20px;line-height:1;letter-spacing:.24em}.blackoutBrandText span{font-size:9px;font-weight:900;letter-spacing:.28em;color:#9aaab3}
-.blackoutStatus{position:absolute;right:max(18px,env(safe-area-inset-right));top:24px;z-index:4;width:185px;text-align:right;text-shadow:0 1px 4px #0009}.blackoutRoom{font-size:10px;letter-spacing:.18em;color:#e5ebed;border-bottom:1px solid #ffffff24;padding-bottom:8px;margin-bottom:11px}.blackoutRoom b{margin-left:9px;font-size:14px}.blackoutMetricLabel{font-size:8px;letter-spacing:.25em;color:#aebbc2;font-weight:900}.blackoutPercent{font-size:54px;font-weight:300;line-height:.95;letter-spacing:-.06em}.blackoutPercent small{font-size:20px;color:#aeb9be;margin-left:3px}.blackoutProgress{height:2px;background:#ffffff22;margin:13px 0 7px;overflow:hidden}.blackoutProgress i{display:block;width:0;height:100%;background:#e7ecee;box-shadow:0 0 8px #ffffff88;transition:width .25s ease}.blackoutCount{font-size:9px;letter-spacing:.08em;color:#b2bdc2}
-.blackoutBottom{position:absolute;bottom:18px;min-width:150px;padding:9px 11px;border-left:2px solid #ffffff4a;background:linear-gradient(90deg,#090d10b8,transparent);backdrop-filter:blur(5px)}.blackoutBottom.left{left:18px}.blackoutBottom.right{right:18px;text-align:right;border-left:0;border-right:2px solid #ffffff4a;background:linear-gradient(270deg,#090d10b8,transparent)}.blackoutBottom>span{display:block;font-size:7px;letter-spacing:.22em;color:#95a4ab;font-weight:900}.blackoutBottom>b{display:block;margin-top:2px;font-size:20px;letter-spacing:.02em}.blackoutActions{display:flex;gap:5px;justify-content:flex-end;margin-top:5px}.blackoutActions button{pointer-events:auto;border:1px solid #ffffff1c;background:#ffffff0c;color:#dfe5e7;padding:5px 8px;font-size:7px;font-weight:900;letter-spacing:.08em}
-.glass{position:absolute}.left{left:16px}.right{right:16px}.label{font-size:9px;letter-spacing:.15em;font-weight:900;color:#75b9f7}.big{font-size:28px;font-weight:1000;letter-spacing:-.04em}.sub{font-size:11px;color:#8da1b7}
-#combo{position:absolute;left:50%;top:24px;transform:translateX(-50%) translateY(-5px);font-size:13px;font-weight:900;letter-spacing:.24em;opacity:0;transition:.18s;text-shadow:0 2px 12px #000}#combo.on{opacity:1;transform:translateX(-50%)}
-#msg{position:absolute;left:50%;bottom:9%;transform:translateX(-50%) translateY(10px);opacity:0;transition:.2s;padding:8px 15px;background:#0a0e11c9;border-left:2px solid #dfe6e9;font-size:10px;letter-spacing:.08em;font-weight:900;backdrop-filter:blur(6px)}#msg.on{opacity:1;transform:translateX(-50%)}
-#cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.7}#cross:before,#cross:after{content:"";position:absolute;background:#fff;border-radius:2px}#cross:before{width:14px;height:2px;left:2px;top:8px}#cross:after{width:2px;height:14px;left:8px;top:2px}
-#reset{pointer-events:auto;margin-top:6px;padding:7px 10px;border-radius:8px;color:#fff;background:#ffffff10;border:1px solid #ffffff1a;font-weight:800;font-size:10px}
+
+#hud{position:fixed;inset:0;z-index:35;pointer-events:none;color:#f5f7fb;font-family:Arial,Helvetica,sans-serif}
+.blackoutBrand{position:fixed;top:32px;left:40px;display:flex;gap:16px;align-items:center;font-size:19px;letter-spacing:4px;font-weight:800;z-index:4;text-shadow:none}
+.blackoutLogo{border:1px solid #758694;padding:11px 9px;width:auto;height:auto;min-width:0;display:inline-block;background:none;font-size:22px;letter-spacing:-1px;backdrop-filter:none;font-weight:800}
+.blackoutBrandText{display:block;line-height:1}.blackoutBrandText b{font-size:19px;letter-spacing:4px;font-weight:800}.blackoutBrandText span{display:block;font-size:10px;letter-spacing:2.5px;color:#95a6b6;margin-top:7px;font-weight:400}
+.blackoutStatus{position:fixed;right:40px;top:135px;width:150px;text-align:right;z-index:4;text-shadow:none}
+.blackoutRoom{position:fixed;right:40px;top:32px;width:auto;display:flex;align-items:center;gap:20px;font-size:11px;letter-spacing:2px;color:#f5f7fb;border:0;padding:0;margin:0}.blackoutRoom b{margin-left:0;font-size:19px;font-weight:400}
+.blackoutMetricLabel{font-size:10px;letter-spacing:2px;color:#c0cbd4;font-weight:400}
+.blackoutPercent{font-size:62px;display:block;font-weight:400;letter-spacing:-3px;line-height:1.08}.blackoutPercent span{font-weight:400}.blackoutPercent small{font-style:normal;font-size:25px;color:#a2b2c1;letter-spacing:0;margin-left:0}
+.blackoutProgress{height:2px;background:#ffffff30;margin:10px 0;overflow:hidden}.blackoutProgress i{display:block;width:0;height:100%;background:#b0ff80;box-shadow:none;transition:width .25s ease}
+.blackoutCount{font-size:11px;letter-spacing:0;color:#b9c6d3;text-transform:lowercase}
+.blackoutBottom{position:fixed;bottom:48px;min-width:0;padding:0;border:0;background:none;backdrop-filter:none;color:#c4ced8}.blackoutBottom.left{left:40px}.blackoutBottom.right{right:40px;text-align:right;border:0;background:none}.blackoutBottom>span{display:block;font-size:8px;letter-spacing:1.5px;color:#7f8f9f;font-weight:400}.blackoutBottom>b{display:block;margin-top:3px;font-size:13px;letter-spacing:.3px;font-weight:700}.blackoutActions{display:flex;gap:6px;justify-content:flex-end;margin-top:5px}.blackoutActions button{pointer-events:auto;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;padding:5px 8px;font-size:8px;font-weight:700;letter-spacing:1px}
+#combo{position:fixed;left:50%;top:20%;transform:translateX(-50%);font-size:13px;letter-spacing:3px;color:#b0ff80;font-weight:700;opacity:0;transition:.15s;text-shadow:none}#combo.on{opacity:1}
+#msg{position:fixed;top:20%;left:0;width:100%;text-align:center;transform:none;opacity:0;transition:.2s;padding:0;background:none;border:0;font-size:13px;letter-spacing:3px;color:#b0ff80;font-weight:400;backdrop-filter:none}#msg.on{opacity:1;transform:none}
+#cross{position:fixed;top:48%;left:50%;width:auto;height:auto;transform:none;opacity:1;color:#ffffff66;font-size:16px;line-height:1}#cross:before{content:"+";position:static;background:none;width:auto;height:auto}#cross:after{display:none}
+.blackoutFooter{position:fixed;bottom:25px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:1px;color:#c4ced8;pointer-events:none}.blackoutFooterBrand b{margin-left:20px;color:#7c8c9c}.blackoutDot{display:inline-block;background:#b0ff80;width:5px;height:5px;margin-right:8px;border-radius:50%}.blackoutFooterHint{font-size:11px;letter-spacing:.3px}
+
 #help{position:fixed;z-index:40;left:16px;bottom:16px;padding:12px 14px;border-radius:12px;background:#07101ae8;border:1px solid #77baff33;color:#b1c1d3;font-size:12px;line-height:1.55}
 #touch{position:fixed;inset:0;z-index:30;pointer-events:none;touch-action:none}
 .joy{position:absolute;left:max(18px,env(safe-area-inset-left));bottom:max(20px,env(safe-area-inset-bottom));width:126px;height:126px;border-radius:50%;border:1px solid #ffffff30;background:#07101a70;box-shadow:0 12px 35px #0007;backdrop-filter:blur(5px);pointer-events:auto;touch-action:none;z-index:3}
@@ -204,8 +210,8 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 .homeFeatures{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:20px 0}.homeFeature{padding:11px;border-radius:12px;border:1px solid #ffffff10;background:#ffffff06}.homeFeature b{display:block;font-size:12px;color:#fff;margin-bottom:3px}.homeFeature span{font-size:10px;color:#8fa8bd;line-height:1.35}
 .homeActions{display:flex;gap:10px;flex-wrap:wrap}.homePlay{padding:15px 34px;border-radius:13px;background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}.homeSecondary{padding:14px 20px;border-radius:13px;background:#ffffff0c;border:1px solid #ffffff18;color:#dcecff;font-weight:900}
 .viewChoice{margin:16px 0 18px}.viewChoiceLabel{font-size:10px;letter-spacing:.16em;color:#88bfe8;font-weight:900;margin-bottom:8px}.viewChoiceBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.viewChoiceBtns button{padding:12px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff16;color:#d7e8f7;font-weight:900}.viewChoiceBtns button.on{background:linear-gradient(135deg,#1473c7,#269ee7);border-color:#79ceff;color:#fff;box-shadow:0 0 22px #2c9fff44}
-#viewToggle{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:26;padding:10px 15px;border-radius:12px;background:#07101ad9;border:1px solid #65bdff55;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#exitHome{background:#6f2730!important;border-color:#a94a57!important;color:#fff!important}#exitHome:hover{background:#8b303c!important}
-#soundToggle{position:fixed;left:18px;top:118px;z-index:70;padding:10px 13px;border-radius:12px;background:#07101af2;border:1px solid #65bdff77;color:#fff;font-weight:900;box-shadow:0 12px 35px #0008;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}#homeGameBtn{position:fixed;right:18px;top:118px;z-index:80;padding:10px 14px;border-radius:12px;background:#762c35f2;border:1px solid #d96774aa;color:#fff;font-weight:1000;letter-spacing:.05em;box-shadow:0 12px 35px #0008;pointer-events:auto;touch-action:manipulation}
+#viewToggle{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:26;padding:7px 11px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:9px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto}#exitHome{background:#6f2730!important;border-color:#a94a57!important;color:#fff!important}#exitHome:hover{background:#8b303c!important}
+#soundToggle{position:fixed;left:40px;top:92px;z-index:70;padding:7px 9px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:8px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}#homeGameBtn{position:fixed;right:40px;top:92px;z-index:80;padding:7px 10px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:8px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto;touch-action:manipulation}
 @media(max-width:700px){.blackoutBrand{left:10px;top:10px;gap:8px}.blackoutLogo{width:40px;height:36px;font-size:14px}.blackoutBrandText b{font-size:13px}.blackoutBrandText span{font-size:6px}.blackoutStatus{right:10px;top:12px;width:115px}.blackoutRoom{font-size:6px;margin-bottom:6px;padding-bottom:5px}.blackoutMetricLabel{font-size:6px}.blackoutPercent{font-size:32px}.blackoutPercent small{font-size:12px}.blackoutBottom{bottom:8px;min-width:105px;padding:6px 8px}.blackoutBottom.left{left:8px}.blackoutBottom.right{right:8px}.blackoutBottom>b{font-size:13px}.blackoutBottom>span{font-size:5px}.blackoutActions{display:none}#viewToggle{bottom:max(94px,calc(env(safe-area-inset-bottom) + 88px));font-size:9px;padding:7px 10px}#soundToggle{left:10px;top:74px;font-size:8px;padding:7px 9px}#homeGameBtn{right:10px;top:74px;font-size:9px;padding:8px 10px}}
 .homeNote{margin-top:13px;color:#829bb1;font-size:11px;line-height:1.45}.offlineStatus{display:inline-flex;align-items:center;min-height:28px;margin-top:10px;padding:6px 10px;border-radius:999px;background:#ffffff07;border:1px solid #ffffff12;color:#8ea8bd;font-size:10px;font-weight:800;line-height:1.25}.offlineStatus[data-state="ready"]{color:#a8f5c7;border-color:#52df8b55;background:#0c392355}.offlineStatus[data-state="warning"]{color:#ffd38a;border-color:#ffb84a55;background:#4a2f0b55}.homeSecondary.offlineReady{color:#b8ffd4;border-color:#52df8b77;background:#0b382455}.homeSecondary:disabled{opacity:.65;cursor:wait}
 #objectivePopup{z-index:90;background:rgba(2,5,9,.84);backdrop-filter:blur(10px);overflow:auto;align-items:start;padding:10px}
@@ -362,7 +368,8 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     <div class="blackoutMetricLabel">DISTRUZIONE</div>
     <div class="blackoutPercent"><span id="destructionPct">0</span><small>%</small></div>
     <div class="blackoutProgress"><i id="destructionBar"></i></div>
-    <div class="blackoutCount"><span id="destroyed">0</span> / <span id="total">0</span> OGGETTI</div>
+    <div class="blackoutCount">0 oggetti distrutti</div>
+    <span id="destroyed" class="hidden">0</span><span id="total" class="hidden">0</span>
   </div>
 
   <div class="blackoutBottom left">
@@ -375,6 +382,10 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
   <div id="combo">COMBO x1</div>
   <div id="msg"></div><div id="cross"></div>
+  <div class="blackoutFooter">
+    <span class="blackoutFooterBrand"><i class="blackoutDot"></i>MEDIASET / MCR <b>01</b></span>
+    <span class="blackoutFooterHint">WASD movimento · Mouse visuale · Shift corsa · Spazio salto · Click colpisci · V visuale</span>
+  </div>
   <button id="viewToggle" class="hidden">🎮 TERZA PERSONA</button>
 </div>
 <button id="soundToggle" class="hidden">🔊 AUDIO ON</button>
@@ -3252,6 +3263,8 @@ function updateBlackoutHud(){
  if(destructionPctEl)destructionPctEl.textContent=String(THREE.MathUtils.clamp(pct,0,100));
  if(destructionBarEl)destructionBarEl.style.width=THREE.MathUtils.clamp(pct,0,100)+'%';
  if(totalEl)totalEl.textContent=String(total);
+ const countBox=q('.blackoutCount');
+ if(countBox)countBox.textContent=destroyed+' oggetti distrutti';
 }
 function activeBreakableCount(){
  return destruct.filter(d=>!d.editorOnly&&d.startVis!==false).length;
