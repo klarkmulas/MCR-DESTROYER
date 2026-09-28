@@ -1289,9 +1289,10 @@ function animateOffice(dt,speedRatio,run){
  };
  set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);
  set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
- set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);
+ set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);set(officeRig.lArm,'z',0);
  set(officeRig.rArm,'x',rArmX);set(officeRig.rArm,'y',rArmY);set(officeRig.rArm,'z',rArmZ);
- set(officeRig.lFore,'x',lForeX);set(officeRig.rFore,'x',rForeX);set(officeRig.rFore,'y',rForeY);set(officeRig.rFore,'z',rForeZ);
+ set(officeRig.lFore,'x',lForeX);set(officeRig.lFore,'y',0);set(officeRig.lFore,'z',0);
+ set(officeRig.rFore,'x',rForeX);set(officeRig.rFore,'y',rForeY);set(officeRig.rFore,'z',rForeZ);
  set(officeRig.torsoPivot,'x',torsoX);set(officeRig.torsoPivot,'y',torsoY);set(officeRig.torsoPivot,'z',torsoZ);
  set(officeRig.pelvis,'y',pelvisY);set(officeRig.pelvis,'z',pelvisZ);
  set(officeRig.head,'y',headY);set(officeRig.head,'x',headX);
@@ -1347,17 +1348,35 @@ function findMixamoBone(root,suffixes){
  }
  return exactBone||exactAny||suffixBone||suffixAny||null;
 }
+function applyRigPoseNow(rig){
+ if(!rig?.base||!rig?.pose)return;
+ for(const [obj,base] of rig.base){
+   if(!obj||!base)continue;
+   const p=rig.pose.get(obj)||{};
+   obj.rotation.set(
+     base.x+(p.x||0),
+     base.y+(p.y||0),
+     base.z+(p.z||0),
+     obj.rotation.order
+   );
+ }
+}
 function captureRigBase(rig){
  const base=new Map(),pose=new Map();
  for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lLeg','rLeg','lShin','rShin','rHand']){
    const o=rig[key];if(o&&!base.has(o))base.set(o,o.rotation.clone());
  }
- // Porta le braccia del bind-pose Mixamo dalla T-pose a una postura rilassata.
- if(rig.lArm)pose.set(rig.lArm,{z:1.16,x:.06});
- if(rig.rArm)pose.set(rig.rArm,{z:-1.16,x:.06});
- if(rig.lFore)pose.set(rig.lFore,{x:-.18});
- if(rig.rFore)pose.set(rig.rFore,{x:-.20});
+ // Da T-pose Mixamo a postura umana rilassata.
+ if(rig.lArm)pose.set(rig.lArm,{z:1.18,x:.04,y:-.03});
+ if(rig.rArm)pose.set(rig.rArm,{z:-1.02,x:.08,y:.04});
+ if(rig.lFore)pose.set(rig.lFore,{x:-.22,y:.02,z:-.04});
+ if(rig.rFore)pose.set(rig.rFore,{x:-.38,y:-.04,z:.05});
+ if(rig.lLeg)pose.set(rig.lLeg,{z:.015});
+ if(rig.rLeg)pose.set(rig.rLeg,{z:-.015});
+ if(rig.lShin)pose.set(rig.lShin,{x:.015});
+ if(rig.rShin)pose.set(rig.rShin,{x:.015});
  rig.base=base;rig.pose=pose;rig.custom=true;
+ applyRigPoseNow(rig);
  return rig;
 }
 function setFallbackCharacter(){
@@ -1448,6 +1467,8 @@ async function loadCustomCharacterModel(url,formatHint=''){
 
    const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand}=rigMap;
    officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand});
+   applyRigPoseNow(officeRig);
+   model.updateMatrixWorld(true);
    if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
    if(batPivot.parent!==player)player.add(batPivot);
    customAvatarRoot=holder;
