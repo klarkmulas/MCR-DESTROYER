@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.27.5';
+ const PWA_VERSION='2026.09.28.1';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -79,7 +79,9 @@
  });
 
  if('serviceWorker' in navigator){
-   navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(err=>console.warn('Service worker non registrato',err));
+   navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).then(reg=>{
+     reg.update().catch(()=>{});
+   }).catch(err=>console.warn('Service worker non registrato',err));
    navigator.serviceWorker.addEventListener('message',event=>{
      const d=event.data||{};
      if(d.type==='OFFLINE_PROGRESS'){
