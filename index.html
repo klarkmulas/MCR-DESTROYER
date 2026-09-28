@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.9';
+ const PWA_VERSION='2026.09.28.10';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1168,10 +1168,14 @@ function applySavedLayout(){
   const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
   if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
   if(saved.characterStyles){mergeCharacterStyles(saved.characterStyles);pendingCharacterStyles=saved.characterStyles;queueMicrotask(applyAllCharacterStyles)}
+  if(saved.playerModelUrl){
+    expectedPlayerModelUrl=saved.playerModelUrl;
+    if(saved.playerModelUrl!==playerModelUrl&&saved.playerModelUrl!==customAvatarLoadingUrl)loadCustomCharacterModel(saved.playerModelUrl);
+  }
   if(Array.isArray(saved.items))applyStableLayoutItems(saved.items);
  }catch(e){console.warn('Layout non caricato',e)}
 }
-if(!loadLayoutFromUrl())loadGlobalLayout();
+queueMicrotask(()=>{if(!loadLayoutFromUrl())loadGlobalLayout()});
 
 
 function fallbackHuman(){
@@ -1313,6 +1317,12 @@ fallbackHuman();
 const fallbackOfficeRig=officeRig;
 const fallbackBodyRoot=avatar.children[0]||null;
 let playerModelUrl=null,customAvatarRoot=null,customAvatarLoadingUrl=null;
+let expectedPlayerModelUrl=null;
+try{
+ const cachedBootstrap=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');
+ expectedPlayerModelUrl=cachedBootstrap?.playerModelUrl||null;
+}catch(e){}
+if(expectedPlayerModelUrl&&fallbackBodyRoot)fallbackBodyRoot.visible=false;
 const fbxLoader=new FBXLoader();
 const gltfCharacterLoader=new GLTFLoader();
 const _customBatPos=new THREE.Vector3(),_customBatWorldQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_customBatQ=new THREE.Quaternion();
@@ -1419,7 +1429,9 @@ function setFallbackCharacter(){
  if(fallbackBodyRoot)fallbackBodyRoot.visible=true;
  if(batPivot.parent!==fallbackOfficeRig.rHand)fallbackOfficeRig.rHand.add(batPivot);
  batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);batPivot.scale.set(1,1,1);batPivot.visible=true;
- playerModelUrl=null;
+ playerModelUrl=null;expectedPlayerModelUrl=null;customAvatarLoadingUrl=null;
+ if(fallbackBodyRoot)fallbackBodyRoot.visible=true;
+ syncCharacterViewVisibility();
  queueMicrotask(()=>applyCharacterStyleToPlayer());
  if(characterStatus)characterStatus.textContent='Personaggio originale attivo.';
 }
@@ -1478,12 +1490,34 @@ function prepareCustomCharacterMaterials(model){
  });
 }
 const _customHeadWorld=new THREE.Vector3(),_customFpForward=new THREE.Vector3();
+function customCharacterRequested(){return !!(expectedPlayerModelUrl||playerModelUrl||customAvatarLoadingUrl||customAvatarRoot)}
 function useCustomFirstPerson(){return !!(officeRig?.custom&&customAvatarRoot)}
+function syncCharacterViewVisibility(){
+ const customReady=useCustomFirstPerson(),customRequested=customCharacterRequested();
+ if(fallbackBodyRoot)fallbackBodyRoot.visible=!customRequested;
+ if(customAvatarRoot)customAvatarRoot.visible=true;
+ if(editorMode){
+   avatar.visible=true;fpView.visible=false;return;
+ }
+ if(!started){
+   avatar.visible=false;fpView.visible=false;return;
+ }
+ if(cameraMode==='third'){
+   avatar.visible=customReady||!customRequested;
+   fpView.visible=false;
+ }else{
+   avatar.visible=customReady;
+   fpView.visible=!customRequested;
+ }
+}
 
 async function loadCustomCharacterModel(url,formatHint=''){
  if(!url){setFallbackCharacter();return false}
+ expectedPlayerModelUrl=url;
+ if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
  if(customAvatarLoadingUrl===url)return false;
  customAvatarLoadingUrl=url;
+ syncCharacterViewVisibility();
  if(characterStatus)characterStatus.textContent='Caricamento personaggio umano…';
  try{
    const clean=(url.split('?')[0]||'').toLowerCase();
@@ -1550,8 +1584,10 @@ async function loadCustomCharacterModel(url,formatHint=''){
    if(batPivot.parent!==player)player.add(batPivot);
    customAvatarRoot=holder;
    playerModelUrl=url;
+   expectedPlayerModelUrl=url;
    customBatFollowHand();
    applyCharacterStyleToPlayer();
+   syncCharacterViewVisibility();
    if(characterStatus)characterStatus.textContent='✓ Personaggio caricato · rig Mixamo riconosciuto.';
    show('PERSONAGGIO UMANO CARICATO');
    return true;
@@ -2574,9 +2610,9 @@ function updateEditorCamera(dt){
 
 function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
- editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));fpView.visible=started&&!on&&cameraMode==='first'&&!useCustomFirstPerson();q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
+ editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);syncCharacterViewVisibility();q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;avatar.visible=true;initEditorCamera(true);openEditorSection(currentEditorSection||'home',false);show('EDITOR SALA ATTIVO');}
- else{editDragging=false;editorTransformDrag=null;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);avatar.visible=started&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));fpView.visible=started&&cameraMode==='first'&&!useCustomFirstPerson();q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
+ else{editDragging=false;editorTransformDrag=null;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);syncCharacterViewVisibility();q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
 function selectedMonitorTargets(){
  const list=[...selectedEdits].filter(d=>d?.type==='monitor'&&d.o?.visible&&!d.dead);
@@ -2731,8 +2767,12 @@ function applyLayoutData(data){
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
  if(data.characterStyles){mergeCharacterStyles(data.characterStyles);pendingCharacterStyles=data.characterStyles;queueMicrotask(applyAllCharacterStyles)}
  if(Array.isArray(data.items))applyStableLayoutItems(data.items);
- if(data.playerModelUrl && data.playerModelUrl!==playerModelUrl)loadCustomCharacterModel(data.playerModelUrl);
- else if(!data.playerModelUrl && playerModelUrl)setFallbackCharacter();
+ if(data.playerModelUrl){
+   expectedPlayerModelUrl=data.playerModelUrl;
+   if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
+   syncCharacterViewVisibility();
+   if(data.playerModelUrl!==playerModelUrl&&data.playerModelUrl!==customAvatarLoadingUrl)loadCustomCharacterModel(data.playerModelUrl);
+ }else if(!data.playerModelUrl && (playerModelUrl||expectedPlayerModelUrl))setFallbackCharacter();
 }
 function loadLayoutFromUrl(){
  try{const raw=new URLSearchParams(location.search).get('layout');if(!raw)return false;const data=JSON.parse(decodeURIComponent(escape(atob(raw))));applyLayoutData(data);queueMicrotask(restoreRuntimeSession);return true}catch(e){console.warn('Layout URL non valido',e);return false}
@@ -2829,8 +2869,10 @@ function restoreRuntimeSession(){
 addEventListener('pagehide',()=>{saveRuntimeSession();analyticsHeartbeat(false)});
 addEventListener('beforeunload',saveRuntimeSession);
 async function loadGlobalLayout(){
+ // Avvia subito la copia locale: evita il flash del personaggio fallback
+ // mentre aspettiamo Supabase.
+ applySavedLayout();
  if(!navigator.onLine){
-  applySavedLayout();
   restoreRuntimeSession();
   return;
  }
@@ -3165,8 +3207,7 @@ function setCameraMode(mode,announce=true){
  }else{
    yaw=thirdPersonYaw;
  }
- avatar.visible=started&&!editorMode&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));
- fpView.visible=started&&cameraMode==='first'&&!editorMode&&!useCustomFirstPerson();
+ syncCharacterViewVisibility();
  q('#chooseFirst')?.classList.toggle('on',cameraMode==='first');
  q('#chooseThird')?.classList.toggle('on',cameraMode==='third');
  const vt=q('#viewToggle');if(vt){vt.textContent=cameraMode==='first'?'🎮 TERZA PERSONA':'👁 PRIMA PERSONA';vt.classList.toggle('hidden',!started||editorMode)}
@@ -3224,7 +3265,7 @@ function updateCam(dt){
    camera.position.lerp(safeDesired,camSmooth);
    camera.lookAt(thirdCamLook);
 
-   avatar.visible=started&&!editorMode;fpView.visible=false;
+   avatar.visible=started&&!editorMode&&(useCustomFirstPerson()||!customCharacterRequested());fpView.visible=false;
  }else{
    const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .016 : .009)*ratio:0;
    if(useCustomFirstPerson()){
@@ -3238,7 +3279,8 @@ function updateCam(dt){
      fpView.visible=false;
    }else{
      camera.position.set(player.position.x,player.position.y+1.67+headBob,player.position.z);
-     avatar.visible=false;fpView.visible=started&&!editorMode;
+     avatar.visible=false;
+     fpView.visible=started&&!editorMode&&!customCharacterRequested();
    }
    camera.rotation.order='YXZ';
    camera.rotation.y=yaw+recoilYaw;
