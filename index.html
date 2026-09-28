@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.8';
+ const PWA_VERSION='2026.09.28.9';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -674,7 +674,7 @@ const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacter
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
 const npcModelPanel=q('#npcModelPanel'),npcHeight=q('#npcHeight'),npcBuild=q('#npcBuild'),npcShoulders=q('#npcShoulders'),npcHeadSize=q('#npcHeadSize'),npcArms=q('#npcArms'),npcLegs=q('#npcLegs'),npcTorsoDepth=q('#npcTorsoDepth');
-const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null};
+const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null,colorsEdited:false};
 let characterStyleState={player:{...DEFAULT_PLAYER_STYLE},npcs:{}};
 let pendingCharacterStyles=null;
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
@@ -1042,6 +1042,7 @@ function buildRoom(){
 }
 scene.add(new THREE.AmbientLight(0xaebdcd,.52));
 scene.add(new THREE.HemisphereLight(0xb8cfe6,0x2c1b11,.76));
+const playerFillLight=new THREE.PointLight(0xddeeff,2.4,3.2,2);playerFillLight.position.set(0,1.75,.85);player.add(playerFillLight);
 const sun=new THREE.DirectionalLight(0xd5e1ed,1.15);sun.position.set(4,9,3);sun.castShadow=false;scene.add(sun);
 for(const x of [-8,-2,4,10]){let l=new THREE.PointLight(0xffd9ad,9,11,2);l.position.set(x,4.55,1);scene.add(l)}
 for(const x of [-4,0,4]){let l=new THREE.PointLight(0x5aa8ef,8,10,2);l.position.set(x,3.2,-6.7);scene.add(l)}
@@ -1438,6 +1439,47 @@ function customBatFollowHand(){
  batPivot.scale.set(.76,.76,.76);
 }
 
+
+function customMaterialFallbackColor(name=''){
+ const n=name.toLowerCase();
+ if(/skin|face|head|body/.test(n))return 0xc79a7d;
+ if(/hair|beard|brow/.test(n))return 0x30251f;
+ if(/shirt|top|jacket|hood|sweater|tee/.test(n))return 0x596571;
+ if(/pants|bottom|trouser|jean/.test(n))return 0x2b3038;
+ if(/shoe|boot|sneaker/.test(n))return 0x25292e;
+ return 0x8b9298;
+}
+function prepareCustomCharacterMaterials(model){
+ model.traverse(o=>{
+   if(!(o.isMesh||o.isSkinnedMesh)||!o.material)return;
+   const mats=Array.isArray(o.material)?o.material:[o.material];
+   const prepared=mats.map(src=>{
+     const m=src.clone();
+     const name=((o.name||'')+' '+(m.name||'')).toLowerCase();
+     if(m.map){
+       m.map.colorSpace=THREE.SRGBColorSpace;
+       m.map.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy?.()||4);
+       if(m.color)m.color.set(0xffffff); // non moltiplicare la texture per un colore scuro
+     }else if(m.color){
+       const lum=.2126*m.color.r+.7152*m.color.g+.0722*m.color.b;
+       if(lum<.08)m.color.setHex(customMaterialFallbackColor(name));
+     }
+     if('roughness' in m)m.roughness=Math.max(.48,Number(m.roughness)||.65);
+     if('metalness' in m)m.metalness=Math.min(.12,Number(m.metalness)||0);
+     if(m.emissive){
+       m.emissive.setHex(0x0d0f12);
+       if('emissiveIntensity' in m)m.emissiveIntensity=.16;
+     }
+     m.side=THREE.FrontSide;
+     m.needsUpdate=true;
+     return m;
+   });
+   o.material=Array.isArray(o.material)?prepared:prepared[0];
+ });
+}
+const _customHeadWorld=new THREE.Vector3(),_customFpForward=new THREE.Vector3();
+function useCustomFirstPerson(){return !!(officeRig?.custom&&customAvatarRoot)}
+
 async function loadCustomCharacterModel(url,formatHint=''){
  if(!url){setFallbackCharacter();return false}
  if(customAvatarLoadingUrl===url)return false;
@@ -1471,10 +1513,9 @@ async function loadCustomCharacterModel(url,formatHint=''){
      if(o.isMesh||o.isSkinnedMesh){
        o.castShadow=true;o.receiveShadow=true;o.frustumCulled=true;
        if(o.isSkinnedMesh)o.normalizeSkinWeights?.();
-       const mats=Array.isArray(o.material)?o.material:[o.material];
-       for(const m of mats){if(m){m.needsUpdate=true;if(m.map)m.map.colorSpace=THREE.SRGBColorSpace}}
      }
    });
+   prepareCustomCharacterMaterials(model);
 
    const rigMap={
      hips:findMixamoBone(model,['Hips']),
@@ -1657,16 +1698,20 @@ function customMeshPart(mesh){
  if(/shoe|boot|sneaker|footwear/.test(s))return 'shoes';
  if(/bottom|pants|trouser|jean|short/.test(s))return 'pants';
  if(/top|shirt|jacket|hood|sweater|tshirt|tee/.test(s))return 'shirt';
- if(/body|skin|face|head/.test(s))return 'skin';
+ if(/skin|face|head/.test(s))return 'skin';
  return null;
 }
 function playerStyleMeshes(style){
  if(officeRig?.custom&&customAvatarRoot){
-   customAvatarRoot.traverse(o=>{
-     if(!(o.isMesh||o.isSkinnedMesh)||!o.material)return;
-     const part=customMeshPart(o);
-     if(part&&style[part])setMaterialColor(o.material,style[part]);
-   });
+   // Mantieni le texture originali del modello finché l'utente non sceglie
+   // esplicitamente di cambiare i colori nell'editor.
+   if(style?.colorsEdited){
+     customAvatarRoot.traverse(o=>{
+       if(!(o.isMesh||o.isSkinnedMesh)||!o.material)return;
+       const part=customMeshPart(o);
+       if(part&&style[part])setMaterialColor(o.material,style[part]);
+     });
+   }
  }else if(officeRig?.materials){
    setMaterialColor(officeRig.materials.skin,style.skin);
    setMaterialColor(officeRig.materials.shirt,style.shirt);
@@ -1786,7 +1831,7 @@ function applyCharacterColorsFromUI(){
    characterStyleState.npcs[n.id]={...n.baseStyle,...(characterStyleState.npcs[n.id]||{}),...style};
    applyCharacterStyleToNpc(n);
  }else{
-   characterStyleState.player={...characterStyleState.player,...style};
+   characterStyleState.player={...characterStyleState.player,...style,colorsEdited:true};
    applyCharacterStyleToPlayer();
  }
  syncCharacterEditorUI();show('COLORI PERSONAGGIO APPLICATI');
@@ -1794,7 +1839,11 @@ function applyCharacterColorsFromUI(){
 function resetSelectedCharacterStyle(){
  const n=selectedCharacterNpc();
  if(n){delete characterStyleState.npcs[n.id];applyCharacterStyleToNpc(n);applyNpcBodyShape(n,{height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1})}
- else{characterStyleState.player={...DEFAULT_PLAYER_STYLE};applyCharacterStyleToPlayer()}
+ else{
+   characterStyleState.player={...DEFAULT_PLAYER_STYLE};
+   if(playerModelUrl&&officeRig?.custom)loadCustomCharacterModel(playerModelUrl);
+   else applyCharacterStyleToPlayer();
+ }
  syncCharacterEditorUI();show('ASPETTO PERSONAGGIO RIPRISTINATO');
 }
 function removeCharacterImage(kind){
@@ -2525,9 +2574,9 @@ function updateEditorCamera(dt){
 
 function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
- editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&cameraMode==='third';fpView.visible=started&&!on&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
+ editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));fpView.visible=started&&!on&&cameraMode==='first'&&!useCustomFirstPerson();q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
  if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;avatar.visible=true;initEditorCamera(true);openEditorSection(currentEditorSection||'home',false);show('EDITOR SALA ATTIVO');}
- else{editDragging=false;editorTransformDrag=null;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
+ else{editDragging=false;editorTransformDrag=null;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);avatar.visible=started&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));fpView.visible=started&&cameraMode==='first'&&!useCustomFirstPerson();q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
 function selectedMonitorTargets(){
  const list=[...selectedEdits].filter(d=>d?.type==='monitor'&&d.o?.visible&&!d.dead);
@@ -3116,8 +3165,8 @@ function setCameraMode(mode,announce=true){
  }else{
    yaw=thirdPersonYaw;
  }
- avatar.visible=started&&cameraMode==='third'&&!editorMode;
- fpView.visible=started&&cameraMode==='first'&&!editorMode;
+ avatar.visible=started&&!editorMode&&(cameraMode==='third'||(cameraMode==='first'&&useCustomFirstPerson()));
+ fpView.visible=started&&cameraMode==='first'&&!editorMode&&!useCustomFirstPerson();
  q('#chooseFirst')?.classList.toggle('on',cameraMode==='first');
  q('#chooseThird')?.classList.toggle('on',cameraMode==='third');
  const vt=q('#viewToggle');if(vt){vt.textContent=cameraMode==='first'?'🎮 TERZA PERSONA':'👁 PRIMA PERSONA';vt.classList.toggle('hidden',!started||editorMode)}
@@ -3178,12 +3227,23 @@ function updateCam(dt){
    avatar.visible=started&&!editorMode;fpView.visible=false;
  }else{
    const headBob=grounded&&speed>.05?Math.sin(fpWalk*2)*(run ? .016 : .009)*ratio:0;
-   camera.position.set(player.position.x,player.position.y+1.67+headBob,player.position.z);
+   if(useCustomFirstPerson()){
+     animateOffice(dt,ratio,run);
+     officeRig.head.updateWorldMatrix(true,false);
+     officeRig.head.getWorldPosition(_customHeadWorld);
+     _customFpForward.set(-Math.sin(yaw),0,-Math.cos(yaw)).normalize();
+     camera.position.copy(_customHeadWorld).addScaledVector(_customFpForward,.16);
+     camera.position.y+=.005+headBob*.25;
+     avatar.visible=started&&!editorMode;
+     fpView.visible=false;
+   }else{
+     camera.position.set(player.position.x,player.position.y+1.67+headBob,player.position.z);
+     avatar.visible=false;fpView.visible=started&&!editorMode;
+   }
    camera.rotation.order='YXZ';
    camera.rotation.y=yaw+recoilYaw;
    camera.rotation.x=pitch-recoilPitch;
    camera.rotation.z=(grounded&&speed>.05?Math.sin(fpWalk)*.0035*ratio:0)+recoilRoll;
-   avatar.visible=false;fpView.visible=started&&!editorMode;
  }
  if(shake>0){shake=Math.max(0,shake-dt);camera.position.x+=(Math.random()-.5)*shake*.06;camera.position.y+=(Math.random()-.5)*shake*.05}
  recoilPitch=THREE.MathUtils.lerp(recoilPitch,0,1-Math.exp(-18*dt));
