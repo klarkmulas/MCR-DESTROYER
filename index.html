@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.12';
+ const PWA_VERSION='2026.09.28.13';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1081,7 +1081,12 @@ for(const x of [-8,-2,4,10]){let l=new THREE.PointLight(0xffd9ad,9,11,2);l.posit
 for(const x of [-4,0,4]){let l=new THREE.PointLight(0x5aa8ef,8,10,2);l.position.set(x,3.2,-6.7);scene.add(l)}
 buildRoom();totalEl.textContent=activeBreakableCount();
 const baseObjectCount=destruct.length;
-destruct.forEach((d,i)=>{d.editId=i;d.sourceIndex=i;d.o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=d.o})});
+let stableObjectSourceIndex=0,stableEditorSurfaceIndex=-1;
+destruct.forEach((d,i)=>{
+ d.editId=i;
+ d.sourceIndex=d.editorOnly?stableEditorSurfaceIndex--:stableObjectSourceIndex++;
+ d.o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=d.o});
+});
 
 function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  if(!source?.o)return null;
@@ -1163,8 +1168,22 @@ function applyOneLayoutState(d,s){
  }
  if(d.customKind||s.styleColor||s.textureUrl||s.materialPreset)applyAppearanceState(d,s);
 }
+function clearAppliedLayoutExtras(){
+ if(destruct.length<=baseObjectCount)return;
+ const extras=destruct.slice(baseObjectCount),roots=new Set(extras.map(d=>d?.o).filter(Boolean));
+ for(const d of extras){
+   try{if(d?.type==='monitor')stopMonitorVideo(d,false)}catch(e){}
+   if(d?.o)scene.remove(d.o);
+ }
+ destruct.length=baseObjectCount;
+ for(let i=obstacles.length-1;i>=0;i--)if(roots.has(obstacles[i]?.o))obstacles.splice(i,1);
+ for(let i=dynamics.length-1;i>=0;i--)if(roots.has(dynamics[i]?.o))dynamics.splice(i,1);
+ for(let i=impactBodies.length-1;i>=0;i--)if(roots.has(impactBodies[i]?.o))impactBodies.splice(i,1);
+ if(selectedEdit&&roots.has(selectedEdit.o)){selectedEdit=null;selectedEdits.clear()}
+}
 function applyStableLayoutItems(items){
  if(!Array.isArray(items))return;
+ clearAppliedLayoutExtras();
  const base=destruct.slice(0,baseObjectCount);
  const usedBase=new Set();
  for(const s of items){
@@ -3012,10 +3031,8 @@ function restoreRuntimeSession(){
 addEventListener('pagehide',()=>{saveRuntimeSession();analyticsHeartbeat(false)});
 addEventListener('beforeunload',saveRuntimeSession);
 async function loadGlobalLayout(){
- // Avvia subito la copia locale: evita il flash del personaggio fallback
- // mentre aspettiamo Supabase.
- applySavedLayout();
  if(!navigator.onLine){
+  applySavedLayout();
   restoreRuntimeSession();
   return;
  }
