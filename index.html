@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.4';
+ const PWA_VERSION='2026.09.28.5';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -161,7 +161,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}
 .editorSection{display:none;padding:14px 14px 90px}.editorSection.active{display:block}.editorSectionHead{display:flex;gap:10px;align-items:center;margin:2px 0 12px}.editorSectionHead>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#176bb025;border:1px solid #51baff33;font-size:20px}.editorSectionHead h4{margin:0;font-size:14px;color:#f3f9ff}.editorSectionHead p{margin:3px 0 0;font-size:9px;color:#7f9ab1}
 .editorWelcome{text-align:center;padding:18px 8px 12px}.editorWelcomeIcon{font-size:38px}.editorWelcome h4{font-size:18px;margin:7px 0}.editorWelcome p{font-size:10px;color:#88a0b5;line-height:1.45;max-width:390px;margin:0 auto}.editorChoiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.editorChoiceGrid button{min-height:92px;text-align:left;padding:12px;border-radius:12px;border:1px solid #ffffff12;background:#0f1d2a;color:white}.editorChoiceGrid button:first-child{grid-column:1/-1}.editorChoiceGrid button:hover{background:#142b3e;border-color:#4db8ff44}.editorChoiceGrid b{display:block;font-size:11px;margin-bottom:5px}.editorChoiceGrid span{font-size:9px;color:#829bb0;line-height:1.35}.editorTip{margin-top:10px;padding:9px 10px;border-radius:9px;background:#176bb014;color:#86aac5;font-size:9px;line-height:1.4}
-.editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
+.editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorDirectHint{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 10px;padding:9px 10px;border-radius:10px;background:#0c1e2c;border:1px solid #4cbaff22;color:#8ca9bf;font-size:9px;line-height:1.35}.editorDirectHint b{color:#d7efff}.gizmoScaleDot,.gizmoRotateDot{display:inline-block;width:9px;height:9px;border-radius:3px;background:#45c9ff;box-shadow:0 0 8px #45c9ff88}.gizmoRotateDot{border-radius:50%;background:#ffab3d;box-shadow:0 0 8px #ffab3d88}.npcModelPanel{margin:12px 0 4px;padding:10px;border-radius:10px;background:#0b1925;border:1px solid #ffffff10}.npcShapeHint{font-size:9px;color:#7895aa;line-height:1.35;margin-bottom:8px}.npcShapeRow{display:grid;grid-template-columns:82px 1fr 42px;gap:7px;align-items:center;margin:7px 0}.npcShapeRow label{font-size:9px;font-weight:800;color:#a3bdd1}.npcShapeRow input{width:100%}.npcShapeRow span{font-size:9px;text-align:right;color:#fff}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
 .editorSaveBar{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1.35fr;gap:7px;padding:10px 14px 14px;background:linear-gradient(0deg,#08111b 75%,#08111be8 90%,transparent)}.editorSaveBar button{padding:11px;border-radius:10px;border:1px solid #ffffff16;background:#162839;color:#eaf6ff;font-size:10px;font-weight:900}.editorSaveBar .save{background:#176bb0}
 body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.characterColorGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:7px 0}.characterColorGrid label{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:7px;padding:7px 8px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05}.characterColorGrid span{font-size:9px;color:#9eb9cf;font-weight:800}.characterColorGrid input[type=color]{width:42px;height:30px;padding:1px;border:0;background:transparent}.characterBox select,#characterEditorPro select,#characterEditorPro input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
@@ -478,6 +478,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
   <section class="editorSection" data-editor-section="objects">
     <div class="editorSectionHead"><span>🪑</span><div><h4>OGGETTI</h4><p>Posizione, rotazione e dimensioni dell'elemento selezionato.</p></div></div>
+    <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Trascina gli angoli azzurri</b> per ridimensionare · <span class="gizmoRotateDot"></span><b>trascina l'anello arancione</b> per ruotare · trascina il corpo per spostare.</div>
 
     <div class="editorCard">
       <div class="editorCardTitle">TRASFORMA</div>
@@ -535,6 +536,22 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
         <label><span>Scarpe</span><input id="charShoesColor" type="color" value="#202329"></label>
       </div>
       <button id="applyCharacterColors" class="editorPrimaryWide">APPLICA COLORI</button>
+
+      <div id="npcModelPanel" class="npcModelPanel hidden">
+        <div class="editorSubTitle">MODELLA NPC</div>
+        <div class="npcShapeHint">Regola le proporzioni del corpo. Le modifiche vengono applicate in tempo reale.</div>
+        <div class="npcShapeRow"><label>Altezza</label><input id="npcHeight" type="range" min="0.85" max="1.20" step="0.01" value="1"><span id="npcHeightV">100%</span></div>
+        <div class="npcShapeRow"><label>Corporatura</label><input id="npcBuild" type="range" min="0.78" max="1.35" step="0.01" value="1"><span id="npcBuildV">100%</span></div>
+        <div class="npcShapeRow"><label>Spalle</label><input id="npcShoulders" type="range" min="0.82" max="1.30" step="0.01" value="1"><span id="npcShouldersV">100%</span></div>
+        <div class="npcShapeRow"><label>Testa</label><input id="npcHeadSize" type="range" min="0.85" max="1.18" step="0.01" value="1"><span id="npcHeadSizeV">100%</span></div>
+        <div class="npcShapeRow"><label>Braccia</label><input id="npcArms" type="range" min="0.86" max="1.18" step="0.01" value="1"><span id="npcArmsV">100%</span></div>
+        <div class="npcShapeRow"><label>Gambe</label><input id="npcLegs" type="range" min="0.86" max="1.18" step="0.01" value="1"><span id="npcLegsV">100%</span></div>
+        <div class="npcShapeRow"><label>Busto</label><input id="npcTorsoDepth" type="range" min="0.78" max="1.35" step="0.01" value="1"><span id="npcTorsoDepthV">100%</span></div>
+        <div class="structureGrid">
+          <button id="npcHumanPreset">PROPORZIONI UMANE</button>
+          <button id="npcResetShape">RESET CORPO</button>
+        </div>
+      </div>
 
       <div class="editorSubTitle">FOTO SUL VISO</div>
       <input id="facePhotoFile" type="file" accept="image/png,image/jpeg,image/webp">
@@ -656,6 +673,7 @@ const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q(
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
+const npcModelPanel=q('#npcModelPanel'),npcHeight=q('#npcHeight'),npcBuild=q('#npcBuild'),npcShoulders=q('#npcShoulders'),npcHeadSize=q('#npcHeadSize'),npcArms=q('#npcArms'),npcLegs=q('#npcLegs'),npcTorsoDepth=q('#npcTorsoDepth');
 const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null};
 let characterStyleState={player:{...DEFAULT_PLAYER_STYLE},npcs:{}};
 let pendingCharacterStyles=null;
@@ -753,6 +771,8 @@ const floorMat=new THREE.MeshPhysicalMaterial({color:0x301c16,roughness:.25,meta
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xacc5d7,transparent:true,opacity:.15,roughness:.025,transmission:.5,thickness:.05});
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
 const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
+let editorGizmoRoot=null,editorGizmoHandles=[],editorTransformDrag=null;
+const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3();
 
 let footstepTimer=0,audioEnabled=localStorage.getItem('mcrAudioEnabled')!=='0';
 const sfxStep=new Audio('./sfx_step.wav?v=2');
@@ -1509,6 +1529,7 @@ function syncCharacterEditorUI(){
  if(characterEditStatus){
    characterEditStatus.textContent='Modifica '+(selectedCharacterNpc()?characterLabel(selectedCharacterNpc()):'il giocatore principale')+'. Foto viso: '+(s.faceUrl?'presente':'nessuna')+' · immagine vestito: '+(s.clothingUrl?'presente':'nessuna')+'.';
  }
+ updateNpcShapeUI();
 }
 function setMaterialColor(material,color){
  if(!material||!color)return;
@@ -1602,6 +1623,7 @@ function applyCharacterStyleToNpc(n){
  setMaterialColor(n.materials?.pants,s.pants);
  setMaterialColor(n.materials?.hair,s.hair);
  setMaterialColor(n.materials?.shoe,s.shoes);
+ applyNpcBodyShape(n,s.body||null);
  setNpcOverlay(n,'face',s.faceUrl);setNpcOverlay(n,'clothing',s.clothingUrl);
 }
 function applyAllCharacterStyles(){
@@ -1657,7 +1679,7 @@ function applyCharacterColorsFromUI(){
 }
 function resetSelectedCharacterStyle(){
  const n=selectedCharacterNpc();
- if(n){delete characterStyleState.npcs[n.id];applyCharacterStyleToNpc(n)}
+ if(n){delete characterStyleState.npcs[n.id];applyCharacterStyleToNpc(n);applyNpcBodyShape(n,{height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1})}
  else{characterStyleState.player={...DEFAULT_PLAYER_STYLE};applyCharacterStyleToPlayer()}
  syncCharacterEditorUI();show('ASPETTO PERSONAGGIO RIPRISTINATO');
 }
@@ -1738,6 +1760,54 @@ function stopAmbientAlarm(){
  clearTimeout(ambientAlarmTimer);
  ambientAlarmTimer=null;
 }
+
+function captureNpcModelBase(n){
+ if(!n)return;
+ const partState=o=>o?{position:o.position.clone(),scale:o.scale.clone()}:null;
+ n.modelBase={
+   body:partState(n.body),pelvis:partState(n.pelvis),torso:partState(n.torso),head:partState(n.head),
+   lArm:partState(n.lArm),rArm:partState(n.rArm),lLeg:partState(n.lLeg),rLeg:partState(n.rLeg),
+   headParts:(n.headParts||[]).map(o=>({o,position:o.position.clone(),scale:o.scale.clone()}))
+ };
+}
+function npcBodyShape(n){
+ const saved=characterStyleState.npcs?.[n.id]?.body||{};
+ return {height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1,...saved};
+}
+function applyNpcBodyShape(n,bodyOverride=null){
+ if(!n?.modelBase)return;
+ const b={...npcBodyShape(n),...(bodyOverride||{})},base=n.modelBase;
+ n.body.scale.copy(base.body.scale);n.body.scale.y*=b.height;
+ n.pelvis.scale.copy(base.pelvis.scale);n.pelvis.scale.x*=b.build;n.pelvis.scale.z*=.92+b.build*.08;
+ n.torso.scale.copy(base.torso.scale);n.torso.scale.x*=b.build;n.torso.scale.z*=b.torsoDepth;
+ const limbWidth=Math.sqrt(Math.max(.6,b.build));
+ for(const arm of [n.lArm,n.rArm]){arm.scale.set(limbWidth,b.arms,limbWidth)}
+ for(const leg of [n.lLeg,n.rLeg]){leg.scale.set(limbWidth,b.legs,limbWidth)}
+ n.lArm.position.copy(base.lArm.position);n.rArm.position.copy(base.rArm.position);
+ n.lArm.position.x*=b.shoulders;n.rArm.position.x*=b.shoulders;
+ n.lLeg.position.copy(base.lLeg.position);n.rLeg.position.copy(base.rLeg.position);
+ for(const p of base.headParts){
+   const centerY=.93,centerZ=0;
+   p.o.scale.copy(p.scale).multiplyScalar(b.head);
+   p.o.position.set(p.position.x*b.head,centerY+(p.position.y-centerY)*b.head,centerZ+(p.position.z-centerZ)*b.head);
+ }
+ n.baseShape={height:b.height,build:b.build,shoulders:b.shoulders,head:b.head,arms:b.arms,legs:b.legs,torsoDepth:b.torsoDepth};
+}
+function updateNpcShapeUI(){
+ const n=selectedCharacterNpc();
+ npcModelPanel?.classList.toggle('hidden',!n);
+ if(!n)return;
+ const b=npcBodyShape(n);
+ const fields=[[npcHeight,'npcHeightV',b.height],[npcBuild,'npcBuildV',b.build],[npcShoulders,'npcShouldersV',b.shoulders],[npcHeadSize,'npcHeadSizeV',b.head],[npcArms,'npcArmsV',b.arms],[npcLegs,'npcLegsV',b.legs],[npcTorsoDepth,'npcTorsoDepthV',b.torsoDepth]];
+ for(const [el,id,val] of fields){if(el)el.value=String(val);const v=q('#'+id);if(v)v.textContent=Math.round(val*100)+'%'}
+}
+function applyNpcShapeFromUI(){
+ const n=selectedCharacterNpc();if(!n)return;
+ const body={height:Number(npcHeight.value),build:Number(npcBuild.value),shoulders:Number(npcShoulders.value),head:Number(npcHeadSize.value),arms:Number(npcArms.value),legs:Number(npcLegs.value),torsoDepth:Number(npcTorsoDepth.value)};
+ characterStyleState.npcs[n.id]={...n.baseStyle,...(characterStyleState.npcs[n.id]||{}),body};
+ applyNpcBodyShape(n,body);updateNpcShapeUI();
+}
+
 function createNpc(kind='office',path=[],opts={}){
  const root=new THREE.Group();root.position.copy(path[0]||new THREE.Vector3());scene.add(root);
  const skin=mat(opts.skin||0xc88a68,.68,0), hair=mat(opts.hair||0x2a211c,.82,0), darkPants=mat(0x242832,.72,.03);
@@ -1745,19 +1815,23 @@ function createNpc(kind='office',path=[],opts={}){
  const body=new THREE.Group();body.position.y=.04;root.add(body);
  const pelvis=new THREE.Group();pelvis.position.y=.88;body.add(pelvis);
  const hip=new THREE.Mesh(new THREE.BoxGeometry(.42,.18,.26),pants);pelvis.add(hip);
- const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.38,5,10),shirt);torso.position.y=.34;torso.scale.set(1.12,1,.76);pelvis.add(torso);
+ const torso=new THREE.Mesh(new THREE.CapsuleGeometry(.22,.38,8,16),shirt);torso.position.y=.34;torso.scale.set(1.12,1,.76);pelvis.add(torso);
  const neck=new THREE.Mesh(new THREE.CylinderGeometry(.065,.075,.08,10),skin);neck.position.set(0,.76,0);pelvis.add(neck);
- const head=new THREE.Mesh(new THREE.SphereGeometry(.18,16,12),skin);head.position.set(0,.93,0);head.scale.set(.96,1.08,.98);pelvis.add(head);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.18,24,18),skin);head.position.set(0,.93,0);head.scale.set(.96,1.08,.98);pelvis.add(head);
  const faceDark=mat(0x20252b,.8,0);
- const nose=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin);nose.scale.set(.7,.85,1.25);nose.position.set(0,.945,.178);pelvis.add(nose);
- for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,7,5),faceDark);eye.position.set(sx*.058,.98,.176);pelvis.add(eye)}
- const earL=new THREE.Mesh(new THREE.SphereGeometry(.032,8,6),skin),earR=earL.clone();earL.scale.set(.65,1,.55);earR.scale.copy(earL.scale);earL.position.set(-.175,.95,0);earR.position.set(.175,.95,0);pelvis.add(earL,earR);
- const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.186,12,8,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.02,-.005);pelvis.add(hairCap);
- function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,5,8),material);m.position.y=-len*.5;p.add(m);return p}
+ const nose=new THREE.Mesh(new THREE.SphereGeometry(.032,12,10),skin);nose.scale.set(.7,.85,1.25);nose.position.set(0,.945,.178);pelvis.add(nose);
+ for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.012,10,8),faceDark);eye.position.set(sx*.058,.98,.176);pelvis.add(eye)}
+ const earL=new THREE.Mesh(new THREE.SphereGeometry(.032,12,10),skin),earR=earL.clone();earL.scale.set(.65,1,.55);earR.scale.copy(earL.scale);earL.position.set(-.175,.95,0);earR.position.set(.175,.95,0);pelvis.add(earL,earR);
+ const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.186,18,12,0,Math.PI*2,0,Math.PI*.55),hair);hairCap.position.set(0,1.02,-.005);pelvis.add(hairCap);
+ const mouth=new THREE.Mesh(new THREE.BoxGeometry(.072,.009,.012),faceDark);mouth.position.set(0,.895,.178);pelvis.add(mouth);
+ const browL=new THREE.Mesh(new THREE.BoxGeometry(.052,.009,.012),hair),browR=browL.clone();browL.position.set(-.058,1.018,.177);browR.position.set(.058,1.018,.177);browL.rotation.z=.10;browR.rotation.z=-.10;pelvis.add(browL,browR);
+ const chin=new THREE.Mesh(new THREE.SphereGeometry(.105,14,10),skin);chin.scale.set(.92,.48,.72);chin.position.set(0,.865,.035);pelvis.add(chin);
+ const headParts=[head,nose,earL,earR,hairCap,mouth,browL,browR,chin];pelvis.children.forEach(ch=>{if(ch!==head&&ch.material===faceDark&&!headParts.includes(ch))headParts.push(ch)});
+ function limb(parent,x,y,material,len,rad){const p=new THREE.Group();p.position.set(x,y,0);parent.add(p);const m=new THREE.Mesh(new THREE.CapsuleGeometry(rad,len,8,12),material);m.position.y=-len*.5;p.add(m);return p}
  const lArm=limb(pelvis,-.31,.58,shirt,.30,.068),rArm=limb(pelvis,.31,.58,shirt,.30,.068);
  const lFore=limb(lArm,0,-.29,skin,.27,.056),rFore=limb(rArm,0,-.29,skin,.27,.056);
- const lHand=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),skin);lHand.scale.set(.82,1.05,.72);lHand.position.y=-.27;lFore.add(lHand);
- const rHand=new THREE.Mesh(new THREE.SphereGeometry(.055,10,8),skin);rHand.scale.copy(lHand.scale);rHand.position.y=-.27;rFore.add(rHand);
+ const lHand=new THREE.Mesh(new THREE.SphereGeometry(.055,14,10),skin);lHand.scale.set(.82,1.05,.72);lHand.position.y=-.27;lFore.add(lHand);
+ const rHand=new THREE.Mesh(new THREE.SphereGeometry(.055,14,10),skin);rHand.scale.copy(lHand.scale);rHand.position.y=-.27;rFore.add(rHand);
  const lLeg=limb(pelvis,-.13,-.02,pants,.36,.09),rLeg=limb(pelvis,.13,-.02,pants,.36,.09);
  const lShin=limb(lLeg,0,-.35,pants,.35,.078),rShin=limb(rLeg,0,-.35,pants,.35,.078);
  const lf=new THREE.Mesh(new THREE.BoxGeometry(.21,.11,.36),shoe);lf.position.set(0,-.35,-.07);lShin.add(lf);const rf=lf.clone();rShin.add(rf);
@@ -1778,7 +1852,8 @@ function createNpc(kind='office',path=[],opts={}){
    const h1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.72,8),metal);h1.rotation.z=Math.PI/2;h1.position.set(0,.98,.34);cart.add(h1);
    for(const x of [-.27,.27])for(const z of [-.34,.34]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,10),darkPants);w.rotation.z=Math.PI/2;w.position.set(x,.08,z);cart.add(w)}
  }
- const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000,materials:{skin,hair,shirt,pants,shoe},baseStyle:{skin:'#'+skin.color.getHexString(),hair:'#'+hair.color.getHexString(),shirt:'#'+shirt.color.getHexString(),pants:'#'+pants.color.getHexString(),shoes:'#'+shoe.color.getHexString(),faceUrl:null,clothingUrl:null},overlays:{}};
+ const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000,materials:{skin,hair,shirt,pants,shoe},headParts,baseStyle:{skin:'#'+skin.color.getHexString(),hair:'#'+hair.color.getHexString(),shirt:'#'+shirt.color.getHexString(),pants:'#'+pants.color.getHexString(),shoes:'#'+shoe.color.getHexString(),faceUrl:null,clothingUrl:null},baseShape:{height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1},overlays:{}};
+ captureNpcModelBase(npc);
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
 }
@@ -1825,6 +1900,7 @@ function createHeadEndGuy(){
  const extraHair=new THREE.Mesh(new THREE.SphereGeometry(.19,12,8,0,Math.PI*2,0,Math.PI*.58),beardMat);
  extraHair.position.set(0,1.025,-.005);extraHair.scale.set(1.03,.92,1.03);n.pelvis.add(extraHair);
 
+ captureNpcModelBase(n);
  headEndGuy=n;
  return n;
 }
@@ -3266,6 +3342,19 @@ q('#applyClothingImage').onclick=()=>uploadCharacterImage(clothingImageFile.file
 q('#removeClothingImage').onclick=()=>removeCharacterImage('clothing');
 facePhotoFile.addEventListener('change',()=>{const file=facePhotoFile.files?.[0];if(file)uploadCharacterImage(file,'face')});
 clothingImageFile.addEventListener('change',()=>{const file=clothingImageFile.files?.[0];if(file)uploadCharacterImage(file,'clothing')});
+
+
+[npcHeight,npcBuild,npcShoulders,npcHeadSize,npcArms,npcLegs,npcTorsoDepth].forEach(el=>el?.addEventListener('input',applyNpcShapeFromUI));
+q('#npcResetShape')?.addEventListener('click',()=>{
+ const n=selectedCharacterNpc();if(!n)return;
+ const body={height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1};
+ characterStyleState.npcs[n.id]={...n.baseStyle,...(characterStyleState.npcs[n.id]||{}),body};applyNpcBodyShape(n,body);updateNpcShapeUI();show('CORPO NPC RIPRISTINATO');
+});
+q('#npcHumanPreset')?.addEventListener('click',()=>{
+ const n=selectedCharacterNpc();if(!n)return;
+ const body={height:1.03,build:.96,shoulders:1.04,head:.96,arms:1.03,legs:1.06,torsoDepth:.96};
+ characterStyleState.npcs[n.id]={...n.baseStyle,...(characterStyleState.npcs[n.id]||{}),body};applyNpcBodyShape(n,body);updateNpcShapeUI();show('PROPORZIONI PIÙ UMANE APPLICATE');
+});
 
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
 q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}applyImageFileToSelected(file)};
