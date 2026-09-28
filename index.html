@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.6';
+ const PWA_VERSION='2026.09.28.7';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1489,6 +1489,13 @@ async function uploadAndPublishCharacter(){
  if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per cambiare personaggio.';return}
  const file=characterFile?.files?.[0];
  if(!file){show('SELEZIONA UN FILE FBX O GLB');return}
+ const MAX_CHARACTER_UPLOAD=50*1024*1024;
+ if(file.size>MAX_CHARACTER_UPLOAD){
+   const mb=(file.size/1024/1024).toFixed(1);
+   if(characterStatus)characterStatus.textContent='File troppo grande: '+mb+' MiB. Il limite attuale è 50 MiB. Usa una versione ottimizzata del modello.';
+   show('FILE '+mb+' MiB · LIMITE 50 MiB');
+   return;
+ }
  const isFbx=/\.fbx$/i.test(file.name||''),isGlb=/\.glb$/i.test(file.name||'');
  if(!isFbx&&!isGlb){show('USA UN FILE .FBX O .GLB');return}
 
