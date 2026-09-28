@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.7';
+ const PWA_VERSION='2026.09.28.8';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1315,7 +1315,7 @@ let playerModelUrl=null,customAvatarRoot=null,customAvatarLoadingUrl=null;
 const fbxLoader=new FBXLoader();
 const gltfCharacterLoader=new GLTFLoader();
 const _customBatPos=new THREE.Vector3(),_customBatWorldQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_customBatQ=new THREE.Quaternion();
-const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.15,.10,-1.48,'XYZ'));
+const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.08,-.06,-.22,'XYZ'));
 
 function normalizedBoneName(name=''){
  return name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^mixamorig/,'');
@@ -1348,37 +1348,70 @@ function findMixamoBone(root,suffixes){
  }
  return exactBone||exactAny||suffixBone||suffixAny||null;
 }
+
+const _rigA=new THREE.Vector3(),_rigB=new THREE.Vector3(),_rigDir=new THREE.Vector3(),_rigDesired=new THREE.Vector3(),_rigOut=new THREE.Vector3(),_rigHip=new THREE.Vector3();
+const _rigParentQ=new THREE.Quaternion(),_rigWorldQ=new THREE.Quaternion(),_rigDeltaQ=new THREE.Quaternion(),_rigTargetWorldQ=new THREE.Quaternion(),_rigTargetLocalQ=new THREE.Quaternion();
+function pointBoneChainWorld(bone,child,desiredWorldDir){
+ if(!bone||!child||!bone.parent)return false;
+ bone.updateWorldMatrix(true,true);
+ bone.getWorldPosition(_rigA);child.getWorldPosition(_rigB);
+ _rigDir.copy(_rigB).sub(_rigA);
+ if(_rigDir.lengthSq()<1e-8)return false;
+ _rigDir.normalize();_rigDesired.copy(desiredWorldDir).normalize();
+ _rigDeltaQ.setFromUnitVectors(_rigDir,_rigDesired);
+ bone.parent.getWorldQuaternion(_rigParentQ);
+ bone.getWorldQuaternion(_rigWorldQ);
+ _rigTargetWorldQ.copy(_rigDeltaQ).multiply(_rigWorldQ);
+ _rigTargetLocalQ.copy(_rigParentQ).invert().multiply(_rigTargetWorldQ);
+ bone.quaternion.copy(_rigTargetLocalQ);
+ bone.updateWorldMatrix(true,true);
+ return true;
+}
+function relaxHumanRigWorld(rig){
+ if(!rig?.lArm||!rig?.rArm||!rig?.lFore||!rig?.rFore)return;
+ // Upper arms: derive the outward direction from the actual skeleton,
+ // then point them mostly downward. This is independent of FBX local axes.
+ const relaxUpper=(arm,fore)=>{
+   arm.updateWorldMatrix(true,true);
+   arm.getWorldPosition(_rigA);fore.getWorldPosition(_rigB);
+   _rigOut.copy(_rigB).sub(_rigA);_rigOut.y=0;
+   if(_rigOut.lengthSq()<1e-8)_rigOut.set(1,0,0);else _rigOut.normalize();
+   _rigDesired.set(0,-1,0).multiplyScalar(.975).addScaledVector(_rigOut,.22).normalize();
+   pointBoneChainWorld(arm,fore,_rigDesired);
+ };
+ relaxUpper(rig.lArm,rig.lFore);
+ relaxUpper(rig.rArm,rig.rFore);
+
+ // Forearms: aim the hands near the sides of the hips for a natural relaxed stance.
+ if(rig.pelvis)rig.pelvis.getWorldPosition(_rigHip);
+ const relaxFore=(fore,hand)=>{
+   if(!fore||!hand)return;
+   fore.getWorldPosition(_rigA);hand.getWorldPosition(_rigB);
+   _rigOut.copy(_rigB).sub(_rigA);_rigOut.y=0;
+   if(_rigOut.lengthSq()<1e-8)_rigOut.set(.2,0,0);else _rigOut.normalize();
+   _rigDesired.copy(_rigHip).addScaledVector(_rigOut,.25).add(new THREE.Vector3(0,-.08,0)).sub(_rigA).normalize();
+   pointBoneChainWorld(fore,hand,_rigDesired);
+ };
+ relaxFore(rig.lFore,rig.lHand);
+ relaxFore(rig.rFore,rig.rHand);
+}
 function applyRigPoseNow(rig){
- if(!rig?.base||!rig?.pose)return;
+ if(!rig?.base)return;
  for(const [obj,base] of rig.base){
-   if(!obj||!base)continue;
-   const p=rig.pose.get(obj)||{};
-   obj.rotation.set(
-     base.x+(p.x||0),
-     base.y+(p.y||0),
-     base.z+(p.z||0),
-     obj.rotation.order
-   );
+   if(obj&&base)obj.rotation.copy(base);
  }
 }
 function captureRigBase(rig){
+ rig.custom=true;
+ relaxHumanRigWorld(rig);
  const base=new Map(),pose=new Map();
- for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lLeg','rLeg','lShin','rShin','rHand']){
+ for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lHand','rHand','lLeg','rLeg','lShin','rShin']){
    const o=rig[key];if(o&&!base.has(o))base.set(o,o.rotation.clone());
  }
- // Da T-pose Mixamo a postura umana rilassata.
- if(rig.lArm)pose.set(rig.lArm,{z:1.18,x:.04,y:-.03});
- if(rig.rArm)pose.set(rig.rArm,{z:-1.02,x:.08,y:.04});
- if(rig.lFore)pose.set(rig.lFore,{x:-.22,y:.02,z:-.04});
- if(rig.rFore)pose.set(rig.rFore,{x:-.38,y:-.04,z:.05});
- if(rig.lLeg)pose.set(rig.lLeg,{z:.015});
- if(rig.rLeg)pose.set(rig.rLeg,{z:-.015});
- if(rig.lShin)pose.set(rig.lShin,{x:.015});
- if(rig.rShin)pose.set(rig.rShin,{x:.015});
- rig.base=base;rig.pose=pose;rig.custom=true;
- applyRigPoseNow(rig);
+ rig.base=base;rig.pose=pose;
  return rig;
 }
+
 function setFallbackCharacter(){
  if(customAvatarRoot){avatar.remove(customAvatarRoot);customAvatarRoot=null}
  officeRig=fallbackOfficeRig;
@@ -1400,7 +1433,9 @@ function customBatFollowHand(){
  player.worldToLocal(_customBatPos);
  batPivot.position.copy(_customBatPos);
  batPivot.quaternion.copy(_customBatQ);
- batPivot.scale.set(1,1,1);
+ // Il modello custom ha proporzioni reali: una mazza leggermente più compatta
+ // evita che attraversi busto e camera.
+ batPivot.scale.set(.76,.76,.76);
 }
 
 async function loadCustomCharacterModel(url,formatHint=''){
@@ -1453,6 +1488,7 @@ async function loadCustomCharacterModel(url,formatHint=''){
      rLeg:findMixamoBone(model,['RightUpLeg']),
      lShin:findMixamoBone(model,['LeftLeg']),
      rShin:findMixamoBone(model,['RightLeg']),
+     lHand:findMixamoBone(model,['LeftHand']),
      rHand:findMixamoBone(model,['RightHand'])
    };
    const missing=Object.entries(rigMap).filter(([,v])=>!v).map(([k])=>k);
@@ -1465,8 +1501,8 @@ async function loadCustomCharacterModel(url,formatHint=''){
      throw new Error('Ossa mancanti: '+missing.join(', '));
    }
 
-   const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand}=rigMap;
-   officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand});
+   const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,lHand,rHand}=rigMap;
+   officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lHand,rHand,lLeg,rLeg,lShin,rShin});
    applyRigPoseNow(officeRig);
    model.updateMatrixWorld(true);
    if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
