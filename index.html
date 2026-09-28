@@ -3018,7 +3018,7 @@ renderer.domElement.addEventListener('wheel',e=>{
  if(started&&!editorMode&&cameraMode==='third'){
    thirdPersonDistance=THREE.MathUtils.clamp(thirdPersonDistance+Math.sign(e.deltaY)*.35,3.6,6.0);
  }
-},{passive:true});
+},{passive:false});
 let joy=q('#joy'),knob=q('#knob'),jid=null;
 function resetJoy(){jid=null;knob.style.transform='';mobile.x=mobile.y=0}
 joy.addEventListener('pointerdown',e=>{e.preventDefault();jid=e.pointerId;joy.setPointerCapture?.(jid)},{passive:false});
