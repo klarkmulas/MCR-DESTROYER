@@ -829,7 +829,7 @@ function addBadge(x,z,ry){const c=document.createElement('canvas');c.width=c.hei
 function buildRoom(){
  box(28,.25,18,floorMat,0,-.13,0);
  const roof=box(28,.18,18,black,0,5.15,0);topViewHidden.push(roof);
- const backWall=box(28,5.2,.25,dark,0,2.5,-8.9),leftWall=box(.25,5.2,18,dark,-14,2.5,0),rightWall=box(.25,5.2,18,dark,14,2.5,0);topViewHidden.push(backWall,leftWall,rightWall);
+ const backWall=box(28,5.2,.25,dark,0,2.5,-8.9),leftWall=box(.25,5.2,18,dark,-14,2.5,0),rightWall=box(.25,5.2,18,dark,14,2.5,0);topViewHidden.push(backWall,leftWall,rightWall);addObstacle(backWall,14,.12);addObstacle(leftWall,.12,9);addObstacle(rightWall,.12,9);
  for(let x=-12;x<=12;x+=2){const g=box(.03,.045,17.4,steel,x,5.02,0);topViewHidden.push(g)}
  for(let z=-7.5;z<=7.5;z+=2){const g=box(27.4,.045,.03,steel,0,5.02,z);topViewHidden.push(g)}
  const panelMat=new THREE.MeshStandardMaterial({color:0xffe6c0,emissive:0xffd39a,emissiveIntensity:1.55,roughness:.28});
