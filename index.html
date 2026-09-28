@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.5';
+ const PWA_VERSION='2026.09.28.6';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -514,12 +514,12 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
     <div class="editorCard characterBox">
       <div class="editorCardTitle">MODELLO 3D DEL GIOCATORE</div>
-      <input id="characterFile" type="file" accept=".fbx,model/fbx,application/octet-stream">
+      <input id="characterFile" type="file" accept=".fbx,.glb,model/fbx,model/gltf-binary,application/octet-stream">
       <div class="structureGrid">
-        <button id="uploadCharacterFile">CARICA FBX</button>
+        <button id="uploadCharacterFile">CARICA FBX / GLB</button>
         <button id="removeCharacterModel">RIPRISTINA MODELLO</button>
       </div>
-      <div id="characterStatus" class="structureHint">Carica un personaggio FBX riggato Mixamo.</div>
+      <div id="characterStatus" class="structureHint">Carica un FBX moderno oppure un GLB riggato. Per il web è preferibile GLB.</div>
     </div>
 
     <div class="editorCard" id="characterEditorPro">
@@ -1312,6 +1312,7 @@ const fallbackOfficeRig=officeRig;
 const fallbackBodyRoot=avatar.children[0]||null;
 let playerModelUrl=null,customAvatarRoot=null,customAvatarLoadingUrl=null;
 const fbxLoader=new FBXLoader();
+const gltfCharacterLoader=new GLTFLoader();
 const _customBatPos=new THREE.Vector3(),_customBatWorldQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_customBatQ=new THREE.Quaternion();
 const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.15,.10,-1.48,'XYZ'));
 
@@ -1382,23 +1383,36 @@ function customBatFollowHand(){
  batPivot.quaternion.copy(_customBatQ);
  batPivot.scale.set(1,1,1);
 }
-async function loadCustomFbxCharacter(url){
+
+async function loadCustomCharacterModel(url,formatHint=''){
  if(!url){setFallbackCharacter();return false}
  if(customAvatarLoadingUrl===url)return false;
  customAvatarLoadingUrl=url;
  if(characterStatus)characterStatus.textContent='Caricamento personaggio umano…';
  try{
-   const model=await fbxLoader.loadAsync(url);
+   const clean=(url.split('?')[0]||'').toLowerCase();
+   const isGlb=/\.glb$/i.test(clean)||formatHint==='glb';
+   let model;
+   if(isGlb){
+     const gltf=await gltfCharacterLoader.loadAsync(url);
+     model=gltf.scene||gltf.scenes?.[0];
+     if(!model)throw new Error('GLB senza scena 3D valida');
+   }else{
+     model=await fbxLoader.loadAsync(url);
+   }
+
    if(customAvatarRoot)avatar.remove(customAvatarRoot);
    const holder=new THREE.Group();holder.name='MCR_CustomHuman';
    holder.add(model);avatar.add(holder);
    model.updateMatrixWorld(true);
+
    let box=new THREE.Box3().setFromObject(model),size=box.getSize(new THREE.Vector3());
    if(!Number.isFinite(size.y)||size.y<=0)throw new Error('Dimensioni modello non valide');
    const scale=1.76/size.y;
    model.scale.setScalar(scale);model.updateMatrixWorld(true);
    box=new THREE.Box3().setFromObject(model);
    model.position.y-=box.min.y;
+
    model.traverse(o=>{
      if(o.isMesh||o.isSkinnedMesh){
        o.castShadow=true;o.receiveShadow=true;o.frustumCulled=true;
@@ -1407,6 +1421,7 @@ async function loadCustomFbxCharacter(url){
        for(const m of mats){if(m){m.needsUpdate=true;if(m.map)m.map.colorSpace=THREE.SRGBColorSpace}}
      }
    });
+
    const rigMap={
      hips:findMixamoBone(model,['Hips']),
      spine:findMixamoBone(model,['Spine2','Spine1','Spine']),
@@ -1427,9 +1442,10 @@ async function loadCustomFbxCharacter(url){
        .map(o=>o.name).filter(Boolean)
        .filter(n=>/mixamo|hips|spine|arm|leg|hand|head/i.test(n))
        .slice(0,45);
-     console.warn('Rig FBX: ossa mancanti',missing,'Disponibili:',available);
+     console.warn('Rig personaggio: ossa mancanti',missing,'Disponibili:',available);
      throw new Error('Ossa mancanti: '+missing.join(', '));
    }
+
    const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand}=rigMap;
    officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand});
    if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
@@ -1438,25 +1454,58 @@ async function loadCustomFbxCharacter(url){
    playerModelUrl=url;
    customBatFollowHand();
    applyCharacterStyleToPlayer();
-   if(characterStatus)characterStatus.textContent='✓ Personaggio umano caricato e rig Mixamo riconosciuto.';
+   if(characterStatus)characterStatus.textContent='✓ Personaggio caricato · rig Mixamo riconosciuto.';
    show('PERSONAGGIO UMANO CARICATO');
    return true;
  }catch(e){
-   console.error('Errore personaggio FBX',e);
+   console.error('Errore personaggio 3D',e);
    setFallbackCharacter();
-   if(characterStatus)characterStatus.textContent='Errore FBX: '+(e?.message||'modello non compatibile');
+   const msg=String(e?.message||'modello non compatibile');
+   if(/FBX version not supported|FileVersion:\s*6100/i.test(msg)){
+     if(characterStatus)characterStatus.textContent='Questo FBX è versione 6.1 (6100): Three.js non lo può leggere. Converti il file in GLB oppure esportalo come FBX 7.4/7.5 e ricaricalo.';
+   }else if(characterStatus){
+     characterStatus.textContent='Errore modello: '+msg;
+   }
    return false;
  }finally{customAvatarLoadingUrl=null}
 }
+async function loadCustomFbxCharacter(url){return loadCustomCharacterModel(url)}
+async function inspectFbxVersion(file){
+ try{
+   const buf=await file.slice(0,4096).arrayBuffer();
+   const u8=new Uint8Array(buf);
+   const magic=new TextDecoder('latin1').decode(u8.slice(0,23));
+   if(magic.startsWith('Kaydara FBX Binary')&&u8.length>=27){
+     return new DataView(buf).getUint32(23,true);
+   }
+   const text=new TextDecoder().decode(u8);
+   const m=text.match(/FBXVersion:\s*(\d+)/i);
+   return m?Number(m[1]):null;
+ }catch(e){return null}
+}
+
+
 async function uploadAndPublishCharacter(){
  if(!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accedi come amministratore per cambiare personaggio.';return}
  const file=characterFile?.files?.[0];
- if(!file){show('SELEZIONA UN FILE FBX');return}
- if(!/\.fbx$/i.test(file.name)){show('SERVE UN FILE .FBX');return}
+ if(!file){show('SELEZIONA UN FILE FBX O GLB');return}
+ const isFbx=/\.fbx$/i.test(file.name||''),isGlb=/\.glb$/i.test(file.name||'');
+ if(!isFbx&&!isGlb){show('USA UN FILE .FBX O .GLB');return}
+
+ if(isFbx){
+   const version=await inspectFbxVersion(file);
+   if(version&&version<7000){
+     const major=(version/1000).toFixed(1);
+     if(characterStatus)characterStatus.textContent='FBX '+major+' rilevato ('+version+'). Questo formato è troppo vecchio per il loader web. Converti in GLB oppure riesporta come FBX 7.4/7.5.';
+     show('FBX '+major+' NON SUPPORTATO · CONVERTI IN GLB');
+     return;
+   }
+ }
+
  if(characterStatus)characterStatus.textContent='Upload personaggio in corso…';
  try{
    const url=await uploadSharedMedia(file,'characters');
-   const ok=await loadCustomFbxCharacter(url);
+   const ok=await loadCustomCharacterModel(url,isGlb?'glb':'fbx');
    if(!ok)return;
    await publishLayoutGlobal();
    if(characterStatus)characterStatus.textContent='✓ Personaggio pubblicato per tutti.';
@@ -1466,6 +1515,7 @@ async function uploadAndPublishCharacter(){
    show('ERRORE PERSONAGGIO');
  }
 }
+
 async function removeAndPublishCharacter(){
  if(!isAdmin){adminLogin.classList.remove('hidden');return}
  setFallbackCharacter();
@@ -2510,20 +2560,19 @@ async function uploadSharedMedia(file,folder='videos'){
  const raw=(file.name||'media').replace(/[^a-zA-Z0-9._-]+/g,'_');
  const id=(crypto.randomUUID?.()||Math.random().toString(36).slice(2));
  const path=folder+'/'+Date.now()+'-'+id+'-'+raw;
- const isFbx=/\.fbx$/i.test(file.name||'')||folder==='characters';
+ const isFbx=/\.fbx$/i.test(file.name||'');
+ const isGlb=/\.glb$/i.test(file.name||'');
  let uploadBody=file;
  let uploadType=file.type||undefined;
- if(isFbx){
-   uploadType='model/fbx';
-   // Alcuni browser etichettano gli FBX come application/octet-stream.
-   // Ricreiamo fisicamente il File con il MIME corretto prima dell'upload.
+ if(isFbx||isGlb){
+   uploadType=isGlb?'model/gltf-binary':'model/fbx';
    try{
-     uploadBody=new File([await file.arrayBuffer()],file.name||'character.fbx',{
-       type:'model/fbx',
+     uploadBody=new File([await file.arrayBuffer()],file.name||(isGlb?'character.glb':'character.fbx'),{
+       type:uploadType,
        lastModified:file.lastModified||Date.now()
      });
    }catch(e){
-     uploadBody=new Blob([await file.arrayBuffer()],{type:'model/fbx'});
+     uploadBody=new Blob([await file.arrayBuffer()],{type:uploadType});
    }
  }
  const {error}=await supabase.storage.from('mcr-media').upload(path,uploadBody,{
@@ -2569,7 +2618,7 @@ function applyLayoutData(data){
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
  if(data.characterStyles){mergeCharacterStyles(data.characterStyles);pendingCharacterStyles=data.characterStyles;queueMicrotask(applyAllCharacterStyles)}
  if(Array.isArray(data.items))applyStableLayoutItems(data.items);
- if(data.playerModelUrl && data.playerModelUrl!==playerModelUrl)loadCustomFbxCharacter(data.playerModelUrl);
+ if(data.playerModelUrl && data.playerModelUrl!==playerModelUrl)loadCustomCharacterModel(data.playerModelUrl);
  else if(!data.playerModelUrl && playerModelUrl)setFallbackCharacter();
 }
 function loadLayoutFromUrl(){
