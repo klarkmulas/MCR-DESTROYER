@@ -1,4 +1,4 @@
-const VERSION='2026.09.27.5';
+const VERSION='2026.09.28.1';
 const PREFIX='mcr-destroyer-';
 const SHELL_CACHE=PREFIX+'shell-'+VERSION;
 const RUNTIME_CACHE=PREFIX+'runtime-'+VERSION;
@@ -32,7 +32,12 @@ const OFFLINE_URLS=[
 self.addEventListener('install',event=>{
   event.waitUntil((async()=>{
     const cache=await caches.open(SHELL_CACHE);
-    await cache.addAll(SHELL);
+    // Non bloccare l'installazione se una singola risorsa temporaneamente fallisce.
+    await Promise.allSettled(SHELL.map(async item=>{
+      const req=new Request(item,{cache:'reload'});
+      const res=await fetch(req);
+      if(res && res.ok)await cache.put(req,res.clone());
+    }));
     await self.skipWaiting();
   })());
 });
@@ -62,8 +67,14 @@ async function networkFirst(request,cacheName){
     const cached=await caches.match(request);
     if(cached)return cached;
     if(request.mode==='navigate'){
-      const fallback=await caches.match('./index.html');
+      const fallback=
+        await caches.match('./index.html',{ignoreSearch:true})
+        || await caches.match('./',{ignoreSearch:true});
       if(fallback)return fallback;
+      return new Response(
+        '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MCR DESTROYER</title><style>body{font-family:Arial;background:#07101a;color:white;display:grid;place-items:center;height:100vh;margin:0;text-align:center}main{max-width:560px;padding:30px}button{padding:12px 18px}</style><main><h1>MCR DESTROYER</h1><p>Connessione non disponibile e cache offline non ancora pronta.</p><button onclick="location.reload()">RIPROVA</button></main>',
+        {status:503,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}}
+      );
     }
     throw err;
   }
