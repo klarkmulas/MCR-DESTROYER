@@ -1487,15 +1487,15 @@ function updatePlayerOverlays(){
  if(playerOverlays.face&&officeRig.head){
    officeRig.head.getWorldPosition(overlayTmpWorld);overlayTmpLocal.copy(overlayTmpWorld);avatar.worldToLocal(overlayTmpLocal);
    playerOverlays.face.position.copy(overlayTmpLocal);
-   playerOverlays.face.position.y+=(officeRig.custom?.045:0);
-   playerOverlays.face.position.z+=(officeRig.custom?.11:.22);
+   playerOverlays.face.position.y+=(officeRig.custom ? .045 : 0);
+   playerOverlays.face.position.z+=(officeRig.custom ? .11 : .22);
    playerOverlays.face.rotation.set(0,0,0);
  }
  if(playerOverlays.clothing&&officeRig.torsoPivot){
    officeRig.torsoPivot.getWorldPosition(overlayTmpWorld);overlayTmpLocal.copy(overlayTmpWorld);avatar.worldToLocal(overlayTmpLocal);
    playerOverlays.clothing.position.copy(overlayTmpLocal);
-   playerOverlays.clothing.position.y+=(officeRig.custom?.06:.34);
-   playerOverlays.clothing.position.z+=(officeRig.custom?.11:.23);
+   playerOverlays.clothing.position.y+=(officeRig.custom ? .06 : .34);
+   playerOverlays.clothing.position.z+=(officeRig.custom ? .11 : .23);
    playerOverlays.clothing.rotation.set(0,0,0);
  }
 }
