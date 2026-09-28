@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.15';
+ const PWA_VERSION='2026.09.28.16';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -134,10 +134,10 @@
 button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border-radius:12px;background:linear-gradient(135deg,#2588ff,#5cd8ff);color:#fff;font-weight:900;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}
 .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:28px}.controls div{padding:10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.controls b{display:block;font-size:13px}.controls span{display:block;margin-top:2px;font-size:10px;color:#8296ad}
 #hud{position:fixed;inset:0;z-index:35;pointer-events:none;color:#f4f6f7}
-.blackoutBrand{position:absolute;left:18px;top:18px;display:flex;align-items:center;gap:16px;text-shadow:0 1px 4px #0008}
+.blackoutBrand{position:absolute;left:max(14px,env(safe-area-inset-left));top:18px;z-index:4;display:flex;align-items:center;gap:16px;text-shadow:0 1px 4px #0008}
 .blackoutLogo{width:58px;height:52px;display:grid;place-items:center;border:1px solid #d9e0e522;background:#aeb7ba12;font-size:21px;font-weight:1000;letter-spacing:-.05em;backdrop-filter:blur(6px)}
 .blackoutBrandText{display:flex;flex-direction:column;gap:5px}.blackoutBrandText b{font-size:20px;line-height:1;letter-spacing:.24em}.blackoutBrandText span{font-size:9px;font-weight:900;letter-spacing:.28em;color:#9aaab3}
-.blackoutStatus{position:absolute;right:22px;top:24px;width:185px;text-align:right;text-shadow:0 1px 4px #0009}.blackoutRoom{font-size:10px;letter-spacing:.18em;color:#e5ebed;border-bottom:1px solid #ffffff24;padding-bottom:8px;margin-bottom:11px}.blackoutRoom b{margin-left:9px;font-size:14px}.blackoutMetricLabel{font-size:8px;letter-spacing:.25em;color:#aebbc2;font-weight:900}.blackoutPercent{font-size:54px;font-weight:300;line-height:.95;letter-spacing:-.06em}.blackoutPercent small{font-size:20px;color:#aeb9be;margin-left:3px}.blackoutProgress{height:2px;background:#ffffff22;margin:13px 0 7px;overflow:hidden}.blackoutProgress i{display:block;width:0;height:100%;background:#e7ecee;box-shadow:0 0 8px #ffffff88;transition:width .25s ease}.blackoutCount{font-size:9px;letter-spacing:.08em;color:#b2bdc2}
+.blackoutStatus{position:absolute;right:max(18px,env(safe-area-inset-right));top:24px;z-index:4;width:185px;text-align:right;text-shadow:0 1px 4px #0009}.blackoutRoom{font-size:10px;letter-spacing:.18em;color:#e5ebed;border-bottom:1px solid #ffffff24;padding-bottom:8px;margin-bottom:11px}.blackoutRoom b{margin-left:9px;font-size:14px}.blackoutMetricLabel{font-size:8px;letter-spacing:.25em;color:#aebbc2;font-weight:900}.blackoutPercent{font-size:54px;font-weight:300;line-height:.95;letter-spacing:-.06em}.blackoutPercent small{font-size:20px;color:#aeb9be;margin-left:3px}.blackoutProgress{height:2px;background:#ffffff22;margin:13px 0 7px;overflow:hidden}.blackoutProgress i{display:block;width:0;height:100%;background:#e7ecee;box-shadow:0 0 8px #ffffff88;transition:width .25s ease}.blackoutCount{font-size:9px;letter-spacing:.08em;color:#b2bdc2}
 .blackoutBottom{position:absolute;bottom:18px;min-width:150px;padding:9px 11px;border-left:2px solid #ffffff4a;background:linear-gradient(90deg,#090d10b8,transparent);backdrop-filter:blur(5px)}.blackoutBottom.left{left:18px}.blackoutBottom.right{right:18px;text-align:right;border-left:0;border-right:2px solid #ffffff4a;background:linear-gradient(270deg,#090d10b8,transparent)}.blackoutBottom>span{display:block;font-size:7px;letter-spacing:.22em;color:#95a4ab;font-weight:900}.blackoutBottom>b{display:block;margin-top:2px;font-size:20px;letter-spacing:.02em}.blackoutActions{display:flex;gap:5px;justify-content:flex-end;margin-top:5px}.blackoutActions button{pointer-events:auto;border:1px solid #ffffff1c;background:#ffffff0c;color:#dfe5e7;padding:5px 8px;font-size:7px;font-weight:900;letter-spacing:.08em}
 .glass{position:absolute}.left{left:16px}.right{right:16px}.label{font-size:9px;letter-spacing:.15em;font-weight:900;color:#75b9f7}.big{font-size:28px;font-weight:1000;letter-spacing:-.04em}.sub{font-size:11px;color:#8da1b7}
 #combo{position:absolute;left:50%;top:24px;transform:translateX(-50%) translateY(-5px);font-size:13px;font-weight:900;letter-spacing:.24em;opacity:0;transition:.18s;text-shadow:0 2px 12px #000}#combo.on{opacity:1;transform:translateX(-50%)}
@@ -649,7 +649,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
     <div class="editorCard">
       <div class="editorCardTitle">ILLUMINAZIONE GENERALE</div>
-      <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.45" max="3.0" step="0.05" value="1.18"><span id="editLightv" class="editorValue">1.32</span></div>
+      <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.55" max="1.80" step="0.05" value="1.08"><span id="editLightv" class="editorValue">1.08</span></div>
     </div>
 
     <div class="editorCard">
@@ -721,7 +721,7 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
 let adminSession=null,isAdmin=false,adminOperatorPreview=sessionStorage.getItem('mcrAdminOperatorPreview')==='1';
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;game.appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.35));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.08;game.appendChild(renderer.domElement);
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x171d22);scene.fog=new THREE.FogExp2(0x171d22,.0065);const normalSceneFog=scene.fog;
 function gameBaseFov(){const touchLike=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;return touchLike?(innerWidth>innerHeight?92:88):82}
 function thirdPersonBaseFov(){const touchLike=mobileDevice();return touchLike?(innerWidth>innerHeight?88:86):78}const camera=new THREE.PerspectiveCamera(gameBaseFov(),innerWidth/innerHeight,.04,100);const topCamera=new THREE.OrthographicCamera(-16,16,10,-10,.1,100);topCamera.position.set(0,24,5.8);topCamera.up.set(0,0,-1);topCamera.lookAt(0,0,0);{const a=innerWidth/innerHeight,h=10;topCamera.left=-h*a;topCamera.right=h*a;topCamera.top=h;topCamera.bottom=-h;topCamera.updateProjectionMatrix();}
@@ -823,7 +823,7 @@ function makeBlackoutWoodTexture(){
  }
  const t=new THREE.CanvasTexture(cv);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3.5,2.25);t.anisotropy=8;return t;
 }
-const dark=mat(0x707679,.76,.03), black=mat(0x0b1014,.42,.32), steel=mat(0x626c73,.34,.70), deskMat=mat(0x151b20,.42,.22);
+const dark=mat(0x666d70,.78,.02), black=mat(0x080c10,.40,.34), steel=mat(0x59636a,.36,.68), deskMat=mat(0x11161a,.38,.24);
 const floorMat=new THREE.MeshPhysicalMaterial({color:0xffffff,map:makeBlackoutWoodTexture(),roughness:.38,metalness:.02,clearcoat:.38,clearcoatRoughness:.32});
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xb9d0dd,transparent:true,opacity:.13,roughness:.06,transmission:.42,thickness:.06});
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
@@ -1123,13 +1123,13 @@ function buildRoom(){
  const extinguisher=cyl(.2,.24,.9,mat(0xa9151f,.35,.35),12.4,.46,6.25);
  reg(extinguisher,'extinguisher',2,650,'dynamic');
 }
-scene.add(new THREE.AmbientLight(0xc4d0d6,.72));
-scene.add(new THREE.HemisphereLight(0xd5e2e8,0x473326,.92));
-const playerFillLight=new THREE.PointLight(0xeaf4f8,1.65,3.5,2);playerFillLight.position.set(.25,1.7,.95);player.add(playerFillLight);
-const sun=new THREE.DirectionalLight(0xe7edf0,1.55);sun.position.set(5.5,10,4.5);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=14;sun.shadow.camera.bottom=-14;sun.shadow.camera.near=.5;sun.shadow.camera.far=32;sun.shadow.bias=-.00035;scene.add(sun);
-for(const x of [-9,-3,3,9]){let l=new THREE.PointLight(0xffead5,5.8,10,2);l.position.set(x,4.55,1.2);scene.add(l)}
-for(const x of [-5,0,5]){let l=new THREE.PointLight(0x8bc7ef,4.4,8.5,2);l.position.set(x,3.35,-6.9);scene.add(l)}
-const consoleFill=new THREE.PointLight(0xa7d8ff,3.2,9,2);consoleFill.position.set(0,2.4,-4.8);scene.add(consoleFill);
+scene.add(new THREE.AmbientLight(0xb8c4ca,.28));
+scene.add(new THREE.HemisphereLight(0xc7d5dc,0x3d2c23,.44));
+const playerFillLight=new THREE.PointLight(0xeaf4f8,1.05,3.6,2);playerFillLight.position.set(.25,1.7,.95);player.add(playerFillLight);
+const sun=new THREE.DirectionalLight(0xe1e7ea,1.02);sun.position.set(5.5,10,4.5);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=14;sun.shadow.camera.bottom=-14;sun.shadow.camera.near=.5;sun.shadow.camera.far=32;sun.shadow.bias=-.00035;scene.add(sun);
+for(const x of [-9,-3,3,9]){let l=new THREE.PointLight(0xffdfbd,1.15,8.5,2);l.position.set(x,4.55,1.2);scene.add(l)}
+for(const x of [-5,0,5]){let l=new THREE.PointLight(0x74b5e6,.95,7.5,2);l.position.set(x,3.35,-6.9);scene.add(l)}
+const consoleFill=new THREE.PointLight(0x8fc8f0,.78,8,2);consoleFill.position.set(0,2.4,-4.8);scene.add(consoleFill);
 buildRoom();totalEl.textContent=activeBreakableCount();queueMicrotask(updateBlackoutHud);
 const baseObjectCount=destruct.length;
 let stableObjectSourceIndex=0,stableEditorSurfaceIndex=-1;
@@ -1274,7 +1274,7 @@ function ensureLayoutObjects(items){
 function applySavedLayout(){
  try{
   const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
-  if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
+  if(saved.exposure){const ex=THREE.MathUtils.clamp(Number(saved.exposure)||1.08,.55,1.80);renderer.toneMappingExposure=ex;editLight.value=ex;editLightv.textContent=ex.toFixed(2)}
   if(saved.characterStyles){mergeCharacterStyles(saved.characterStyles);pendingCharacterStyles=saved.characterStyles;queueMicrotask(applyAllCharacterStyles)}
   if(saved.playerModelUrl){
     expectedPlayerModelUrl=saved.playerModelUrl;
@@ -3007,7 +3007,7 @@ function saveLayout(){
 function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.stringify(layoutData()))))}
 function applyLayoutData(data){
  if(!data)return;
- if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
+ if(data.exposure){const ex=THREE.MathUtils.clamp(Number(data.exposure)||1.08,.55,1.80);renderer.toneMappingExposure=ex;editLight.value=ex;editLightv.textContent=ex.toFixed(2)}
  if(data.characterStyles){mergeCharacterStyles(data.characterStyles);pendingCharacterStyles=data.characterStyles;queueMicrotask(applyAllCharacterStyles)}
  if(Array.isArray(data.items))applyStableLayoutItems(data.items);
  if(data.playerModelUrl){
@@ -3056,7 +3056,7 @@ function resetSelectedObjects(){
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 }
 function restoreOriginalLayout(){
- destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);d.startScale.copy(d.origScale);if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}});renderer.toneMappingExposure=1.18;editLight.value='1.18';editLightv.textContent='1.18';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);if(topViewMode)buildTopPlanHelpers();show('LAYOUT ORIGINALE RIPRISTINATO');
+ destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);d.startScale.copy(d.origScale);if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}});renderer.toneMappingExposure=1.08;editLight.value='1.08';editLightv.textContent='1.08';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);if(topViewMode)buildTopPlanHelpers();show('LAYOUT ORIGINALE RIPRISTINATO');
 }
 function editorNpcPick(clientX,clientY){
  const rect=renderer.domElement.getBoundingClientRect();editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());
