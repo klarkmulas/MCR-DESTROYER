@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.10';
+ const PWA_VERSION='2026.09.28.11';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1232,11 +1232,12 @@ function animateOffice(dt,speedRatio,run){
  if(moving&&!attacking)walkPhase+=dt*(run?10.4:6.7)*Math.max(.38,speedRatio);
  else if(!attacking)walkPhase+=dt*.65;
  const s=Math.sin(walkPhase),c2=Math.cos(walkPhase),k=1-Math.exp(-16*dt);
- const stride=(run ? .78 : .50)*speedRatio;
+ const stride=(officeRig.custom?(run ? .56 : .36):(run ? .78 : .50))*speedRatio;
  const movingS=moving?s:0,opp=-movingS;
 
  let lLegX=movingS*stride,rLegX=opp*stride;
- let lKnee=Math.max(0,-movingS)*.78*speedRatio,rKnee=Math.max(0,-opp)*.78*speedRatio;
+ const kneeAmp=officeRig.custom?.48:.78;
+ let lKnee=Math.max(0,-movingS)*kneeAmp*speedRatio,rKnee=Math.max(0,-opp)*kneeAmp*speedRatio;
  let lArmX=opp*stride*.62,rArmX=movingS*stride*.56;
  let lForeX=-.10+Math.max(0,opp)*.13*speedRatio,rForeX=-.12+Math.max(0,movingS)*.08*speedRatio;
  let rArmY=0,rArmZ=0,rForeY=0,rForeZ=0,lArmY=0;
@@ -1293,7 +1294,12 @@ function animateOffice(dt,speedRatio,run){
    obj.rotation[axis]=THREE.MathUtils.lerp(obj.rotation[axis],target,k);
  };
  set(officeRig.lLeg,'x',lLegX);set(officeRig.rLeg,'x',rLegX);
- set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
+ if(officeRig.custom){
+   applyCustomKnee(officeRig.lShin,officeRig.kneeBend?.left,lKnee,k);
+   applyCustomKnee(officeRig.rShin,officeRig.kneeBend?.right,rKnee,k);
+ }else{
+   set(officeRig.lShin,'x',lKnee);set(officeRig.rShin,'x',rKnee);
+ }
  set(officeRig.lArm,'x',lArmX);set(officeRig.lArm,'y',lArmY);set(officeRig.lArm,'z',0);
  set(officeRig.rArm,'x',rArmX);set(officeRig.rArm,'y',rArmY);set(officeRig.rArm,'z',rArmZ);
  set(officeRig.lFore,'x',lForeX);set(officeRig.lFore,'y',0);set(officeRig.lFore,'z',0);
@@ -1325,8 +1331,9 @@ try{
 if(expectedPlayerModelUrl&&fallbackBodyRoot)fallbackBodyRoot.visible=false;
 const fbxLoader=new FBXLoader();
 const gltfCharacterLoader=new GLTFLoader();
-const _customBatPos=new THREE.Vector3(),_customBatWorldQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_customBatQ=new THREE.Quaternion();
-const _customBatOffsetQ=new THREE.Quaternion().setFromEuler(new THREE.Euler(.08,-.06,-.22,'XYZ'));
+const _customBatPos=new THREE.Vector3(),_customBatHand=new THREE.Vector3(),_customBatGrip=new THREE.Vector3(),_customForePos=new THREE.Vector3(),_customBatDir=new THREE.Vector3(),_customBatLocalDir=new THREE.Vector3(),_customPlayerForward=new THREE.Vector3(),_customBatY=new THREE.Vector3(0,1,0);
+const _customBatQ=new THREE.Quaternion(),_playerWorldQ=new THREE.Quaternion(),_playerWorldInvQ=new THREE.Quaternion();
+const _kneeAxisX=new THREE.Vector3(1,0,0),_kneeAxisY=new THREE.Vector3(0,1,0),_kneeAxisZ=new THREE.Vector3(0,0,1),_kneeDeltaQ=new THREE.Quaternion(),_kneeTargetQ=new THREE.Quaternion(),_kneeTestQ=new THREE.Quaternion(),_kneeFootBase=new THREE.Vector3(),_kneeFootTest=new THREE.Vector3();
 
 function normalizedBoneName(name=''){
  return name.toLowerCase().replace(/[^a-z0-9]/g,'').replace(/^mixamorig/,'');
@@ -1412,14 +1419,53 @@ function applyRigPoseNow(rig){
    if(obj&&base)obj.rotation.copy(base);
  }
 }
+
+function calibrateKneeBend(shin,foot){
+ if(!shin||!foot)return {axis:'x',sign:1};
+ shin.updateWorldMatrix(true,true);foot.getWorldPosition(_kneeFootBase);
+ const original=shin.quaternion.clone();
+ const tests=[['x',_kneeAxisX],['y',_kneeAxisY],['z',_kneeAxisZ]];
+ let best={axis:'x',sign:1,score:-Infinity};
+ for(const [axis,v] of tests){
+   for(const sign of [-1,1]){
+     shin.quaternion.copy(original).multiply(_kneeTestQ.setFromAxisAngle(v,sign*.18));
+     shin.updateWorldMatrix(true,true);foot.getWorldPosition(_kneeFootTest);
+     // A valid knee flexion mainly raises the foot. Penalize excessive sideways motion.
+     const dy=_kneeFootTest.y-_kneeFootBase.y;
+     const lateral=Math.hypot(_kneeFootTest.x-_kneeFootBase.x,_kneeFootTest.z-_kneeFootBase.z);
+     const score=dy*4-lateral*.10;
+     if(score>best.score)best={axis,sign,score};
+   }
+ }
+ shin.quaternion.copy(original);shin.updateWorldMatrix(true,true);
+ return {axis:best.axis,sign:best.sign};
+}
+function kneeAxisVector(axis){
+ return axis==='y'?_kneeAxisY:(axis==='z'?_kneeAxisZ:_kneeAxisX);
+}
+function applyCustomKnee(shin,spec,amount,k){
+ if(!shin)return;
+ const baseQ=officeRig.baseQ?.get(shin);
+ if(!baseQ)return;
+ const s=spec||{axis:'x',sign:1};
+ const bend=THREE.MathUtils.clamp(Number(amount)||0,0,.52);
+ _kneeDeltaQ.setFromAxisAngle(kneeAxisVector(s.axis),s.sign*bend);
+ _kneeTargetQ.copy(baseQ).multiply(_kneeDeltaQ);
+ shin.quaternion.slerp(_kneeTargetQ,k);
+}
+
 function captureRigBase(rig){
  rig.custom=true;
  relaxHumanRigWorld(rig);
- const base=new Map(),pose=new Map();
- for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lHand','rHand','lLeg','rLeg','lShin','rShin']){
-   const o=rig[key];if(o&&!base.has(o))base.set(o,o.rotation.clone());
+ const base=new Map(),baseQ=new Map(),pose=new Map();
+ for(const key of ['pelvis','torsoPivot','head','lArm','rArm','lFore','rFore','lHand','rHand','lLeg','rLeg','lShin','rShin','lFoot','rFoot']){
+   const o=rig[key];if(o&&!base.has(o)){base.set(o,o.rotation.clone());baseQ.set(o,o.quaternion.clone())}
  }
- rig.base=base;rig.pose=pose;
+ rig.base=base;rig.baseQ=baseQ;rig.pose=pose;
+ rig.kneeBend={
+   left:calibrateKneeBend(rig.lShin,rig.lFoot),
+   right:calibrateKneeBend(rig.rShin,rig.rFoot)
+ };
  return rig;
 }
 
@@ -1429,6 +1475,7 @@ function setFallbackCharacter(){
  if(fallbackBodyRoot)fallbackBodyRoot.visible=true;
  if(batPivot.parent!==fallbackOfficeRig.rHand)fallbackOfficeRig.rHand.add(batPivot);
  batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);batPivot.scale.set(1,1,1);batPivot.visible=true;
+ bat.position.set(.22,.18,0);bat.rotation.set(0,0,-.55);
  playerModelUrl=null;expectedPlayerModelUrl=null;customAvatarLoadingUrl=null;
  if(fallbackBodyRoot)fallbackBodyRoot.visible=true;
  syncCharacterViewVisibility();
@@ -1436,19 +1483,44 @@ function setFallbackCharacter(){
  if(characterStatus)characterStatus.textContent='Personaggio originale attivo.';
 }
 function customBatFollowHand(){
- if(!officeRig?.custom||!officeRig.rHand)return;
- officeRig.rHand.updateWorldMatrix(true,false);
- officeRig.rHand.getWorldPosition(_customBatPos);
- officeRig.rHand.getWorldQuaternion(_customBatWorldQ);
+ if(!officeRig?.custom||!officeRig.rHand||!officeRig.rFore)return;
+
+ officeRig.rHand.updateWorldMatrix(true,true);
+ officeRig.rFore.updateWorldMatrix(true,true);
+ officeRig.rHand.getWorldPosition(_customBatHand);
+ officeRig.rFore.getWorldPosition(_customForePos);
+
+ // Se esiste la prima falange del dito medio/indice, sposta il punto dal polso
+ // verso il vero centro del palmo.
+ _customBatGrip.copy(_customBatHand);
+ if(officeRig.rGrip){
+   officeRig.rGrip.updateWorldMatrix(true,false);
+   officeRig.rGrip.getWorldPosition(_customBatPos);
+   _customBatGrip.lerp(_customBatPos,.62);
+ }
+
+ // Direzione naturale: prosecuzione dell'avambraccio oltre la mano,
+ // con un piccolo contributo in avanti per non appoggiarla sulla gamba.
+ _customBatDir.copy(_customBatHand).sub(_customForePos).normalize();
  player.getWorldQuaternion(_playerWorldQ);
- _playerWorldQ.invert();
- _customBatQ.copy(_playerWorldQ).multiply(_customBatWorldQ).multiply(_customBatOffsetQ);
+ _customPlayerForward.set(0,0,-1).applyQuaternion(_playerWorldQ).normalize();
+ _customBatDir.multiplyScalar(.88).addScaledVector(_customPlayerForward,.18).normalize();
+
+ // batPivot è figlio di player: convertiamo punto di presa e direzione in locale.
+ _customBatPos.copy(_customBatGrip);
  player.worldToLocal(_customBatPos);
+ _playerWorldInvQ.copy(_playerWorldQ).invert();
+ _customBatLocalDir.copy(_customBatDir).applyQuaternion(_playerWorldInvQ).normalize();
+ _customBatQ.setFromUnitVectors(_customBatY,_customBatLocalDir);
+
  batPivot.position.copy(_customBatPos);
  batPivot.quaternion.copy(_customBatQ);
- // Il modello custom ha proporzioni reali: una mazza leggermente più compatta
- // evita che attraversi busto e camera.
- batPivot.scale.set(.76,.76,.76);
+ batPivot.scale.set(.74,.74,.74);
+
+ // Il pivot coincide con l'impugnatura. Il cilindro parte poco sotto il palmo
+ // e prosegue oltre la mano: visivamente la mano avvolge davvero il manico.
+ bat.position.set(0,.43,0);
+ bat.rotation.set(0,0,0);
 }
 
 
@@ -1564,7 +1636,9 @@ async function loadCustomCharacterModel(url,formatHint=''){
      lShin:findMixamoBone(model,['LeftLeg']),
      rShin:findMixamoBone(model,['RightLeg']),
      lHand:findMixamoBone(model,['LeftHand']),
-     rHand:findMixamoBone(model,['RightHand'])
+     rHand:findMixamoBone(model,['RightHand']),
+     lFoot:findMixamoBone(model,['LeftFoot']),
+     rFoot:findMixamoBone(model,['RightFoot'])
    };
    const missing=Object.entries(rigMap).filter(([,v])=>!v).map(([k])=>k);
    if(missing.length){
@@ -1576,8 +1650,9 @@ async function loadCustomCharacterModel(url,formatHint=''){
      throw new Error('Ossa mancanti: '+missing.join(', '));
    }
 
-   const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,lHand,rHand}=rigMap;
-   officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lHand,rHand,lLeg,rLeg,lShin,rShin});
+   const {hips,spine,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,lHand,rHand,lFoot,rFoot}=rigMap;
+   const rGrip=findMixamoBone(model,['RightHandMiddle1','RightHandIndex1','RightHandRing1']);
+   officeRig=captureRigBase({pelvis:hips,hip:hips,torsoPivot:spine,head,lArm,rArm,lFore,rFore,lHand,rHand,rGrip,lLeg,rLeg,lShin,rShin,lFoot,rFoot});
    applyRigPoseNow(officeRig);
    model.updateMatrixWorld(true);
    if(fallbackBodyRoot)fallbackBodyRoot.visible=false;
