@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.3';
+ const PWA_VERSION='2026.09.28.4';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -154,12 +154,21 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .onlineDot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:#425466;box-shadow:0 0 0 0 transparent}.onlineDot.on{background:#52df8b;box-shadow:0 0 12px #52df8b88}.statsFoot{margin-top:9px;font-size:9px;color:#708aa2;line-height:1.4}
 @media(max-width:700px){#adminStatsBtn{right:10px;top:10px;font-size:9px;padding:8px 10px}#adminStats{left:8px;right:8px;top:52px;width:auto;max-width:360px;margin:auto}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
 #adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
-#roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(520px,96vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
+#roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(520px,96vw);overflow:auto;padding:0;border-radius:18px;background:#08111bf7;border:1px solid #6ab8ff55;backdrop-filter:blur(14px);box-shadow:0 18px 50px #000c;color:#ddecfa;scrollbar-width:thin}
+.editorHead{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 10px;background:linear-gradient(180deg,#0a1724 72%,#0a1724e8 88%,transparent);border-bottom:1px solid #ffffff10}.editorHead h3{margin:3px 0 2px!important;font-size:20px!important}.editorSectionTitle{font-size:11px;color:#85a4bf}.editorClose{width:34px;height:34px;border-radius:10px;border:1px solid #ffffff18;background:#172536;color:#fff;font-weight:900;font-size:16px}.editorClose:hover{background:#5a2029}
+.editorCameraBar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px 5px}.editorCameraBar button{padding:8px 4px;border-radius:9px;border:1px solid #ffffff15;background:#112233;color:#dff2ff;font-size:9px;font-weight:900}.editorCameraBar button:hover{background:#176bb0}.editorCameraHint{padding:0 15px 10px;font-size:9px;color:#718ca5;text-align:center}
+.editorNav{position:sticky;top:73px;z-index:4;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 10px;background:#09141ff4;border-top:1px solid #ffffff0c;border-bottom:1px solid #ffffff12}.editorNavBtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:9px;background:transparent;color:#7992a8;font-size:15px}.editorNavBtn span{font-size:7px;font-weight:900;letter-spacing:.25px}.editorNavBtn.active{background:#176bb029;color:#77c8ff}.editorNavBtn:hover{background:#ffffff0a;color:#fff}
+.editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}
+.editorSection{display:none;padding:14px 14px 90px}.editorSection.active{display:block}.editorSectionHead{display:flex;gap:10px;align-items:center;margin:2px 0 12px}.editorSectionHead>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#176bb025;border:1px solid #51baff33;font-size:20px}.editorSectionHead h4{margin:0;font-size:14px;color:#f3f9ff}.editorSectionHead p{margin:3px 0 0;font-size:9px;color:#7f9ab1}
+.editorWelcome{text-align:center;padding:18px 8px 12px}.editorWelcomeIcon{font-size:38px}.editorWelcome h4{font-size:18px;margin:7px 0}.editorWelcome p{font-size:10px;color:#88a0b5;line-height:1.45;max-width:390px;margin:0 auto}.editorChoiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.editorChoiceGrid button{min-height:92px;text-align:left;padding:12px;border-radius:12px;border:1px solid #ffffff12;background:#0f1d2a;color:white}.editorChoiceGrid button:first-child{grid-column:1/-1}.editorChoiceGrid button:hover{background:#142b3e;border-color:#4db8ff44}.editorChoiceGrid b{display:block;font-size:11px;margin-bottom:5px}.editorChoiceGrid span{font-size:9px;color:#829bb0;line-height:1.35}.editorTip{margin-top:10px;padding:9px 10px;border-radius:9px;background:#176bb014;color:#86aac5;font-size:9px;line-height:1.4}
+.editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
+.editorSaveBar{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1.35fr;gap:7px;padding:10px 14px 14px;background:linear-gradient(0deg,#08111b 75%,#08111be8 90%,transparent)}.editorSaveBar button{padding:11px;border-radius:10px;border:1px solid #ffffff16;background:#162839;color:#eaf6ff;font-size:10px;font-weight:900}.editorSaveBar .save{background:#176bb0}
+body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.characterColorGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:7px 0}.characterColorGrid label{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:7px;padding:7px 8px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05}.characterColorGrid span{font-size:9px;color:#9eb9cf;font-weight:800}.characterColorGrid input[type=color]{width:42px;height:30px;padding:1px;border:0;background:transparent}.characterBox select,#characterEditorPro select,#characterEditorPro input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){
  .controls{grid-template-columns:repeat(2,1fr)}.panel{padding:22px 16px}.left{left:8px;top:8px;min-width:142px}.right{right:8px;top:8px;min-width:160px;max-width:45vw}.glass{padding:9px 11px}.big{font-size:21px}.sub{font-size:9px}.label{font-size:8px}#combo{top:72px;font-size:16px}#cross{display:block;transform:translate(-50%,-50%) scale(.78)}
  #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
- #roomEditor{left:8px;right:8px;top:8px;bottom:8px;width:auto}
+ #roomEditor{left:6px;right:6px;top:6px;bottom:6px;width:auto}.editorNav{top:72px}.editorChoiceGrid{grid-template-columns:1fr}.editorChoiceGrid button:first-child{grid-column:auto}.editorButtonGrid3{grid-template-columns:repeat(2,1fr)}
 }
 body.mobile-game-fullscreen,body.mobile-game-fullscreen html{width:100%;height:100%;overflow:hidden}
 body.mobile-game-fullscreen{position:fixed;inset:0;margin:0;padding:0;overscroll-behavior:none;background:#000}
@@ -365,144 +374,262 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 </div>
 <button id="adminBtn" class="hidden">ADMIN</button><div id="adminStatus" class="hidden">ADMIN ATTIVO</div><button id="operatorPreviewBtn" class="hidden">👤 PROVA OPERATORE</button><button id="editorBtn" class="hidden">🛠 MODIFICA SALA</button>
 <div id="roomEditor" class="hidden">
-  <h3>EDITOR MCR</h3>
-  <p class="hint"><b>Shift / Ctrl + click</b> seleziona più oggetti · poi trascina QUALSIASI oggetto già selezionato per spostarli tutti insieme · <b>Ctrl+A</b> seleziona tutti gli oggetti · <b>Frecce</b> spostano il gruppo · <b>Ctrl+C / Ctrl+V</b> copia/incolla · <b>Ctrl+D</b> duplica · <b>Canc</b> elimina.<br><b>SALVA PER TUTTI</b> pubblica la sala per tutti gli utenti.</p>
-  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="editorFreeCamera">🎥 CAMERA LIBERA</button><button id="editorFocusSelection">🎯 FOCUS SELEZIONE</button><button id="editorResetCamera">↺ RESET CAMERA</button><button id="selectAll">SELEZIONA TUTTI</button><button id="moveAll">SPOSTA TUTTI</button><button id="clearSelection">DESELEZIONA</button></div>
-  <div class="structureHint"><b>CAMERA:</b> W A S D = movimento · Q/E = giù/su · Shift = veloce · tasto destro + trascina = ruota · rotella = avanti/indietro · F = focus oggetto · R = reset camera · T = pianta.</div>
-  <div id="selectedName">Nessun oggetto selezionato</div>
-  <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
-  <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
-  <div class="editorRow"><label>Y / altezza</label><input id="editY" type="range" min="-2" max="12" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
-  <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-38" max="38" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
-  <div class="editorRow"><label>Rotazione</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
-  <div class="editorRow"><label>Larghezza X</label><input id="editSX" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
-  <div class="editorRow"><label>Altezza Y</label><input id="editSY" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
-  <div class="editorRow"><label>Profondità Z</label><input id="editSZ" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
-  <div class="nudge"><button id="nudgeLeft">X−</button><button id="nudgeRight">X+</button><button id="nudgeBack">Z−</button><button id="nudgeFront">Z+</button></div>
-  <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.45" max="3.0" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
-  <div class="screenBox" id="mapProBox">
-    <div class="proBadge">🏗 EDITOR MAPPA PRO v1</div>
-    <div class="label">NUOVO AMBIENTE</div>
-    <input id="roomNameInput" type="text" maxlength="40" placeholder="Nome ambiente (es. Data Center)">
-    <div class="proGrid three">
-      <div class="proField"><span>LARGHEZZA</span><input id="roomWidthInput" type="number" min="3" max="20" step="0.5" value="8"></div>
-      <div class="proField"><span>PROFONDITÀ</span><input id="roomDepthInput" type="number" min="3" max="20" step="0.5" value="6"></div>
-      <div class="proField"><span>ALTEZZA</span><input id="roomHeightInput" type="number" min="2.4" max="6" step="0.1" value="3"></div>
+  <div class="editorHead">
+    <div>
+      <div class="proBadge">MCR EDITOR</div>
+      <h3>MODIFICA IL GIOCO</h3>
+      <div id="editorSectionTitle" class="editorSectionTitle">Scegli cosa vuoi modificare</div>
     </div>
-    <button id="createRoomKit">＋ CREA STANZA COMPLETA</button>
-    <div class="structureHint">Crea pavimento, soffitto, pareti e una porta automatica. La stanza viene generata davanti al giocatore e resta modificabile pezzo per pezzo.</div>
+    <button id="closeEditor" class="editorClose" title="Chiudi editor">✕</button>
+  </div>
 
-    <div class="label" style="margin-top:12px">ELEMENTI ARCHITETTONICI</div>
-    <div class="structureGrid">
-      <button id="addFloor">＋ PAVIMENTO</button>
-      <button id="addCeiling">＋ SOFFITTO</button>
-      <button id="addDoor">＋ PORTA</button>
-      <button id="addLight">＋ LUCE</button>
-      <button id="addPicture">＋ PANNELLO IMMAGINE</button>
-      <button id="addWallPro">＋ PARETE PRO</button>
+  <div class="editorCameraBar">
+    <button id="topView">⬇ PIANTA</button>
+    <button id="editorFreeCamera">🎥 LIBERA</button>
+    <button id="editorFocusSelection">🎯 FOCUS</button>
+    <button id="editorResetCamera">↺ RESET</button>
+  </div>
+  <div class="editorCameraHint">WASD muove · Q/E altezza · tasto destro ruota · rotella avanza · Shift accelera</div>
+
+  <div class="editorNav">
+    <button class="editorNavBtn active" data-editor-open="home">⌂<span>HOME</span></button>
+    <button class="editorNavBtn" data-editor-open="map">🏗<span>MAPPA</span></button>
+    <button class="editorNavBtn" data-editor-open="objects">🪑<span>OGGETTI</span></button>
+    <button class="editorNavBtn" data-editor-open="characters">🧍<span>PERSONAGGI</span></button>
+    <button class="editorNavBtn" data-editor-open="screens">🖥<span>SCHERMI</span></button>
+    <button class="editorNavBtn" data-editor-open="settings">⚙<span>ALTRO</span></button>
+  </div>
+
+  <div id="editorSelectionBar" class="editorSelectionBar">
+    <div>
+      <div class="editorMiniLabel">SELEZIONE</div>
+      <div id="selectedName">Nessun oggetto selezionato</div>
+      <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
+    </div>
+    <button id="clearSelection" class="editorTinyBtn">DESELEZIONA</button>
+  </div>
+
+  <section class="editorSection active" data-editor-section="home">
+    <div class="editorWelcome">
+      <div class="editorWelcomeIcon">🛠</div>
+      <h4>Cosa vuoi modificare?</h4>
+      <p>Scegli una sezione. L'editor aprirà anche automaticamente il pannello giusto quando selezioni qualcosa nella sala.</p>
+    </div>
+    <div class="editorChoiceGrid">
+      <button data-editor-open="map"><b>🏗 MAPPA E STANZE</b><span>Crea ambienti, pareti, porte, pavimenti, luci e colori.</span></button>
+      <button data-editor-open="objects"><b>🪑 OGGETTI</b><span>Sposta, ruota, ridimensiona, duplica o elimina elementi.</span></button>
+      <button data-editor-open="characters"><b>🧍 PERSONAGGI</b><span>Modifica player e NPC, colori, viso, vestiti e modello 3D.</span></button>
+      <button data-editor-open="screens"><b>🖥 SCHERMI E TV</b><span>Immagini, preset, video e contenuti dei monitor.</span></button>
+      <button data-editor-open="settings"><b>⚙ IMPOSTAZIONI</b><span>Luminosità, selezione multipla, layout e strumenti avanzati.</span></button>
+    </div>
+    <div class="editorTip"><b>Suggerimento:</b> clicca direttamente un monitor, una parete o un oggetto nella scena: ti porterò automaticamente nella sezione più utile.</div>
+  </section>
+
+  <section class="editorSection" data-editor-section="map">
+    <div class="editorSectionHead"><span>🏗</span><div><h4>MAPPA E STANZE</h4><p>Costruisci e personalizza gli ambienti.</p></div></div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">CREA UNA NUOVA STANZA</div>
+      <input id="roomNameInput" type="text" maxlength="40" placeholder="Nome ambiente, es. Data Center">
+      <div class="proGrid three">
+        <div class="proField"><span>LARGHEZZA</span><input id="roomWidthInput" type="number" min="3" max="20" step="0.5" value="8"></div>
+        <div class="proField"><span>PROFONDITÀ</span><input id="roomDepthInput" type="number" min="3" max="20" step="0.5" value="6"></div>
+        <div class="proField"><span>ALTEZZA</span><input id="roomHeightInput" type="number" min="2.4" max="6" step="0.1" value="3"></div>
+      </div>
+      <button id="createRoomKit" class="editorPrimaryWide">＋ CREA STANZA COMPLETA</button>
     </div>
 
-    <div class="label" style="margin-top:12px">ASPETTO OGGETTI SELEZIONATI</div>
-    <div class="appearanceRow"><label>Colore</label><input id="surfaceColor" type="color" value="#445566"></div>
-    <div class="appearanceRow"><label>Materiale</label>
-      <select id="surfaceMaterial">
-        <option value="matte">Opaco</option>
-        <option value="plastic">Plastica</option>
-        <option value="metal">Metallo</option>
-        <option value="glass">Vetro</option>
+    <div class="editorCard">
+      <div class="editorCardTitle">AGGIUNGI ALLA MAPPA</div>
+      <div class="editorButtonGrid3">
+        <button id="addWallPro">▥ PARETE</button>
+        <button id="addDoor">🚪 PORTA</button>
+        <button id="addFloor">▰ PAVIMENTO</button>
+        <button id="addCeiling">▱ SOFFITTO</button>
+        <button id="addLight">💡 LUCE</button>
+        <button id="addPicture">🖼 IMMAGINE</button>
+        <button id="addGlassPanel">◇ VETRATA</button>
+        <button id="addColumn">▮ COLONNA</button>
+        <button id="addWall">＋ PARETE BASE</button>
+      </div>
+    </div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">ASPETTO DELL'ELEMENTO SELEZIONATO</div>
+      <div class="appearanceRow"><label>Colore</label><input id="surfaceColor" type="color" value="#445566"></div>
+      <div class="appearanceRow"><label>Materiale</label>
+        <select id="surfaceMaterial">
+          <option value="matte">Opaco</option>
+          <option value="plastic">Plastica</option>
+          <option value="metal">Metallo</option>
+          <option value="glass">Vetro</option>
+        </select>
+      </div>
+      <button id="applySurfaceStyle" class="editorPrimaryWide">APPLICA COLORE / MATERIALE</button>
+      <div class="editorSubTitle">IMMAGINE / TEXTURE</div>
+      <input id="surfaceImageFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div class="structureGrid">
+        <button id="applySurfaceImage">USA IMMAGINE</button>
+        <button id="clearSurfaceTexture">RIMUOVI IMMAGINE</button>
+      </div>
+      <div class="appearanceRow"><label>Intensità luce</label><input id="lightIntensity" type="range" min="0" max="20" step="0.5" value="8"></div>
+    </div>
+  </section>
+
+  <section class="editorSection" data-editor-section="objects">
+    <div class="editorSectionHead"><span>🪑</span><div><h4>OGGETTI</h4><p>Posizione, rotazione e dimensioni dell'elemento selezionato.</p></div></div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">TRASFORMA</div>
+      <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
+      <div class="editorRow"><label>Y</label><input id="editY" type="range" min="-2" max="12" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
+      <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-38" max="38" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
+      <div class="editorRow"><label>Ruota</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
+      <div class="editorSubTitle">DIMENSIONI</div>
+      <div class="editorRow"><label>Larghezza</label><input id="editSX" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
+      <div class="editorRow"><label>Altezza</label><input id="editSY" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
+      <div class="editorRow"><label>Profondità</label><input id="editSZ" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
+      <div class="nudge"><button id="nudgeLeft">← X</button><button id="nudgeRight">X →</button><button id="nudgeBack">← Z</button><button id="nudgeFront">Z →</button></div>
+    </div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">AGGIUNGI OGGETTO BASE</div>
+      <div class="editorButtonGrid3">
+        <button id="addCube">＋ CUBO</button>
+        <button id="addGreenPanel">▣ PANNELLO</button>
+      </div>
+    </div>
+
+    <div class="editorActionGrid">
+      <button id="copySelected">COPIA</button>
+      <button id="duplicateSelected">DUPLICA</button>
+      <button id="resetSelected">RIPRISTINA</button>
+      <button id="deleteSelected" class="danger">ELIMINA</button>
+    </div>
+  </section>
+
+  <section class="editorSection" data-editor-section="characters">
+    <div class="editorSectionHead"><span>🧍</span><div><h4>PERSONAGGI</h4><p>Modifica il tuo personaggio e gli NPC.</p></div></div>
+
+    <div class="editorCard characterBox">
+      <div class="editorCardTitle">MODELLO 3D DEL GIOCATORE</div>
+      <input id="characterFile" type="file" accept=".fbx,model/fbx,application/octet-stream">
+      <div class="structureGrid">
+        <button id="uploadCharacterFile">CARICA FBX</button>
+        <button id="removeCharacterModel">RIPRISTINA MODELLO</button>
+      </div>
+      <div id="characterStatus" class="structureHint">Carica un personaggio FBX riggato Mixamo.</div>
+    </div>
+
+    <div class="editorCard" id="characterEditorPro">
+      <div class="editorCardTitle">ASPETTO</div>
+      <select id="characterTarget"><option value="player">Giocatore principale</option></select>
+      <button id="focusCharacter" class="editorPrimaryWide">🎯 MOSTRA PERSONAGGIO</button>
+
+      <div class="editorSubTitle">COLORI</div>
+      <div class="characterColorGrid">
+        <label><span>Pelle</span><input id="charSkinColor" type="color" value="#c88a68"></label>
+        <label><span>Maglia</span><input id="charShirtColor" type="color" value="#7f7f79"></label>
+        <label><span>Pantaloni</span><input id="charPantsColor" type="color" value="#24262b"></label>
+        <label><span>Capelli</span><input id="charHairColor" type="color" value="#2b211c"></label>
+        <label><span>Scarpe</span><input id="charShoesColor" type="color" value="#202329"></label>
+      </div>
+      <button id="applyCharacterColors" class="editorPrimaryWide">APPLICA COLORI</button>
+
+      <div class="editorSubTitle">FOTO SUL VISO</div>
+      <input id="facePhotoFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div class="structureGrid">
+        <button id="applyFacePhoto">APPLICA FOTO</button>
+        <button id="removeFacePhoto">RIMUOVI</button>
+      </div>
+
+      <div class="editorSubTitle">IMMAGINE SUL VESTITO</div>
+      <input id="clothingImageFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div class="structureGrid">
+        <button id="applyClothingImage">APPLICA SUL PETTO</button>
+        <button id="removeClothingImage">RIMUOVI</button>
+      </div>
+
+      <button id="resetCharacterStyle" class="editorSecondaryWide">RIPRISTINA ASPETTO</button>
+      <div id="characterEditStatus" class="structureHint">Scegli il personaggio che vuoi personalizzare.</div>
+    </div>
+  </section>
+
+  <section class="editorSection" data-editor-section="screens">
+    <div class="editorSectionHead"><span>🖥</span><div><h4>SCHERMI E TV</h4><p>Seleziona uno o più monitor nella sala.</p></div></div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">CONTENUTO SCHERMO</div>
+      <select id="screenPreset">
+        <option value="0">Multiview</option>
+        <option value="1">Dashboard tecnica</option>
+        <option value="2">Barre colore</option>
+        <option value="3">Log / playout</option>
       </select>
-    </div>
-    <div class="structureGrid">
-      <button id="applySurfaceStyle">APPLICA COLORE / MATERIALE</button>
-      <button id="clearSurfaceTexture">RIMUOVI IMMAGINE</button>
-    </div>
-    <input id="surfaceImageFile" type="file" accept="image/png,image/jpeg,image/webp">
-    <button id="applySurfaceImage">USA IMMAGINE COME TEXTURE</button>
-    <div class="appearanceRow"><label>Intensità luce</label><input id="lightIntensity" type="range" min="0" max="20" step="0.5" value="8"></div>
-    <div class="structureHint">Colore e texture vengono salvati nel layout globale. La regolazione luce agisce sugli elementi LUCE selezionati.</div>
-  </div>
+      <button id="applyScreenPreset" class="editorPrimaryWide">APPLICA PRESET</button>
 
-  <div class="structureBox">
-    <div class="label">AGGIUNGI STRUTTURA</div>
-    <div class="structureGrid">
-      <button id="addCube">＋ CUBO</button>
-      <button id="addColumn">＋ COLONNA</button>
-      <button id="addGlassPanel">＋ VETRATA</button>
-      <button id="addWall">＋ PARETE</button>
-      <button id="addGreenPanel">＋ PANNELLO</button>
+      <div class="editorSubTitle">IMMAGINE</div>
+      <input id="screenFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <button id="applyScreenFile" class="editorPrimaryWide">USA IMMAGINE</button>
+
+      <div class="editorSubTitle">VIDEO</div>
+      <input id="screenVideoUrl" type="url" placeholder="URL diretto .mp4 / .webm">
+      <div class="structureGrid">
+        <button id="applyScreenVideoUrl">APPLICA URL</button>
+        <button id="clearScreenVideo">RIMUOVI VIDEO</button>
+      </div>
+      <input id="screenVideoFile" type="file" accept="video/mp4,video/webm">
+      <button id="applyScreenVideoFile" class="editorPrimaryWide">CARICA VIDEO</button>
+      <div class="structureGrid">
+        <button id="screenVideoPlay">▶ PLAY</button>
+        <button id="screenVideoPause">⏸ PAUSA</button>
+      </div>
+      <label class="checkLine"><input id="screenVideoLoop" type="checkbox" checked> LOOP</label>
+      <label class="checkLine"><input id="screenVideoMuted" type="checkbox" checked> MUTO</label>
+      <div class="sliderRow"><span>Volume</span><input id="screenVideoVolume" type="range" min="0" max="1" step="0.05" value="0"><span id="screenVideoVolumeV" class="editorValue">0%</span></div>
+      <div id="screenMediaStatus" class="structureHint">Nessun monitor selezionato.</div>
     </div>
-    <div class="structureHint">L'oggetto viene creato vicino a te e resta modificabile con posizione, rotazione e dimensioni.</div>
-  </div>
-  <div class="screenBox">
-    <div class="label">SCHERMI SELEZIONATI</div>
-    <select id="screenPreset"><option value="0">Multiview</option><option value="1">Dashboard tecnica</option><option value="2">Barre colore</option><option value="3">Log / playout</option></select>
-    <button id="applyScreenPreset">APPLICA PRESET</button>
-    <input id="screenFile" type="file" accept="image/png,image/jpeg,image/webp">
-    <button id="applyScreenFile">USA IMMAGINE CARICATA</button>
-    <div class="label" style="margin-top:10px">VIDEO TV</div>
-    <input id="screenVideoUrl" type="url" placeholder="URL diretto video .mp4 / .webm oppure ./video.mp4">
-    <div class="structureGrid">
-      <button id="applyScreenVideoUrl">APPLICA VIDEO URL</button>
-      <button id="clearScreenVideo">RIMUOVI VIDEO</button>
-    </div>
-    <input id="screenVideoFile" type="file" accept="video/mp4,video/webm">
-    <button id="applyScreenVideoFile">PROVA VIDEO LOCALE</button>
-    <div class="structureGrid">
-      <button id="screenVideoPlay">▶ PLAY</button>
-      <button id="screenVideoPause">⏸ PAUSA</button>
-    </div>
-    <label class="checkLine"><input id="screenVideoLoop" type="checkbox" checked> LOOP</label>
-    <label class="checkLine"><input id="screenVideoMuted" type="checkbox" checked> MUTO</label>
-    <div class="sliderRow"><span>Volume</span><input id="screenVideoVolume" type="range" min="0" max="1" step="0.05" value="0"><span id="screenVideoVolumeV" class="editorValue">0%</span></div>
-    <div id="screenMediaStatus" class="structureHint">Seleziona un monitor nella sala, poi scegli immagine o video.</div>
-    <div class="structureHint">Video e immagini caricati dall’ADMIN vengono messi online. Dopo averli applicati, premi SALVA PER TUTTI per renderli visibili a tutti.</div>
-  </div>
-  <div class="screenBox characterBox">
-    <div class="label">PERSONAGGIO 3ª PERSONA</div>
-    <input id="characterFile" type="file" accept=".fbx,model/fbx,application/octet-stream">
-    <div class="structureGrid">
-      <button id="uploadCharacterFile">CARICA E PUBBLICA FBX</button>
-      <button id="removeCharacterModel">RIPRISTINA PERSONAGGIO</button>
-    </div>
-    <div id="characterStatus" class="structureHint">Puoi caricare un personaggio FBX riggato Mixamo. Il modello viene salvato nello Storage MCR e usato da tutti.</div>
-  </div>
-  <div class="screenBox" id="characterEditorPro">
-    <div class="proBadge">🧍 EDITOR PERSONAGGI PRO v1</div>
-    <div class="label">PERSONAGGIO DA MODIFICARE</div>
-    <select id="characterTarget">
-      <option value="player">Giocatore principale</option>
-    </select>
-    <div class="structureGrid">
-      <button id="focusCharacter">🎯 MOSTRA PERSONAGGIO</button>
-      <button id="resetCharacterStyle">RIPRISTINA ASPETTO</button>
+  </section>
+
+  <section class="editorSection" data-editor-section="settings">
+    <div class="editorSectionHead"><span>⚙</span><div><h4>IMPOSTAZIONI E STRUMENTI</h4><p>Comandi generali dell'editor.</p></div></div>
+
+    <div class="editorCard">
+      <div class="editorCardTitle">ILLUMINAZIONE GENERALE</div>
+      <div class="editorRow"><label>Luminosità</label><input id="editLight" type="range" min="0.45" max="3.0" step="0.05" value="1.32"><span id="editLightv" class="editorValue">1.32</span></div>
     </div>
 
-    <div class="label" style="margin-top:12px">COLORI</div>
-    <div class="characterColorGrid">
-      <label><span>Pelle</span><input id="charSkinColor" type="color" value="#c88a68"></label>
-      <label><span>Maglia</span><input id="charShirtColor" type="color" value="#7f7f79"></label>
-      <label><span>Pantaloni</span><input id="charPantsColor" type="color" value="#24262b"></label>
-      <label><span>Capelli</span><input id="charHairColor" type="color" value="#2b211c"></label>
-      <label><span>Scarpe</span><input id="charShoesColor" type="color" value="#202329"></label>
-    </div>
-    <button id="applyCharacterColors">APPLICA COLORI</button>
-
-    <div class="label" style="margin-top:12px">FOTO SUL VISO</div>
-    <input id="facePhotoFile" type="file" accept="image/png,image/jpeg,image/webp">
-    <div class="structureGrid">
-      <button id="applyFacePhoto">APPLICA FOTO VISO</button>
-      <button id="removeFacePhoto">RIMUOVI FOTO</button>
+    <div class="editorCard">
+      <div class="editorCardTitle">SELEZIONE MULTIPLA</div>
+      <div class="structureGrid">
+        <button id="selectAll">SELEZIONA TUTTI</button>
+        <button id="moveAll">SPOSTA TUTTI</button>
+      </div>
+      <div class="structureHint">Shift/Ctrl + click aggiunge oggetti alla selezione. Ctrl+A seleziona tutto.</div>
     </div>
 
-    <div class="label" style="margin-top:12px">IMMAGINE SUI VESTITI</div>
-    <input id="clothingImageFile" type="file" accept="image/png,image/jpeg,image/webp">
-    <div class="structureGrid">
-      <button id="applyClothingImage">APPLICA SUL PETTO</button>
-      <button id="removeClothingImage">RIMUOVI IMMAGINE</button>
+    <div class="editorCard">
+      <div class="editorCardTitle">LAYOUT</div>
+      <div class="structureGrid">
+        <button id="shareLayout">COPIA LINK LAYOUT</button>
+        <button id="resetLayout" class="danger">RIPRISTINA ORIGINALE</button>
+      </div>
     </div>
-    <div id="characterEditStatus" class="structureHint">Le foto vengono applicate come decal al volto e al petto. Premi SALVA PER TUTTI per pubblicare le modifiche.</div>
+
+    <div class="editorShortcutHelp">
+      <b>SCORCIATOIE</b>
+      <span>Ctrl+C / Ctrl+V · copia/incolla</span>
+      <span>Ctrl+D · duplica</span>
+      <span>Canc · elimina</span>
+      <span>Frecce · sposta selezione</span>
+      <span>F · focus · R · reset camera · T · pianta</span>
+    </div>
+  </section>
+
+  <div class="editorSaveBar">
+    <button id="publishLayout">💾 SOLO QUESTO PC</button>
+    <button id="saveLayout" class="save">☁ SALVA PER TUTTI</button>
   </div>
-  <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
 <div id="adminLogin" class="hidden">
   <div class="loginCard">
@@ -1914,6 +2041,24 @@ function updateFirstPersonView(dt,speedRatio,run){
  fpRig.weapon.rotation.y=THREE.MathUtils.lerp(fpRig.weapon.rotation.y,weaponY,k);
  fpRig.weapon.rotation.z=THREE.MathUtils.lerp(fpRig.weapon.rotation.z,weaponZ,k);
 }
+
+const EDITOR_SECTION_TITLES={home:'Scegli cosa vuoi modificare',map:'Mappa e stanze',objects:'Oggetti',characters:'Personaggi',screens:'Schermi e TV',settings:'Impostazioni e strumenti'};
+let currentEditorSection='home';
+function openEditorSection(name='home',announce=false){
+ if(!EDITOR_SECTION_TITLES[name])name='home';
+ currentEditorSection=name;
+ document.querySelectorAll('.editorSection').forEach(el=>el.classList.toggle('active',el.dataset.editorSection===name));
+ document.querySelectorAll('.editorNavBtn').forEach(el=>el.classList.toggle('active',el.dataset.editorOpen===name));
+ const title=q('#editorSectionTitle');if(title)title.textContent=EDITOR_SECTION_TITLES[name];
+ if(announce&&name!=='home')show(EDITOR_SECTION_TITLES[name].toUpperCase());
+ roomEditor?.scrollTo?.({top:0,behavior:'smooth'});
+}
+function editorSectionForObject(d){
+ if(!d)return null;
+ if(d.type==='monitor')return 'screens';
+ if(['wall','floor','ceiling','door','light','picture','glass','column','panel'].includes(d.type)||['roomWall','floor','ceiling','door','light','picture','glassPanel'].includes(d.customKind))return 'map';
+ return 'objects';
+}
 function editorLabel(d){const base=({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete',floor:'Pavimento',ceiling:'Soffitto',door:'Porta',light:'Luce',picture:'Pannello immagine'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1);return d?.roomName?base+' · '+d.roomName:base}
 function activeCamera(){return editorMode&&topViewMode?topCamera:camera}
 function clearEditHelpers(){for(const h of editHelpers)scene.remove(h);editHelpers=[]}
@@ -1939,6 +2084,7 @@ function selectEdit(d,additive=false){
    else{selectedEdits.add(d);selectedEdit=d}
  }else{selectedEdit=null;selectedEdits.clear()}
  rebuildEditHelpers();refreshEditorFields();
+ if(d&&!additive){const section=editorSectionForObject(d);if(section&&currentEditorSection!=='characters')openEditorSection(section,false)}
 }
 function selectAllObjects(){
  selectedEdits.clear();
@@ -2093,7 +2239,7 @@ function updateEditorCamera(dt){
 function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
  editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&cameraMode==='third';fpView.visible=started&&!on&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
- if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;avatar.visible=true;initEditorCamera(true);show('EDITOR SALA ATTIVO · CAMERA LIBERA');}
+ if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;avatar.visible=true;initEditorCamera(true);openEditorSection(currentEditorSection||'home',false);show('EDITOR SALA ATTIVO');}
  else{editDragging=false;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
 function selectedMonitorTargets(){
@@ -3055,6 +3201,7 @@ topViewBtn.onclick=()=>setTopView(!topViewMode);
 q('#editorFreeCamera').onclick=()=>{if(topViewMode)setTopView(false);initEditorCamera(true);show('CAMERA LIBERA ATTIVA')};
 q('#editorFocusSelection').onclick=focusEditorSelection;
 q('#editorResetCamera').onclick=resetEditorCamera;
+document.querySelectorAll('[data-editor-open]').forEach(btn=>btn.addEventListener('click',()=>openEditorSection(btn.dataset.editorOpen,true)));
 q('#selectAll').onclick=()=>{setMoveAllMode(false);selectAllObjects()};
 q('#moveAll').onclick=()=>setMoveAllMode(!moveAllMode);
 q('#clearSelection').onclick=()=>{setMoveAllMode(false);selectEdit(null)};
@@ -3109,8 +3256,8 @@ q('#addGlassPanel').onclick=()=>createCustomPrimitive('glassPanel');
 q('#addWall').onclick=()=>createCustomPrimitive('wall');
 q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
 
-characterTarget?.addEventListener('change',()=>{syncCharacterEditorUI();focusCharacterTarget()});
-q('#focusCharacter').onclick=focusCharacterTarget;
+characterTarget?.addEventListener('change',()=>{openEditorSection('characters',false);syncCharacterEditorUI();focusCharacterTarget()});
+q('#focusCharacter').onclick=()=>{openEditorSection('characters',false);focusCharacterTarget()};
 q('#applyCharacterColors').onclick=applyCharacterColorsFromUI;
 q('#resetCharacterStyle').onclick=resetSelectedCharacterStyle;
 q('#applyFacePhoto').onclick=()=>uploadCharacterImage(facePhotoFile.files?.[0],'face');
