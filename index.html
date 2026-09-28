@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.11';
+ const PWA_VERSION='2026.09.28.12';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -158,10 +158,10 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .editorHead{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 10px;background:linear-gradient(180deg,#0a1724 72%,#0a1724e8 88%,transparent);border-bottom:1px solid #ffffff10}.editorHead h3{margin:3px 0 2px!important;font-size:20px!important}.editorSectionTitle{font-size:11px;color:#85a4bf}.editorClose{width:34px;height:34px;border-radius:10px;border:1px solid #ffffff18;background:#172536;color:#fff;font-weight:900;font-size:16px}.editorClose:hover{background:#5a2029}
 .editorCameraBar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px 5px}.editorCameraBar button{padding:8px 4px;border-radius:9px;border:1px solid #ffffff15;background:#112233;color:#dff2ff;font-size:9px;font-weight:900}.editorCameraBar button:hover{background:#176bb0}.editorCameraHint{padding:0 15px 10px;font-size:9px;color:#718ca5;text-align:center}
 .editorNav{position:sticky;top:73px;z-index:4;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 10px;background:#09141ff4;border-top:1px solid #ffffff0c;border-bottom:1px solid #ffffff12}.editorNavBtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:9px;background:transparent;color:#7992a8;font-size:15px}.editorNavBtn span{font-size:7px;font-weight:900;letter-spacing:.25px}.editorNavBtn.active{background:#176bb029;color:#77c8ff}.editorNavBtn:hover{background:#ffffff0a;color:#fff}
-.editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}
+.editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}.quickStyleBar{margin:7px 14px 0;display:grid;grid-template-columns:1fr 46px 74px;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid #46bfff2c;background:#0b1b28}.quickStyleBar.hidden{display:none!important}.quickStyleText{font-size:8px;color:#7894aa;margin-top:2px}.quickStyleBar input[type=color]{width:46px;height:34px;padding:2px;border-radius:8px;border:1px solid #ffffff1a;background:#122435}.quickStyleBar button{height:34px;border-radius:8px;border:1px solid #52c1ff33;background:#176bb0;color:#fff;font-size:8px;font-weight:900}
 .editorSection{display:none;padding:14px 14px 90px}.editorSection.active{display:block}.editorSectionHead{display:flex;gap:10px;align-items:center;margin:2px 0 12px}.editorSectionHead>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#176bb025;border:1px solid #51baff33;font-size:20px}.editorSectionHead h4{margin:0;font-size:14px;color:#f3f9ff}.editorSectionHead p{margin:3px 0 0;font-size:9px;color:#7f9ab1}
 .editorWelcome{text-align:center;padding:18px 8px 12px}.editorWelcomeIcon{font-size:38px}.editorWelcome h4{font-size:18px;margin:7px 0}.editorWelcome p{font-size:10px;color:#88a0b5;line-height:1.45;max-width:390px;margin:0 auto}.editorChoiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.editorChoiceGrid button{min-height:92px;text-align:left;padding:12px;border-radius:12px;border:1px solid #ffffff12;background:#0f1d2a;color:white}.editorChoiceGrid button:first-child{grid-column:1/-1}.editorChoiceGrid button:hover{background:#142b3e;border-color:#4db8ff44}.editorChoiceGrid b{display:block;font-size:11px;margin-bottom:5px}.editorChoiceGrid span{font-size:9px;color:#829bb0;line-height:1.35}.editorTip{margin-top:10px;padding:9px 10px;border-radius:9px;background:#176bb014;color:#86aac5;font-size:9px;line-height:1.4}
-.editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorDirectHint{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 10px;padding:9px 10px;border-radius:10px;background:#0c1e2c;border:1px solid #4cbaff22;color:#8ca9bf;font-size:9px;line-height:1.35}.editorDirectHint b{color:#d7efff}.gizmoScaleDot,.gizmoRotateDot{display:inline-block;width:9px;height:9px;border-radius:3px;background:#45c9ff;box-shadow:0 0 8px #45c9ff88}.gizmoRotateDot{border-radius:50%;background:#ffab3d;box-shadow:0 0 8px #ffab3d88}.npcModelPanel{margin:12px 0 4px;padding:10px;border-radius:10px;background:#0b1925;border:1px solid #ffffff10}.npcShapeHint{font-size:9px;color:#7895aa;line-height:1.35;margin-bottom:8px}.npcShapeRow{display:grid;grid-template-columns:82px 1fr 42px;gap:7px;align-items:center;margin:7px 0}.npcShapeRow label{font-size:9px;font-weight:800;color:#a3bdd1}.npcShapeRow input{width:100%}.npcShapeRow span{font-size:9px;text-align:right;color:#fff}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
+.editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorDirectHint{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 10px;padding:9px 10px;border-radius:10px;background:#0c1e2c;border:1px solid #4cbaff22;color:#8ca9bf;font-size:9px;line-height:1.35}.editorDirectHint b{color:#d7efff}.gizmoScaleDot,.gizmoRotateDot{display:inline-block;width:9px;height:9px;border-radius:3px;background:#45c9ff;box-shadow:0 0 8px #45c9ff88}.gizmoRotateDot{border-radius:50%;background:#ffab3d;box-shadow:0 0 8px #ffab3d88}.gizmoXDot,.gizmoYDot,.gizmoZDot{display:inline-block;width:9px;height:9px;border-radius:50%}.gizmoXDot{background:#ff5353;box-shadow:0 0 8px #ff535388}.gizmoYDot{background:#57dc71;box-shadow:0 0 8px #57dc7188}.gizmoZDot{background:#4f7dff;box-shadow:0 0 8px #4f7dff88}.npcModelPanel{margin:12px 0 4px;padding:10px;border-radius:10px;background:#0b1925;border:1px solid #ffffff10}.npcShapeHint{font-size:9px;color:#7895aa;line-height:1.35;margin-bottom:8px}.npcShapeRow{display:grid;grid-template-columns:82px 1fr 42px;gap:7px;align-items:center;margin:7px 0}.npcShapeRow label{font-size:9px;font-weight:800;color:#a3bdd1}.npcShapeRow input{width:100%}.npcShapeRow span{font-size:9px;text-align:right;color:#fff}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
 .editorSaveBar{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1.35fr;gap:7px;padding:10px 14px 14px;background:linear-gradient(0deg,#08111b 75%,#08111be8 90%,transparent)}.editorSaveBar button{padding:11px;border-radius:10px;border:1px solid #ffffff16;background:#162839;color:#eaf6ff;font-size:10px;font-weight:900}.editorSaveBar .save{background:#176bb0}
 body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
 #roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.characterColorGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:7px 0}.characterColorGrid label{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:7px;padding:7px 8px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05}.characterColorGrid span{font-size:9px;color:#9eb9cf;font-weight:800}.characterColorGrid input[type=color]{width:42px;height:30px;padding:1px;border:0;background:transparent}.characterBox select,#characterEditorPro select,#characterEditorPro input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
@@ -408,6 +408,14 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     </div>
     <button id="clearSelection" class="editorTinyBtn">DESELEZIONA</button>
   </div>
+  <div id="quickStyleBar" class="quickStyleBar hidden">
+    <div>
+      <div class="editorMiniLabel">COLORE OGGETTO</div>
+      <div class="quickStyleText">Vale per qualsiasi oggetto, parete, pavimento o soffitto selezionato.</div>
+    </div>
+    <input id="quickObjectColor" type="color" value="#445566" title="Scegli colore">
+    <button id="quickApplyColor">APPLICA</button>
+  </div>
 
   <section class="editorSection active" data-editor-section="home">
     <div class="editorWelcome">
@@ -478,7 +486,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
   <section class="editorSection" data-editor-section="objects">
     <div class="editorSectionHead"><span>🪑</span><div><h4>OGGETTI</h4><p>Posizione, rotazione e dimensioni dell'elemento selezionato.</p></div></div>
-    <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Trascina gli angoli azzurri</b> per ridimensionare · <span class="gizmoRotateDot"></span><b>trascina l'anello arancione</b> per ruotare · trascina il corpo per spostare.</div>
+    <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Angoli azzurri</b> = proporzioni · <span class="gizmoXDot"></span><b>Rosso</b> = larghezza · <span class="gizmoYDot"></span><b>Verde</b> = altezza · <span class="gizmoZDot"></span><b>Blu</b> = profondità · <span class="gizmoRotateDot"></span><b>Arancione</b> = ruota.</div>
 
     <div class="editorCard">
       <div class="editorCardTitle">TRASFORMA</div>
@@ -672,6 +680,7 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
+const quickStyleBar=q('#quickStyleBar'),quickObjectColor=q('#quickObjectColor'),quickApplyColor=q('#quickApplyColor');
 const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
 const npcModelPanel=q('#npcModelPanel'),npcHeight=q('#npcHeight'),npcBuild=q('#npcBuild'),npcShoulders=q('#npcShoulders'),npcHeadSize=q('#npcHeadSize'),npcArms=q('#npcArms'),npcLegs=q('#npcLegs'),npcTorsoDepth=q('#npcTorsoDepth');
 const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null,colorsEdited:false};
@@ -772,7 +781,7 @@ const glassMat=new THREE.MeshPhysicalMaterial({color:0xacc5d7,transparent:true,o
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
 const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
 let editorGizmoRoot=null,editorGizmoHandles=[],editorTransformDrag=null;
-const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3();
+const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3(),_axisScaleWorldQ=new THREE.Quaternion();
 
 let footstepTimer=0,audioEnabled=localStorage.getItem('mcrAudioEnabled')!=='0';
 const sfxStep=new Audio('./sfx_step.wav?v=2');
@@ -812,7 +821,10 @@ function soundNpcHit(){playSfx(sfxImpact,1,.58);setTimeout(()=>playSfx(sfxImpact
 function soundTest(){playSfx(sfxImpact,.95,1.15)}
 function box(w,h,d,ma,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
 function cyl(r1,r2,h,ma,x,y,z){const o=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,14),ma);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
-const impactBodies=[];function reg(o,type,hp,val,mode='static'){const d={o,type,hp:1,max:1,val,mode,dead:false,vel:new THREE.Vector3(),spin:new THREE.Vector3(),impactVel:new THREE.Vector3(),impactSpin:new THREE.Vector3(),startPos:o.position.clone(),startQuat:o.quaternion.clone(),startScale:o.scale.clone(),origPos:o.position.clone(),origQuat:o.quaternion.clone(),origScale:o.scale.clone(),startVis:o.visible};o.userData.d=d;destruct.push(d);return d}
+const impactBodies=[];function reg(o,type,hp,val,mode='static'){const d={o,type,hp:1,max:1,val,mode,dead:false,editorOnly:false,vel:new THREE.Vector3(),spin:new THREE.Vector3(),impactVel:new THREE.Vector3(),impactSpin:new THREE.Vector3(),startPos:o.position.clone(),startQuat:o.quaternion.clone(),startScale:o.scale.clone(),origPos:o.position.clone(),origQuat:o.quaternion.clone(),origScale:o.scale.clone(),startVis:o.visible};o.userData.d=d;destruct.push(d);return d}
+function regEditorSurface(o,type='wall'){
+ const d=reg(o,type,1,0,'static');d.editorOnly=true;d.styleColor=null;d.materialPreset='matte';return d;
+}
 function addObstacle(o,w,d){obstacles.push({o,w,d})}
 let monitorSeed=0;
 function monitorTex(state,seed=0){
@@ -887,6 +899,25 @@ function editableMeshes(d){
  });
  return out;
 }
+
+function editorObjectColor(d){
+ if(d?.styleColor)return d.styleColor;
+ for(const mesh of editableMeshes(d)){
+   const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+   for(const m of mats)if(m?.color)return '#'+m.color.getHexString();
+ }
+ return '#445566';
+}
+function applyUniversalObjectColor(color){
+ if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ for(const d of selectedEdits){
+   d.styleColor=color;
+   applyAppearanceState(d,{styleColor:color});
+ }
+ if(surfaceColor)surfaceColor.value=color;
+ show('COLORE APPLICATO A '+selectedEdits.size+' OGGETT'+(selectedEdits.size===1?'O':'I'));
+}
+
 function applyAppearanceState(d,state={}){
  if(!d?.o)return;
  if(state.roomName!=null)d.roomName=state.roomName;
@@ -905,7 +936,7 @@ function applyAppearanceState(d,state={}){
      if('metalness' in nm)nm.metalness=preset==='metal'?.85:preset==='plastic'?.08:0;
      if(preset==='glass'){nm.transparent=true;nm.opacity=.32;nm.depthWrite=false}
      else if(d.customKind!=='glassPanel'){nm.transparent=false;nm.opacity=1;nm.depthWrite=true}
-     if(!d.textureUrl)nm.map=null;
+     if(state.textureUrl===null)nm.map=null;
      nm.needsUpdate=true;
      return nm;
    });
@@ -1016,15 +1047,17 @@ function updateDoors(dt){
 function addBadge(x,z,ry){const c=document.createElement('canvas');c.width=c.height=256;let g=c.getContext('2d');g.strokeStyle='#dbe4eb';g.lineWidth=7;g.beginPath();g.arc(128,128,86,0,Math.PI*2);g.stroke();g.fillStyle='#edf4fa';g.font='bold 52px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('MCR',128,128);let t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;let p=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false}));p.position.set(x,2.5,z);p.rotation.y=ry;scene.add(p)}
 
 function buildRoom(){
- box(28,.25,18,floorMat,0,-.13,0);
- const roof=box(28,.18,18,black,0,5.15,0);topViewHidden.push(roof);
- const backWall=box(28,5.2,.25,dark,0,2.5,-8.9),leftWall=box(.25,5.2,18,dark,-14,2.5,0),rightWall=box(.25,5.2,18,dark,14,2.5,0);topViewHidden.push(backWall,leftWall,rightWall);addObstacle(backWall,14,.12);addObstacle(leftWall,.12,9);addObstacle(rightWall,.12,9);
+ const roomFloor=box(28,.25,18,floorMat,0,-.13,0);regEditorSurface(roomFloor,'floor');
+ const roof=box(28,.18,18,black,0,5.15,0);regEditorSurface(roof,'ceiling');topViewHidden.push(roof);
+ const backWall=box(28,5.2,.25,dark,0,2.5,-8.9),leftWall=box(.25,5.2,18,dark,-14,2.5,0),rightWall=box(.25,5.2,18,dark,14,2.5,0);
+ regEditorSurface(backWall,'wall');regEditorSurface(leftWall,'wall');regEditorSurface(rightWall,'wall');
+ topViewHidden.push(backWall,leftWall,rightWall);addObstacle(backWall,14,.12);addObstacle(leftWall,.12,9);addObstacle(rightWall,.12,9);
  for(let x=-12;x<=12;x+=2){const g=box(.03,.045,17.4,steel,x,5.02,0);topViewHidden.push(g)}
  for(let z=-7.5;z<=7.5;z+=2){const g=box(27.4,.045,.03,steel,0,5.02,z);topViewHidden.push(g)}
  const panelMat=new THREE.MeshStandardMaterial({color:0xffe6c0,emissive:0xffd39a,emissiveIntensity:1.55,roughness:.28});
  for(let x=-10;x<=10;x+=4)for(const z of [-4,0,4]){const p=box(.42,.035,.14,panelMat,x,4.91,z);topViewHidden.push(p)}
  for(let i=0;i<4;i++){addGlass(-12.6+i*2.1,4.5,1.9);addGlass(12.6-i*2.1,4.5,1.9)}
- box(1.05,5,1.05,dark,-10.8,2.5,4.1);box(1.05,5,1.05,dark,10.8,2.5,4.1);addBadge(-10.8,4.66,0);addBadge(10.8,4.66,Math.PI);addMonitor(-10.8,3.85,4.66,1.45,.82,true);
+ const roomColumnL=box(1.05,5,1.05,dark,-10.8,2.5,4.1),roomColumnR=box(1.05,5,1.05,dark,10.8,2.5,4.1);regEditorSurface(roomColumnL,'column');regEditorSurface(roomColumnR,'column');addBadge(-10.8,4.66,0);addBadge(10.8,4.66,Math.PI);addMonitor(-10.8,3.85,4.66,1.45,.82,true);
  box(15.8,4.35,.35,black,0,2.85,-8.35);
  for(let r=0;r<3;r++)for(let c=0;c<5;c++)addMonitor((c-2)*2.82,2.15+(2-r)*1.49,-8.05,2.7,1.38,true);
  addDesk(-4.7,-5.65,4.2,1.15);addDesk(0,-5.65,4.2,1.15);addDesk(4.7,-5.65,4.2,1.15);
@@ -1065,6 +1098,7 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  scene.add(clone);
  const nd=reg(clone,source.type,source.max,source.val,source.mode);
  nd.editId=destruct.length-1;
+ nd.editorOnly=!!source.editorOnly;
  nd.sourceIndex=Number.isInteger(source.sourceIndex)?source.sourceIndex:(Number.isInteger(source.editId)?source.editId:0);
  nd.customKind=source.customKind||null;
  nd.roomName=state?.roomName??source.roomName??null;
@@ -2437,6 +2471,21 @@ function buildEditorTransformGizmo(){
    h.userData.editorHelper=true;h.userData.editorGizmo={type:'scale'};
    root.add(h);editorGizmoHandles.push(h);
  }
+ const faceDefs=[
+   {axis:'x',sign:-1,color:0xff5353,pos:[editorGizmoBox.min.x,editorGizmoCenter.y,editorGizmoCenter.z]},
+   {axis:'x',sign: 1,color:0xff5353,pos:[editorGizmoBox.max.x,editorGizmoCenter.y,editorGizmoCenter.z]},
+   {axis:'y',sign:-1,color:0x57dc71,pos:[editorGizmoCenter.x,editorGizmoBox.min.y,editorGizmoCenter.z]},
+   {axis:'y',sign: 1,color:0x57dc71,pos:[editorGizmoCenter.x,editorGizmoBox.max.y,editorGizmoCenter.z]},
+   {axis:'z',sign:-1,color:0x4f7dff,pos:[editorGizmoCenter.x,editorGizmoCenter.y,editorGizmoBox.min.z]},
+   {axis:'z',sign: 1,color:0x4f7dff,pos:[editorGizmoCenter.x,editorGizmoCenter.y,editorGizmoBox.max.z]}
+ ];
+ for(const f of faceDefs){
+   const hg=new THREE.SphereGeometry(handleSize*.66,14,10);
+   const hm=new THREE.MeshBasicMaterial({color:f.color,depthTest:false,transparent:true,opacity:.98,toneMapped:false});
+   const h=new THREE.Mesh(hg,hm);h.position.set(...f.pos);h.renderOrder=3002;
+   h.userData.editorHelper=true;h.userData.editorGizmo={type:'axisScale',axis:f.axis,sign:f.sign};
+   root.add(h);editorGizmoHandles.push(h);
+ }
  const radius=Math.max(editorGizmoSize.x,editorGizmoSize.z)*.62+handleSize*.9;
  const tube=THREE.MathUtils.clamp(radius*.035,.035,.075);
  const ring=new THREE.Mesh(
@@ -2481,6 +2530,16 @@ function startEditorTransform(g,e){
  if(g.data.type==='scale'){
    const cp=editorClientPoint(center),dist=Math.max(18,Math.hypot(e.clientX-cp.x,e.clientY-cp.y));
    editorTransformDrag={type:'scale',pointerId:e.pointerId,startScale:selectedEdit.o.scale.clone(),center,startDistance:dist};
+ }else if(g.data.type==='axisScale'){
+   const axis=g.data.axis,sign=g.data.sign||1;
+   const worldAxis=new THREE.Vector3(axis==='x'?1:0,axis==='y'?1:0,axis==='z'?1:0);
+   selectedEdit.o.getWorldQuaternion(_axisScaleWorldQ);worldAxis.applyQuaternion(_axisScaleWorldQ).normalize();
+   const axisLen=Math.max(.35,editorGizmoSize[axis]*.5);
+   const p0=editorClientPoint(center),p1=editorClientPoint(center.clone().addScaledVector(worldAxis,axisLen));
+   let sx=p1.x-p0.x,sy=p1.y-p0.y,screenLen=Math.hypot(sx,sy);
+   if(screenLen<10){sx=axis==='y'?0:1;sy=axis==='y'?-1:0;screenLen=60}
+   sx/=screenLen;sy/=screenLen;
+   editorTransformDrag={type:'axisScale',axis,sign,pointerId:e.pointerId,startScale:selectedEdit.o.scale.clone(),startX:e.clientX,startY:e.clientY,screenX:sx,screenY:sy,screenLen:Math.max(45,screenLen)};
  }else{
    const planeY=Number.isFinite(g.data.planeY)?g.data.planeY:center.y;
    const p=editorRayPointAtY(e.clientX,e.clientY,planeY);if(!p)return false;
@@ -2498,6 +2557,14 @@ function updateEditorTransform(e){
      THREE.MathUtils.clamp(t.startScale.y*ratio,.15,12),
      THREE.MathUtils.clamp(t.startScale.z*ratio,.15,12)
    );
+ }else if(t.type==='axisScale'){
+   const dx=e.clientX-t.startX,dy=e.clientY-t.startY;
+   let delta=(dx*t.screenX+dy*t.screenY)*t.sign;
+   let ratio=1+delta/Math.max(55,t.screenLen);
+   ratio=THREE.MathUtils.clamp(ratio,.12,8);
+   if(e.shiftKey)ratio=Math.round(ratio*20)/20;
+   const ns=t.startScale.clone();ns[t.axis]=THREE.MathUtils.clamp(t.startScale[t.axis]*ratio,.15,12);
+   selectedEdit.o.scale.copy(ns);
  }else{
    const p=editorRayPointAtY(e.clientX,e.clientY,t.planeY);if(!p)return true;
    let delta=Math.atan2(p.z-t.center.z,p.x-t.center.x)-t.startAngle;
@@ -2512,8 +2579,9 @@ function endEditorTransform(e){
 }
 function refreshEditorFields(){
  selectionCount.textContent=selectedEdits.size+' oggett'+(selectedEdits.size===1?'o':'i')+' selezionat'+(selectedEdits.size===1?'o':'i');
- if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';updateScreenMediaStatus();return}
+ if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';quickStyleBar?.classList.add('hidden');updateScreenMediaStatus();return}
  const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit)+(selectedEdits.size>1?'  + altri '+(selectedEdits.size-1):'');
+ quickStyleBar?.classList.remove('hidden');if(quickObjectColor)quickObjectColor.value=editorObjectColor(selectedEdit);
  editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);
  editSX.value=o.scale.x;editSY.value=o.scale.y;editSZ.value=o.scale.z;
  editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';
@@ -2831,7 +2899,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -3081,11 +3149,11 @@ function breakApart(d,dir){
  trimFragments();
 }
 function activeBreakableCount(){
- return destruct.filter(d=>d.startVis!==false).length;
+ return destruct.filter(d=>!d.editorOnly&&d.startVis!==false).length;
 }
 function checkAllDestroyed(){
  if(gameCompleted||!started)return;
- const active=destruct.filter(d=>d.startVis!==false);
+ const active=destruct.filter(d=>!d.editorOnly&&d.startVis!==false);
  if(!active.length||!active.every(d=>d.dead))return;
  gameCompleted=true;
  stopAmbientAlarm();stopHeadEndGuy();
@@ -3169,7 +3237,7 @@ function hit(){
  }else{
    camera.getWorldDirection(fwd);fwd.normalize();origin=camera.getWorldPosition(new THREE.Vector3());
  }
- const objectTargets=destruct.filter(d=>!d.dead&&d.o.visible).map(d=>d.o);
+ const objectTargets=destruct.filter(d=>!d.editorOnly&&!d.dead&&d.o.visible).map(d=>d.o);
  const npcTargets=npcs.filter(n=>!n.fallen).map(n=>n.root);
  const ray=new THREE.Raycaster(origin,fwd,0,3.6);
  const hits=ray.intersectObjects([...objectTargets,...npcTargets],true);
@@ -3703,6 +3771,8 @@ q('#addDoor').onclick=()=>createCustomPrimitive('door');
 q('#addLight').onclick=()=>createCustomPrimitive('light');
 q('#addPicture').onclick=()=>createCustomPrimitive('picture');
 q('#addWallPro').onclick=()=>createCustomPrimitive('roomWall');
+quickApplyColor?.addEventListener('click',()=>applyUniversalObjectColor(quickObjectColor.value));
+quickObjectColor?.addEventListener('dblclick',()=>applyUniversalObjectColor(quickObjectColor.value));
 q('#applySurfaceStyle').onclick=()=>{
  if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
  const color=surfaceColor.value,preset=surfaceMaterial.value;
