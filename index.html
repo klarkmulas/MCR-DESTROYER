@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.2';
+ const PWA_VERSION='2026.09.28.3';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -155,7 +155,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 @media(max-width:700px){#adminStatsBtn{right:10px;top:10px;font-size:9px;padding:8px 10px}#adminStats{left:8px;right:8px;top:52px;width:auto;max-width:360px;margin:auto}.statsGrid{grid-template-columns:repeat(4,1fr)}.statCell{padding:8px 5px}.statCell b{font-size:17px}.statCell span{font-size:7px}}
 #adminLogin{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:#02060bcc;padding:20px}#adminLogin .loginCard{width:min(390px,94vw);padding:22px;border-radius:18px;background:#09131ef5;border:1px solid #6ab8ff44;box-shadow:0 25px 70px #000a}#adminLogin h3{margin:0 0 6px}#adminLogin p{font-size:12px;color:#92a7bb;line-height:1.45}#adminLogin input{width:100%;padding:11px 12px;margin:6px 0;border-radius:9px;background:#101c28;border:1px solid #ffffff18;color:white}#adminLogin .loginBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}#adminLogin button{padding:10px;border-radius:9px;background:#176bb0;color:white;font-weight:800}#adminLogin .secondary{background:#182736}#adminLogin .danger{background:#54212a}
 #roomEditor{position:fixed;z-index:46;right:18px;top:18px;bottom:18px;width:min(520px,96vw);overflow:auto;padding:16px;border-radius:16px;background:#08111bf2;border:1px solid #6ab8ff55;backdrop-filter:blur(10px);box-shadow:0 18px 50px #000a;color:#ddecfa}body.editor-active #hud{opacity:.25}body.editor-active #cross{display:none}
-#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
+#roomEditor h3{margin:0 0 4px;font-size:18px}.editorToolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}.editorToolbar button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorToolbar button.on{background:#176bb0}.structureBox,.screenBox{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff14}.screenBox select,.screenBox input[type=file],.screenBox input[type=url],.screenBox input[type=text],.screenBox input[type=number]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.proGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.proGrid.three{grid-template-columns:repeat(3,1fr)}.proField{display:flex;flex-direction:column;gap:3px}.proField span{font-size:9px;color:#86a4bd;font-weight:800}.appearanceRow{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;margin-top:7px}.appearanceRow label{font-size:10px;color:#9eb9cf;font-weight:800}.appearanceRow input[type=color]{width:100%;height:34px;padding:2px;border-radius:8px;background:#111d28;border:1px solid #ffffff18}.proBadge{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;background:#176bb025;color:#8fd2ff;border:1px solid #4bb6ff44;font-size:9px;font-weight:900;margin-bottom:6px}.characterColorGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:7px 0}.characterColorGrid label{display:grid;grid-template-columns:1fr 42px;align-items:center;gap:7px;padding:7px 8px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05}.characterColorGrid span{font-size:9px;color:#9eb9cf;font-weight:800}.characterColorGrid input[type=color]{width:42px;height:30px;padding:1px;border:0;background:transparent}.characterBox select,#characterEditorPro select,#characterEditorPro input[type=file]{width:100%;margin:5px 0 8px;padding:8px;border-radius:8px;background:#111d28;color:#eaf6ff;border:1px solid #ffffff18;box-sizing:border-box}.structureGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px}.structureGrid button{padding:9px 7px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-size:11px;font-weight:900}.structureGrid button:hover{background:#176bb0}.structureHint{margin-top:7px;color:#7892a9;font-size:10px;line-height:1.35}.selectionCount{font-size:11px;color:#8fc9ff;margin-top:4px}#roomEditor .hint{font-size:11px;line-height:1.4;color:#89a0b8;margin:0 0 12px}.editorRow{display:grid;grid-template-columns:72px 1fr 54px;gap:8px;align-items:center;margin:9px 0}.editorRow label{font-size:11px;font-weight:800;color:#a8c7e4}.editorRow input[type=range]{width:100%}.editorValue{font-size:11px;text-align:right;color:#fff}.editorBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.editorBtns button{padding:9px;border-radius:9px;background:#14283a;color:#eaf6ff;border:1px solid #ffffff16;font-weight:800}.editorBtns .save{background:#176bb0}.editorBtns .danger{background:#54212a}.nudge{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.nudge button{padding:7px 4px;border-radius:8px;background:#101d29;color:#dcecff;border:1px solid #ffffff14;font-size:11px;font-weight:900}#selectedName{padding:8px 10px;border-radius:9px;background:#ffffff09;border:1px solid #ffffff12;font-size:12px;margin:8px 0 12px;color:#fff}
 @media(max-width:700px){
  .controls{grid-template-columns:repeat(2,1fr)}.panel{padding:22px 16px}.left{left:8px;top:8px;min-width:142px}.right{right:8px;top:8px;min-width:160px;max-width:45vw}.glass{padding:9px 11px}.big{font-size:21px}.sub{font-size:9px}.label{font-size:8px}#combo{top:72px;font-size:16px}#cross{display:block;transform:translate(-50%,-50%) scale(.78)}
  #adminBtn{left:50%;bottom:auto;top:76px;transform:translateX(-50%)}#adminStatus{left:50%;bottom:auto;top:110px;transform:translateX(-50%)}#editorBtn{right:10px;bottom:auto;top:76px;font-size:10px;padding:8px 10px}
@@ -367,7 +367,8 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 <div id="roomEditor" class="hidden">
   <h3>EDITOR MCR</h3>
   <p class="hint"><b>Shift / Ctrl + click</b> seleziona più oggetti · poi trascina QUALSIASI oggetto già selezionato per spostarli tutti insieme · <b>Ctrl+A</b> seleziona tutti gli oggetti · <b>Frecce</b> spostano il gruppo · <b>Ctrl+C / Ctrl+V</b> copia/incolla · <b>Ctrl+D</b> duplica · <b>Canc</b> elimina.<br><b>SALVA PER TUTTI</b> pubblica la sala per tutti gli utenti.</p>
-  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="selectAll">SELEZIONA TUTTI</button><button id="moveAll">SPOSTA TUTTI</button><button id="clearSelection">DESELEZIONA</button></div>
+  <div class="editorToolbar"><button id="topView">⬇ VISTA DALL'ALTO</button><button id="editorFreeCamera">🎥 CAMERA LIBERA</button><button id="editorFocusSelection">🎯 FOCUS SELEZIONE</button><button id="editorResetCamera">↺ RESET CAMERA</button><button id="selectAll">SELEZIONA TUTTI</button><button id="moveAll">SPOSTA TUTTI</button><button id="clearSelection">DESELEZIONA</button></div>
+  <div class="structureHint"><b>CAMERA:</b> W A S D = movimento · Q/E = giù/su · Shift = veloce · tasto destro + trascina = ruota · rotella = avanti/indietro · F = focus oggetto · R = reset camera · T = pianta.</div>
   <div id="selectedName">Nessun oggetto selezionato</div>
   <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
   <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
@@ -465,6 +466,42 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     </div>
     <div id="characterStatus" class="structureHint">Puoi caricare un personaggio FBX riggato Mixamo. Il modello viene salvato nello Storage MCR e usato da tutti.</div>
   </div>
+  <div class="screenBox" id="characterEditorPro">
+    <div class="proBadge">🧍 EDITOR PERSONAGGI PRO v1</div>
+    <div class="label">PERSONAGGIO DA MODIFICARE</div>
+    <select id="characterTarget">
+      <option value="player">Giocatore principale</option>
+    </select>
+    <div class="structureGrid">
+      <button id="focusCharacter">🎯 MOSTRA PERSONAGGIO</button>
+      <button id="resetCharacterStyle">RIPRISTINA ASPETTO</button>
+    </div>
+
+    <div class="label" style="margin-top:12px">COLORI</div>
+    <div class="characterColorGrid">
+      <label><span>Pelle</span><input id="charSkinColor" type="color" value="#c88a68"></label>
+      <label><span>Maglia</span><input id="charShirtColor" type="color" value="#7f7f79"></label>
+      <label><span>Pantaloni</span><input id="charPantsColor" type="color" value="#24262b"></label>
+      <label><span>Capelli</span><input id="charHairColor" type="color" value="#2b211c"></label>
+      <label><span>Scarpe</span><input id="charShoesColor" type="color" value="#202329"></label>
+    </div>
+    <button id="applyCharacterColors">APPLICA COLORI</button>
+
+    <div class="label" style="margin-top:12px">FOTO SUL VISO</div>
+    <input id="facePhotoFile" type="file" accept="image/png,image/jpeg,image/webp">
+    <div class="structureGrid">
+      <button id="applyFacePhoto">APPLICA FOTO VISO</button>
+      <button id="removeFacePhoto">RIMUOVI FOTO</button>
+    </div>
+
+    <div class="label" style="margin-top:12px">IMMAGINE SUI VESTITI</div>
+    <input id="clothingImageFile" type="file" accept="image/png,image/jpeg,image/webp">
+    <div class="structureGrid">
+      <button id="applyClothingImage">APPLICA SUL PETTO</button>
+      <button id="removeClothingImage">RIMUOVI IMMAGINE</button>
+    </div>
+    <div id="characterEditStatus" class="structureHint">Le foto vengono applicate come decal al volto e al petto. Premi SALVA PER TUTTI per pubblicare le modifiche.</div>
+  </div>
   <div class="editorBtns"><button id="copySelected">COPIA SELEZIONE</button><button id="duplicateSelected">DUPLICA SELEZIONE</button><button id="saveLayout" class="save">SALVA PER TUTTI</button><button id="publishLayout">SOLO SU QUESTO PC</button><button id="deleteSelected" class="danger">ELIMINA SELEZIONE</button><button id="resetSelected">RESET SELEZIONE</button><button id="shareLayout">COPIA LINK LAYOUT</button><button id="resetLayout" class="danger">ORIGINALE</button><button id="closeEditor">CHIUDI EDITOR</button></div>
 </div>
 <div id="adminLogin" class="hidden">
@@ -491,6 +528,10 @@ import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
 const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
+const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
+const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null};
+let characterStyleState={player:{...DEFAULT_PLAYER_STYLE},npcs:{}};
+let pendingCharacterStyles=null;
 const SUPABASE_URL='https://tlxjhticeyawnrujqear.supabase.co';
 const SUPABASE_KEY='sb_publishable_t2mNDXeQ1fZF3_8xyYvoxw__F7E4Y98';
 const ADMIN_EMAIL='mulas.claudio88@gmail.com';
@@ -574,7 +615,7 @@ function buildFirstPersonView(){
  const watch=new THREE.Mesh(new THREE.BoxGeometry(.075,.035,.085),watchMat);watch.position.set(-.10,.04,.05);hand.add(watch);
  const weapon=new THREE.Group();weapon.position.set(.02,-.02,-.04);weapon.rotation.set(.05,.08,-2.22);hand.add(weapon);
  const batFp=new THREE.Mesh(new THREE.CylinderGeometry(.046,.075,1.05,12),metalMat);batFp.position.set(.18,.27,0);batFp.rotation.z=-.08;batFp.renderOrder=21;weapon.add(batFp);
- fpRig={shoulder,elbow,hand,weapon,bat:batFp,restPos:shoulder.position.clone()};
+ fpRig={shoulder,elbow,hand,weapon,bat:batFp,restPos:shoulder.position.clone(),materials:{skin,shirt}};
 }
 buildFirstPersonView();
 
@@ -584,6 +625,7 @@ const dark=mat(0x171c22,.48,.32), black=mat(0x090d12,.38,.38), steel=mat(0x575f6
 const floorMat=new THREE.MeshPhysicalMaterial({color:0x301c16,roughness:.25,metalness:.04,clearcoat:.72,clearcoatRoughness:.14});
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xacc5d7,transparent:true,opacity:.15,roughness:.025,transmission:.5,thickness:.05});
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
+const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
 
 let footstepTimer=0,audioEnabled=localStorage.getItem('mcrAudioEnabled')!=='0';
 const sfxStep=new Audio('./sfx_step.wav?v=2');
@@ -977,6 +1019,7 @@ function applySavedLayout(){
  try{
   const saved=JSON.parse(localStorage.getItem('mcrDestroyerLayoutV2')||localStorage.getItem('mcrDestroyerLayoutV1')||'null');if(!saved)return;
   if(saved.exposure){renderer.toneMappingExposure=saved.exposure;editLight.value=saved.exposure;editLightv.textContent=Number(saved.exposure).toFixed(2)}
+  if(saved.characterStyles){mergeCharacterStyles(saved.characterStyles);pendingCharacterStyles=saved.characterStyles;queueMicrotask(applyAllCharacterStyles)}
   if(Array.isArray(saved.items))applyStableLayoutItems(saved.items);
  }catch(e){console.warn('Layout non caricato',e)}
 }
@@ -1029,7 +1072,7 @@ function fallbackHuman(){
  const watch=new THREE.Mesh(new THREE.BoxGeometry(.075,.035,.085),blackMat);watch.position.set(-.015,-.21,.075);lFore.add(watch);
 
  rHand.add(batPivot);batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);
- officeRig={pelvis,hip,torsoPivot,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand};
+ officeRig={pelvis,hip,torsoPivot,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,rHand,materials:{skin,shirt,pants,shoe,hair}};
 }
 function animateOffice(dt,speedRatio,run){
  if(!officeRig)return;
@@ -1176,6 +1219,7 @@ function setFallbackCharacter(){
  if(batPivot.parent!==fallbackOfficeRig.rHand)fallbackOfficeRig.rHand.add(batPivot);
  batPivot.position.set(.015,-.015,-.02);batPivot.rotation.set(.08,.10,-2.38);batPivot.scale.set(1,1,1);batPivot.visible=true;
  playerModelUrl=null;
+ queueMicrotask(()=>applyCharacterStyleToPlayer());
  if(characterStatus)characterStatus.textContent='Personaggio originale attivo.';
 }
 function customBatFollowHand(){
@@ -1246,6 +1290,7 @@ async function loadCustomFbxCharacter(url){
    customAvatarRoot=holder;
    playerModelUrl=url;
    customBatFollowHand();
+   applyCharacterStyleToPlayer();
    if(characterStatus)characterStatus.textContent='✓ Personaggio umano caricato e rig Mixamo riconosciuto.';
    show('PERSONAGGIO UMANO CARICATO');
    return true;
@@ -1284,6 +1329,223 @@ uploadCharacterFile?.addEventListener('click',uploadAndPublishCharacter);
 removeCharacterModel?.addEventListener('click',removeAndPublishCharacter);
 avatar.rotation.y=Math.PI;avatar.visible=false;
 
+
+
+const playerOverlays={face:null,clothing:null};
+const overlayTmpWorld=new THREE.Vector3(),overlayTmpLocal=new THREE.Vector3();
+
+function mergeCharacterStyles(raw){
+ if(!raw||typeof raw!=='object')return;
+ characterStyleState={
+   player:{...DEFAULT_PLAYER_STYLE,...(raw.player||{})},
+   npcs:{...(raw.npcs||{})}
+ };
+}
+function selectedCharacterKey(){return characterTarget?.value||'player'}
+function selectedCharacterNpc(){
+ const v=selectedCharacterKey();
+ if(!v.startsWith('npc:'))return null;
+ return npcs.find(n=>n.id===Number(v.slice(4)))||null;
+}
+function characterLabel(n){
+ if(n.specialHeadEnd||n.kind==='headend')return 'Collega Head End';
+ if(n.kind==='cart')return 'Pulizie con carrello';
+ if(n.kind==='cleaner')return 'Addetto pulizie';
+ if(n.kind==='sweeper')return 'Addetto pulizie con scopa';
+ return 'Collega MCR';
+}
+function rebuildCharacterTargetOptions(){
+ if(!characterTarget)return;
+ const keep=characterTarget.value||'player';
+ characterTarget.innerHTML='<option value="player">Giocatore principale (tu)</option>';
+ for(const n of npcs){
+   const op=document.createElement('option');
+   op.value='npc:'+n.id;op.textContent=characterLabel(n)+' #'+n.id;
+   characterTarget.appendChild(op);
+ }
+ characterTarget.value=[...characterTarget.options].some(o=>o.value===keep)?keep:'player';
+ syncCharacterEditorUI();
+}
+function styleForTarget(){
+ const n=selectedCharacterNpc();
+ if(!n)return characterStyleState.player;
+ return {...n.baseStyle,...(characterStyleState.npcs[n.id]||{})};
+}
+function syncCharacterEditorUI(){
+ const s=styleForTarget();
+ if(!s)return;
+ charSkinColor.value=s.skin||'#c88a68';
+ charShirtColor.value=s.shirt||'#7f7f79';
+ charPantsColor.value=s.pants||'#24262b';
+ charHairColor.value=s.hair||'#2b211c';
+ charShoesColor.value=s.shoes||'#202329';
+ if(characterEditStatus){
+   characterEditStatus.textContent='Modifica '+(selectedCharacterNpc()?characterLabel(selectedCharacterNpc()):'il giocatore principale')+'. Foto viso: '+(s.faceUrl?'presente':'nessuna')+' · immagine vestito: '+(s.clothingUrl?'presente':'nessuna')+'.';
+ }
+}
+function setMaterialColor(material,color){
+ if(!material||!color)return;
+ const list=Array.isArray(material)?material:[material];
+ for(const m of list){if(m?.color){m.color.set(color);m.needsUpdate=true}}
+}
+function customMeshPart(mesh){
+ const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
+ const s=((mesh.name||'')+' '+mats.map(m=>m?.name||'').join(' ')).toLowerCase();
+ if(/hair|beard|brow/.test(s))return 'hair';
+ if(/shoe|boot|sneaker|footwear/.test(s))return 'shoes';
+ if(/bottom|pants|trouser|jean|short/.test(s))return 'pants';
+ if(/top|shirt|jacket|hood|sweater|tshirt|tee/.test(s))return 'shirt';
+ if(/body|skin|face|head/.test(s))return 'skin';
+ return null;
+}
+function playerStyleMeshes(style){
+ if(officeRig?.custom&&customAvatarRoot){
+   customAvatarRoot.traverse(o=>{
+     if(!(o.isMesh||o.isSkinnedMesh)||!o.material)return;
+     const part=customMeshPart(o);
+     if(part&&style[part])setMaterialColor(o.material,style[part]);
+   });
+ }else if(officeRig?.materials){
+   setMaterialColor(officeRig.materials.skin,style.skin);
+   setMaterialColor(officeRig.materials.shirt,style.shirt);
+   setMaterialColor(officeRig.materials.pants,style.pants);
+   setMaterialColor(officeRig.materials.hair,style.hair);
+   setMaterialColor(officeRig.materials.shoe,style.shoes);
+ }
+ if(fpRig?.materials){
+   setMaterialColor(fpRig.materials.skin,style.skin);
+   setMaterialColor(fpRig.materials.shirt,style.shirt);
+ }
+}
+function loadOverlayTexture(url,kind,onReady){
+ if(!url)return;
+ const img=new Image();img.crossOrigin='anonymous';
+ img.onload=()=>{
+   const cv=document.createElement('canvas');cv.width=cv.height=512;
+   const g=cv.getContext('2d');g.clearRect(0,0,512,512);
+   if(kind==='face'){
+     g.save();g.beginPath();g.ellipse(256,256,205,245,0,0,Math.PI*2);g.clip();
+     const s=Math.max(410/img.width,490/img.height),w=img.width*s,h=img.height*s;
+     g.drawImage(img,(512-w)/2,(512-h)/2,w,h);g.restore();
+   }else{
+     const max=430,s=Math.min(max/img.width,max/img.height),w=img.width*s,h=img.height*s;
+     g.drawImage(img,(512-w)/2,(512-h)/2,w,h);
+   }
+   const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=4;
+   onReady(tex);
+ };
+ img.onerror=()=>console.warn('Immagine personaggio non caricata',url);
+ img.src=url;
+}
+function makeOverlayPlane(url,kind,w,h){
+ const matl=new THREE.MeshBasicMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,toneMapped:false});
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(w,h),matl);mesh.renderOrder=40;mesh.userData.characterDecal=true;
+ loadOverlayTexture(url,kind,tex=>{matl.map=tex;matl.needsUpdate=true});
+ return mesh;
+}
+function removePlayerOverlay(kind){
+ const m=playerOverlays[kind];if(!m)return;
+ avatar.remove(m);m.geometry?.dispose?.();m.material?.map?.dispose?.();m.material?.dispose?.();playerOverlays[kind]=null;
+}
+function setPlayerOverlay(kind,url){
+ removePlayerOverlay(kind);if(!url)return;
+ const mesh=kind==='face'?makeOverlayPlane(url,'face',.25,.31):makeOverlayPlane(url,'clothing',.34,.25);
+ avatar.add(mesh);playerOverlays[kind]=mesh;
+}
+function setNpcOverlay(n,kind,url){
+ if(!n)return;
+ n.overlays=n.overlays||{};
+ const old=n.overlays[kind];
+ if(old){n.pelvis.remove(old);old.geometry?.dispose?.();old.material?.map?.dispose?.();old.material?.dispose?.();n.overlays[kind]=null}
+ if(!url)return;
+ const mesh=kind==='face'?makeOverlayPlane(url,'face',.23,.29):makeOverlayPlane(url,'clothing',.30,.22);
+ if(kind==='face')mesh.position.set(0,.95,.19);
+ else mesh.position.set(0,.40,.19);
+ n.pelvis.add(mesh);n.overlays[kind]=mesh;
+}
+function applyCharacterStyleToPlayer(){
+ const s=characterStyleState.player||DEFAULT_PLAYER_STYLE;
+ playerStyleMeshes(s);setPlayerOverlay('face',s.faceUrl);setPlayerOverlay('clothing',s.clothingUrl);
+}
+function applyCharacterStyleToNpc(n){
+ if(!n)return;
+ const s={...n.baseStyle,...(characterStyleState.npcs[n.id]||{})};
+ setMaterialColor(n.materials?.skin,s.skin);
+ setMaterialColor(n.materials?.shirt,s.shirt);
+ setMaterialColor(n.materials?.pants,s.pants);
+ setMaterialColor(n.materials?.hair,s.hair);
+ setMaterialColor(n.materials?.shoe,s.shoes);
+ setNpcOverlay(n,'face',s.faceUrl);setNpcOverlay(n,'clothing',s.clothingUrl);
+}
+function applyAllCharacterStyles(){
+ if(officeRig)applyCharacterStyleToPlayer();
+ for(const n of npcs)applyCharacterStyleToNpc(n);
+ syncCharacterEditorUI();
+}
+function updatePlayerOverlays(){
+ if(!officeRig)return;
+ if(playerOverlays.face&&officeRig.head){
+   officeRig.head.getWorldPosition(overlayTmpWorld);overlayTmpLocal.copy(overlayTmpWorld);avatar.worldToLocal(overlayTmpLocal);
+   playerOverlays.face.position.copy(overlayTmpLocal);
+   playerOverlays.face.position.y+=(officeRig.custom?.045:0);
+   playerOverlays.face.position.z+=(officeRig.custom?.11:.22);
+   playerOverlays.face.rotation.set(0,0,0);
+ }
+ if(playerOverlays.clothing&&officeRig.torsoPivot){
+   officeRig.torsoPivot.getWorldPosition(overlayTmpWorld);overlayTmpLocal.copy(overlayTmpWorld);avatar.worldToLocal(overlayTmpLocal);
+   playerOverlays.clothing.position.copy(overlayTmpLocal);
+   playerOverlays.clothing.position.y+=(officeRig.custom?.06:.34);
+   playerOverlays.clothing.position.z+=(officeRig.custom?.11:.23);
+   playerOverlays.clothing.rotation.set(0,0,0);
+ }
+}
+async function uploadCharacterImage(file,kind){
+ if(!file){show('SCEGLI PRIMA UN IMMAGINE');return}
+ try{
+   if(characterEditStatus)characterEditStatus.textContent='Upload immagine in corso…';
+   const url=await uploadSharedMedia(file,kind==='face'?'character-faces':'character-clothes');
+   const n=selectedCharacterNpc(),key=selectedCharacterKey();
+   if(n){
+     const s={...n.baseStyle,...(characterStyleState.npcs[n.id]||{})};
+     if(kind==='face')s.faceUrl=url;else s.clothingUrl=url;
+     characterStyleState.npcs[n.id]=s;applyCharacterStyleToNpc(n);
+   }else{
+     if(kind==='face')characterStyleState.player.faceUrl=url;else characterStyleState.player.clothingUrl=url;
+     applyCharacterStyleToPlayer();
+   }
+   syncCharacterEditorUI();show(kind==='face'?'FOTO VISO APPLICATA':'IMMAGINE VESTITO APPLICATA');
+ }catch(e){console.error('Upload immagine personaggio',e);if(characterEditStatus)characterEditStatus.textContent='Errore upload: '+(e?.message||'errore');show('ERRORE IMMAGINE PERSONAGGIO')}
+}
+function applyCharacterColorsFromUI(){
+ const style={skin:charSkinColor.value,shirt:charShirtColor.value,pants:charPantsColor.value,hair:charHairColor.value,shoes:charShoesColor.value};
+ const n=selectedCharacterNpc();
+ if(n){
+   characterStyleState.npcs[n.id]={...n.baseStyle,...(characterStyleState.npcs[n.id]||{}),...style};
+   applyCharacterStyleToNpc(n);
+ }else{
+   characterStyleState.player={...characterStyleState.player,...style};
+   applyCharacterStyleToPlayer();
+ }
+ syncCharacterEditorUI();show('COLORI PERSONAGGIO APPLICATI');
+}
+function resetSelectedCharacterStyle(){
+ const n=selectedCharacterNpc();
+ if(n){delete characterStyleState.npcs[n.id];applyCharacterStyleToNpc(n)}
+ else{characterStyleState.player={...DEFAULT_PLAYER_STYLE};applyCharacterStyleToPlayer()}
+ syncCharacterEditorUI();show('ASPETTO PERSONAGGIO RIPRISTINATO');
+}
+function removeCharacterImage(kind){
+ const n=selectedCharacterNpc();
+ if(n){
+   const s={...n.baseStyle,...(characterStyleState.npcs[n.id]||{})};
+   if(kind==='face')s.faceUrl=null;else s.clothingUrl=null;
+   characterStyleState.npcs[n.id]=s;applyCharacterStyleToNpc(n);
+ }else{
+   if(kind==='face')characterStyleState.player.faceUrl=null;else characterStyleState.player.clothingUrl=null;
+   applyCharacterStyleToPlayer();
+ }
+ syncCharacterEditorUI();show('IMMAGINE RIMOSSA');
+}
 
 let npcSpeechLast=0;
 function npcVoiceFor(lang){
@@ -1389,7 +1651,7 @@ function createNpc(kind='office',path=[],opts={}){
    const h1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.72,8),metal);h1.rotation.z=Math.PI/2;h1.position.set(0,.98,.34);cart.add(h1);
    for(const x of [-.27,.27])for(const z of [-.34,.34]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,10),darkPants);w.rotation.z=Math.PI/2;w.position.set(x,.08,z);cart.add(w)}
  }
- const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000};
+ const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000,materials:{skin,hair,shirt,pants,shoe},baseStyle:{skin:'#'+skin.color.getHexString(),hair:'#'+hair.color.getHexString(),shirt:'#'+shirt.color.getHexString(),pants:'#'+pants.color.getHexString(),shoes:'#'+shoe.color.getHexString(),faceUrl:null,clothingUrl:null},overlays:{}};
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
 }
@@ -1577,6 +1839,8 @@ function knockDownNpc(n,dir){
  shake=.12;recoilPitch=.025;soundNpcHit();if(n.voiceProfile)speakNpc(n,n.voiceProfile.hit,true);else show(n.kind==='office'?'IMPIEGATO A TERRA':'ADDETTO PULIZIE A TERRA');
 }
 spawnNpcs();
+rebuildCharacterTargetOptions();
+applyAllCharacterStyles();
 
 function updateFirstPersonView(dt,speedRatio,run){
  if(!fpRig)return;
@@ -1764,11 +2028,73 @@ function setTopView(on){
    clearTopPlanHelpers();
  }
 }
+
+function initEditorCamera(force=false){
+ if(editorCamReady&&!force)return;
+ editorCamReady=true;
+ if(cameraMode==='third'){
+   editorCamPos.copy(camera.position);
+   camera.rotation.order='YXZ';editorCamYaw=camera.rotation.y;editorCamPitch=camera.rotation.x;
+ }else{
+   editorCamPos.copy(player.position).add(new THREE.Vector3(4.2,3.2,5.2));
+   focusEditorPoint(player.position.clone().add(new THREE.Vector3(0,1.0,0)),false);
+ }
+}
+function focusEditorPoint(point,announce=true){
+ if(!point)return;
+ const target=point.clone();
+ const dist=selectedEdit?Math.max(2.8,new THREE.Box3().setFromObject(selectedEdit.o).getSize(new THREE.Vector3()).length()*1.35):5.2;
+ editorCamPos.set(target.x+dist*.72,target.y+Math.max(2,dist*.42),target.z+dist*.72);
+ camera.position.copy(editorCamPos);camera.up.set(0,1,0);camera.lookAt(target);camera.rotation.order='YXZ';
+ editorCamYaw=camera.rotation.y;editorCamPitch=camera.rotation.x;editorCamReady=true;
+ if(announce)show('CAMERA CENTRATA');
+}
+function focusEditorSelection(){
+ if(selectedEdit){
+   const box=new THREE.Box3().setFromObject(selectedEdit.o),center=box.getCenter(new THREE.Vector3());
+   focusEditorPoint(center);return;
+ }
+ focusEditorPoint(player.position.clone().add(new THREE.Vector3(0,1,0)));
+}
+function focusCharacterTarget(){
+ const n=selectedCharacterNpc();
+ const root=n?n.root:avatar;
+ const was=root.visible;root.visible=true;
+ const box=new THREE.Box3().setFromObject(root);
+ root.visible=was||editorMode;
+ if(!box.isEmpty())focusEditorPoint(box.getCenter(new THREE.Vector3()));
+ else focusEditorPoint((n?n.root.position:player.position).clone().add(new THREE.Vector3(0,1,0)));
+}
+function resetEditorCamera(){
+ editorCamReady=false;editorCamPos.copy(player.position).add(new THREE.Vector3(5.5,4.0,6.5));
+ camera.position.copy(editorCamPos);camera.lookAt(player.position.clone().add(new THREE.Vector3(0,1,0)));camera.rotation.order='YXZ';
+ editorCamYaw=camera.rotation.y;editorCamPitch=camera.rotation.x;editorCamReady=true;show('CAMERA EDITOR RIPRISTINATA');
+}
+function updateEditorCamera(dt){
+ if(!editorMode||topViewMode)return;
+ initEditorCamera();
+ let mx=((keys.has('KeyD'))?1:0)-((keys.has('KeyA'))?1:0);
+ let mz=((keys.has('KeyW'))?1:0)-((keys.has('KeyS'))?1:0);
+ let my=((keys.has('KeyE'))?1:0)-((keys.has('KeyQ'))?1:0);
+ const speed=(keys.has('ShiftLeft')||keys.has('ShiftRight'))?12:5.5;
+ const forward=new THREE.Vector3(Math.sin(editorCamYaw),0,-Math.cos(editorCamYaw));
+ const right=new THREE.Vector3(Math.cos(editorCamYaw),0,Math.sin(editorCamYaw));
+ if(mx||mz||my){
+   editorCamPos.addScaledVector(right,mx*speed*dt);
+   editorCamPos.addScaledVector(forward,mz*speed*dt);
+   editorCamPos.y+=my*speed*dt;
+   editorCamPos.x=THREE.MathUtils.clamp(editorCamPos.x,-WORLD_LIMIT-8,WORLD_LIMIT+8);
+   editorCamPos.z=THREE.MathUtils.clamp(editorCamPos.z,-WORLD_LIMIT-8,WORLD_LIMIT+8);
+   editorCamPos.y=THREE.MathUtils.clamp(editorCamPos.y,.25,24);
+ }
+ camera.position.copy(editorCamPos);camera.rotation.order='YXZ';camera.rotation.y=editorCamYaw;camera.rotation.x=editorCamPitch;camera.rotation.z=0;
+}
+
 function setEditorMode(on){
  if(on&&!isAdmin){adminLogin.classList.remove('hidden');adminMessage.textContent='Accesso admin richiesto.';return}
  editorMode=on;if(!on)setMoveAllMode(false);document.body.classList.toggle('editor-active',on);avatar.visible=started&&!on&&cameraMode==='third';fpView.visible=started&&!on&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started||on);roomEditor.classList.toggle('hidden',!on);editorBtn.classList.toggle('active',on);editorBtn.textContent=on?'✅ EDITOR ATTIVO':'🛠 MODIFICA SALA';
- if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;show('EDITOR SALA ATTIVO');}
- else{editDragging=false;setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
+ if(on){document.exitPointerLock?.();moveVel.set(0,0,0);fpView.visible=false;avatar.visible=true;initEditorCamera(true);show('EDITOR SALA ATTIVO · CAMERA LIBERA');}
+ else{editDragging=false;editorCamRotating=false;keys.clear();setTopView(false);selectEdit(null);avatar.visible=started&&cameraMode==='third';fpView.visible=started&&cameraMode==='first';q('#viewToggle').classList.toggle('hidden',!started);show('EDITOR CHIUSO');}
 }
 function selectedMonitorTargets(){
  const list=[...selectedEdits].filter(d=>d?.type==='monitor'&&d.o?.visible&&!d.dead);
@@ -1913,7 +2239,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -1922,6 +2248,7 @@ function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.strin
 function applyLayoutData(data){
  if(!data)return;
  if(data.exposure){renderer.toneMappingExposure=data.exposure;editLight.value=data.exposure;editLightv.textContent=Number(data.exposure).toFixed(2)}
+ if(data.characterStyles){mergeCharacterStyles(data.characterStyles);pendingCharacterStyles=data.characterStyles;queueMicrotask(applyAllCharacterStyles)}
  if(Array.isArray(data.items))applyStableLayoutItems(data.items);
  if(data.playerModelUrl && data.playerModelUrl!==playerModelUrl)loadCustomFbxCharacter(data.playerModelUrl);
  else if(!data.playerModelUrl && playerModelUrl)setFallbackCharacter();
@@ -2434,7 +2761,7 @@ function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];i
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 let lastSessionSave=0;
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}if(!(editorMode&&topViewMode))updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
+function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}updatePlayerOverlays();if(editorMode&&!topViewMode)updateEditorCamera(dt);else if(!topViewMode)updateCam(dt);renderer.render(scene,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
 function mobileLandscape(){return mobileDevice()&&innerWidth>innerHeight}
@@ -2578,6 +2905,9 @@ addEventListener('keydown',e=>{
    if(e.code==='Delete'||e.code==='Backspace'){deleteSelectedObject();e.preventDefault();return}
    if(e.code==='Escape'){selectEdit(null);e.preventDefault();return}
    if(e.code==='KeyT'){setTopView(!topViewMode);e.preventDefault();return}
+   if(e.code==='KeyF'){focusEditorSelection();e.preventDefault();return}
+   if(e.code==='KeyR'){resetEditorCamera();e.preventDefault();return}
+   if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','ShiftLeft','ShiftRight'].includes(e.code)){keys.add(e.code);e.preventDefault();return}
    const step=e.shiftKey?1:.2;
    if(e.code==='ArrowLeft'){moveSelection(-step,0,0);e.preventDefault();return}
    if(e.code==='ArrowRight'){moveSelection(step,0,0);e.preventDefault();return}
@@ -2609,7 +2939,11 @@ addEventListener('mousemove',e=>{
 function endEditorDrag(){
  editDragging=false;dragStartPoint=null;dragStartPositions.clear();dragTargets=[];dragPointerId=null;
 }
+renderer.domElement.addEventListener('contextmenu',e=>{if(editorMode)e.preventDefault()});
 renderer.domElement.addEventListener('pointerdown',e=>{
+ if(editorMode&&e.button===2&&!topViewMode){
+   e.preventDefault();initEditorCamera();editorCamRotating=true;editorCamPointerId=e.pointerId;editorCamLastX=e.clientX;editorCamLastY=e.clientY;renderer.domElement.setPointerCapture?.(e.pointerId);return;
+ }
  if(!editorMode||e.button!==0)return;
  e.preventDefault();
  const hit=editorPick(e.clientX,e.clientY);
@@ -2645,6 +2979,10 @@ renderer.domElement.addEventListener('pointerdown',e=>{
  }
 },{passive:false});
 renderer.domElement.addEventListener('pointermove',e=>{
+ if(editorMode&&editorCamRotating&&e.pointerId===editorCamPointerId&&!topViewMode){
+   e.preventDefault();const dx=e.clientX-editorCamLastX,dy=e.clientY-editorCamLastY;editorCamLastX=e.clientX;editorCamLastY=e.clientY;
+   editorCamYaw-=dx*.0045;editorCamPitch=THREE.MathUtils.clamp(editorCamPitch-dy*.0038,-1.45,1.35);return;
+ }
  if(!editorMode||!editDragging||e.pointerId!==dragPointerId||!dragStartPoint||!selectedEdit)return;
  e.preventDefault();
  const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);
@@ -2656,9 +2994,10 @@ renderer.domElement.addEventListener('pointermove',e=>{
  }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 },{passive:false});
-renderer.domElement.addEventListener('pointerup',e=>{if(e.pointerId===dragPointerId)endEditorDrag()});
-renderer.domElement.addEventListener('pointercancel',e=>{if(e.pointerId===dragPointerId)endEditorDrag()});
-renderer.domElement.addEventListener('lostpointercapture',e=>{if(e.pointerId===dragPointerId)endEditorDrag()});
+function endEditorCameraRotate(e){if(!e||e.pointerId===editorCamPointerId){editorCamRotating=false;editorCamPointerId=null}}
+renderer.domElement.addEventListener('pointerup',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorCameraRotate(e)});
+renderer.domElement.addEventListener('pointercancel',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorCameraRotate(e)});
+renderer.domElement.addEventListener('lostpointercapture',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorCameraRotate(e)});
 renderer.domElement.addEventListener('mousedown',e=>{
  if(e.button!==0||editorMode)return;
  if(!pointer&&!matchMedia('(pointer:coarse)').matches)renderer.domElement.requestPointerLock?.();
@@ -2668,6 +3007,12 @@ renderer.domElement.addEventListener('wheel',e=>{
  if(editorMode&&topViewMode){
    topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);
    topCamera.updateProjectionMatrix();
+   return;
+ }
+ if(editorMode&&!topViewMode){
+   e.preventDefault();initEditorCamera();
+   const forward=new THREE.Vector3(Math.sin(editorCamYaw),0,-Math.cos(editorCamYaw));
+   editorCamPos.addScaledVector(forward,-Math.sign(e.deltaY)*1.2);
    return;
  }
  if(started&&!editorMode&&cameraMode==='third'){
@@ -2707,6 +3052,9 @@ adminPassword.addEventListener('keydown',e=>{if(e.key==='Enter')adminSignIn()});
 editorBtn.onclick=()=>setEditorMode(!editorMode);
 q('#closeEditor').onclick=()=>setEditorMode(false);
 topViewBtn.onclick=()=>setTopView(!topViewMode);
+q('#editorFreeCamera').onclick=()=>{if(topViewMode)setTopView(false);initEditorCamera(true);show('CAMERA LIBERA ATTIVA')};
+q('#editorFocusSelection').onclick=focusEditorSelection;
+q('#editorResetCamera').onclick=resetEditorCamera;
 q('#selectAll').onclick=()=>{setMoveAllMode(false);selectAllObjects()};
 q('#moveAll').onclick=()=>setMoveAllMode(!moveAllMode);
 q('#clearSelection').onclick=()=>{setMoveAllMode(false);selectEdit(null)};
@@ -2760,6 +3108,18 @@ q('#addColumn').onclick=()=>createCustomPrimitive('column');
 q('#addGlassPanel').onclick=()=>createCustomPrimitive('glassPanel');
 q('#addWall').onclick=()=>createCustomPrimitive('wall');
 q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
+
+characterTarget?.addEventListener('change',()=>{syncCharacterEditorUI();focusCharacterTarget()});
+q('#focusCharacter').onclick=focusCharacterTarget;
+q('#applyCharacterColors').onclick=applyCharacterColorsFromUI;
+q('#resetCharacterStyle').onclick=resetSelectedCharacterStyle;
+q('#applyFacePhoto').onclick=()=>uploadCharacterImage(facePhotoFile.files?.[0],'face');
+q('#removeFacePhoto').onclick=()=>removeCharacterImage('face');
+q('#applyClothingImage').onclick=()=>uploadCharacterImage(clothingImageFile.files?.[0],'clothing');
+q('#removeClothingImage').onclick=()=>removeCharacterImage('clothing');
+facePhotoFile.addEventListener('change',()=>{const file=facePhotoFile.files?.[0];if(file)uploadCharacterImage(file,'face')});
+clothingImageFile.addEventListener('change',()=>{const file=clothingImageFile.files?.[0];if(file)uploadCharacterImage(file,'clothing')});
+
 q('#applyScreenPreset').onclick=()=>{let n=0;for(const d of selectedEdits)if(d.type==='monitor'){applyMonitorPreset(d,screenPreset.value);n++}show(n?('PRESET APPLICATO A '+n+' SCHERMI'):'SELEZIONA ALMENO UN MONITOR')};
 q('#applyScreenFile').onclick=()=>{const file=screenFile.files?.[0];if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}applyImageFileToSelected(file)};
 screenFile.addEventListener('change',()=>{const file=screenFile.files?.[0];if(file)applyImageFileToSelected(file)});
@@ -2802,7 +3162,7 @@ q('#screenVideoPause').onclick=()=>{let n=0;for(const d of selectedMonitorTarget
 screenVideoLoop.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.loop=screenVideoLoop.checked;d.screenVideoLoop=screenVideoLoop.checked}};
 screenVideoMuted.onchange=()=>{for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.muted=screenVideoMuted.checked;d.screenVideoMuted=screenVideoMuted.checked}};
 screenVideoVolume.oninput=()=>{const v=Number(screenVideoVolume.value);screenVideoVolumeV.textContent=Math.round(v*100)+'%';for(const d of selectedEdits)if(d.type==='monitor'&&d.screenVideo){d.screenVideo.volume=v;d.screenVideoVolume=v}};
-addEventListener('keydown',e=>{if(e.code==='KeyE'&&started){setEditorMode(!editorMode);e.preventDefault()}});
+addEventListener('keydown',e=>{if(e.code==='KeyE'&&started&&!editorMode){setEditorMode(true);e.preventDefault()}});
 addEventListener('resize',applyMobileOrientation);
 window.addEventListener('unhandledrejection',e=>{console.warn('Promise non gestita',e.reason)});
 window.addEventListener('error',e=>{
