@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.13';
+ const PWA_VERSION='2026.09.28.14';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -486,14 +486,17 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
   <section class="editorSection" data-editor-section="objects">
     <div class="editorSectionHead"><span>🪑</span><div><h4>OGGETTI</h4><p>Posizione, rotazione e dimensioni dell'elemento selezionato.</p></div></div>
-    <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Angoli azzurri</b> = proporzioni · <span class="gizmoXDot"></span><b>Rosso</b> = larghezza · <span class="gizmoYDot"></span><b>Verde</b> = altezza · <span class="gizmoZDot"></span><b>Blu</b> = profondità · <span class="gizmoRotateDot"></span><b>Arancione</b> = ruota.</div>
+    <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Angoli azzurri</b> = proporzioni · <span class="gizmoXDot"></span><b>Rosso</b> = larghezza · <span class="gizmoYDot"></span><b>Verde</b> = altezza · <span class="gizmoZDot"></span><b>Blu</b> = profondità · <span class="gizmoRotateDot"></span><b>Anelli</b> = ruota X/Y/Z.</div>
 
     <div class="editorCard">
       <div class="editorCardTitle">TRASFORMA</div>
       <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
       <div class="editorRow"><label>Y</label><input id="editY" type="range" min="-2" max="12" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
       <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-38" max="38" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
-      <div class="editorRow"><label>Ruota</label><input id="editRot" type="range" min="-180" max="180" step="5" value="0"><span id="editRotv" class="editorValue">0°</span></div>
+      <div class="editorSubTitle">ROTAZIONE 3D</div>
+      <div class="editorRow"><label>Rot X</label><input id="editRotX" type="range" min="-180" max="180" step="1" value="0"><span id="editRotXv" class="editorValue">0°</span></div>
+      <div class="editorRow"><label>Rot Y</label><input id="editRot" type="range" min="-180" max="180" step="1" value="0"><span id="editRotv" class="editorValue">0°</span></div>
+      <div class="editorRow"><label>Rot Z</label><input id="editRotZ" type="range" min="-180" max="180" step="1" value="0"><span id="editRotZv" class="editorValue">0°</span></div>
       <div class="editorSubTitle">DIMENSIONI</div>
       <div class="editorRow"><label>Larghezza</label><input id="editSX" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
       <div class="editorRow"><label>Altezza</label><input id="editSY" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
@@ -677,7 +680,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {FBXLoader} from 'three/addons/loaders/FBXLoader.js';
 import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRot=q('#editRot'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotv=q('#editRotv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
+const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q('#hud'), damageEl=q('#damage'), destroyedEl=q('#destroyed'), totalEl=q('#total'), comboEl=q('#combo'), timerEl=q('#timer'), msg=q('#msg'), help=q('#help'), touch=q('#touch'), editorBtn=q('#editorBtn'), adminBtn=q('#adminBtn'), adminStatus=q('#adminStatus'), operatorPreviewBtn=q('#operatorPreviewBtn'), adminLogin=q('#adminLogin'), adminEmail=q('#adminEmail'), adminPassword=q('#adminPassword'), adminMessage=q('#adminMessage'), roomEditor=q('#roomEditor'), selectedName=q('#selectedName'), selectionCount=q('#selectionCount'), editX=q('#editX'), editY=q('#editY'), editZ=q('#editZ'), editRotX=q('#editRotX'), editRot=q('#editRot'), editRotZ=q('#editRotZ'), editSX=q('#editSX'), editSY=q('#editSY'), editSZ=q('#editSZ'), editLight=q('#editLight'), editXv=q('#editXv'), editYv=q('#editYv'), editZv=q('#editZv'), editRotXv=q('#editRotXv'), editRotv=q('#editRotv'), editRotZv=q('#editRotZv'), editSXv=q('#editSXv'), editSYv=q('#editSYv'), editSZv=q('#editSZv'), editLightv=q('#editLightv'), topViewBtn=q('#topView'), screenPreset=q('#screenPreset'), screenFile=q('#screenFile'), screenVideoUrl=q('#screenVideoUrl'), screenVideoFile=q('#screenVideoFile'), screenVideoLoop=q('#screenVideoLoop'), screenVideoMuted=q('#screenVideoMuted'), screenVideoVolume=q('#screenVideoVolume'), screenVideoVolumeV=q('#screenVideoVolumeV'), screenMediaStatus=q('#screenMediaStatus'), adminStatsBtn=q('#adminStatsBtn'), adminStats=q('#adminStats'), statTotal=q('#statTotal'), statToday=q('#statToday'), statOnline=q('#statOnline'), statPlaying=q('#statPlaying'), onlineDot=q('#onlineDot'), statsFoot=q('#statsFoot');
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const quickStyleBar=q('#quickStyleBar'),quickObjectColor=q('#quickObjectColor'),quickApplyColor=q('#quickApplyColor');
@@ -781,7 +784,7 @@ const glassMat=new THREE.MeshPhysicalMaterial({color:0xacc5d7,transparent:true,o
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
 const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
 let editorGizmoRoot=null,editorGizmoHandles=[],editorTransformDrag=null;
-const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3(),_axisScaleWorldQ=new THREE.Quaternion();
+const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3(),_axisScaleWorldQ=new THREE.Quaternion(),_rotatePlaneNormal=new THREE.Vector3(),_rotateBasisU=new THREE.Vector3(),_rotateBasisV=new THREE.Vector3(),_rotateVec=new THREE.Vector3();
 
 let footstepTimer=0,audioEnabled=localStorage.getItem('mcrAudioEnabled')!=='0';
 const sfxStep=new Audio('./sfx_step.wav?v=2');
@@ -992,7 +995,7 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  if(kind==='light')d.pointLight=o.userData.pointLight;
  if(state){
    o.position.set(Number(state.x)||0,Number.isFinite(Number(state.y))?Number(state.y):baseY,Number(state.z)||0);
-   o.rotation.y=Number(state.ry)||0;o.scale.set(Number(state.sx)||1,Number(state.sy)||1,Number(state.sz)||1);o.visible=state.visible!==false;
+   o.rotation.set(Number(state.rx)||0,Number(state.ry)||0,Number(state.rz)||0);o.scale.set(Number(state.sx)||1,Number(state.sy)||1,Number(state.sz)||1);o.visible=state.visible!==false;
  }
  d.roomName=state?.roomName||null;d.styleColor=state?.styleColor||null;d.materialPreset=state?.materialPreset||'matte';d.textureUrl=state?.textureUrl||null;
  d.lightIntensity=Number.isFinite(Number(state?.lightIntensity))?Number(state.lightIntensity):8;d.lightColor=state?.lightColor||null;
@@ -1118,7 +1121,7 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  clone.position.copy(source.o.position);clone.quaternion.copy(source.o.quaternion);clone.scale.copy(source.o.scale);clone.visible=true;
  if(state){
    clone.position.set(state.x??clone.position.x,state.y??clone.position.y,state.z??clone.position.z);
-   clone.rotation.y=state.ry??clone.rotation.y;
+   clone.rotation.set(state.rx??clone.rotation.x,state.ry??clone.rotation.y,state.rz??clone.rotation.z);
    clone.scale.set(state.sx??clone.scale.x,state.sy??clone.scale.y,state.sz??clone.scale.z);
    clone.visible=state.visible!==false;
  }else{
@@ -1151,7 +1154,11 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
 function applyOneLayoutState(d,s){
  if(!d||!s)return;
  d.o.position.set(Number(s.x)||0,Number(s.y)||0,Number(s.z)||0);
- d.o.rotation.y=Number.isFinite(Number(s.ry))?Number(s.ry):0;
+ d.o.rotation.set(
+   Number.isFinite(Number(s.rx))?Number(s.rx):0,
+   Number.isFinite(Number(s.ry))?Number(s.ry):0,
+   Number.isFinite(Number(s.rz))?Number(s.rz):0
+ );
  d.o.scale.set(
    Number.isFinite(Number(s.sx))?Number(s.sx):1,
    Number.isFinite(Number(s.sy))?Number(s.sy):1,
@@ -2505,18 +2512,21 @@ function buildEditorTransformGizmo(){
    h.userData.editorHelper=true;h.userData.editorGizmo={type:'axisScale',axis:f.axis,sign:f.sign};
    root.add(h);editorGizmoHandles.push(h);
  }
- const radius=Math.max(editorGizmoSize.x,editorGizmoSize.z)*.62+handleSize*.9;
- const tube=THREE.MathUtils.clamp(radius*.035,.035,.075);
- const ring=new THREE.Mesh(
-   new THREE.TorusGeometry(radius,tube,10,72),
-   new THREE.MeshBasicMaterial({color:0xffa23c,depthTest:false,transparent:true,opacity:.95,side:THREE.DoubleSide,toneMapped:false})
- );
- ring.rotation.x=Math.PI/2;ring.position.set(editorGizmoCenter.x,editorGizmoBox.max.y+handleSize*1.8,editorGizmoCenter.z);ring.renderOrder=2999;
- ring.userData.editorHelper=true;ring.userData.editorGizmo={type:'rotate',planeY:ring.position.y};
- root.add(ring);editorGizmoHandles.push(ring);
- const knob=new THREE.Mesh(new THREE.SphereGeometry(handleSize*.56,12,8),new THREE.MeshBasicMaterial({color:0xffbe67,depthTest:false,toneMapped:false}));
- knob.position.set(editorGizmoCenter.x+radius,ring.position.y,editorGizmoCenter.z);knob.renderOrder=3001;knob.userData.editorHelper=true;knob.userData.editorGizmo={type:'rotate',planeY:ring.position.y};
- root.add(knob);editorGizmoHandles.push(knob);
+ const ringDefs=[
+   {axis:'x',color:0xff5353,radius:Math.max(editorGizmoSize.y,editorGizmoSize.z)*.60+handleSize*1.2,rot:[0,Math.PI/2,0]},
+   {axis:'y',color:0xffa23c,radius:Math.max(editorGizmoSize.x,editorGizmoSize.z)*.62+handleSize*1.2,rot:[Math.PI/2,0,0]},
+   {axis:'z',color:0x4f7dff,radius:Math.max(editorGizmoSize.x,editorGizmoSize.y)*.60+handleSize*1.2,rot:[0,0,0]}
+ ];
+ for(const rd of ringDefs){
+   const tube=THREE.MathUtils.clamp(rd.radius*.028,.028,.065);
+   const ring=new THREE.Mesh(
+     new THREE.TorusGeometry(rd.radius,tube,10,72),
+     new THREE.MeshBasicMaterial({color:rd.color,depthTest:false,transparent:true,opacity:.90,side:THREE.DoubleSide,toneMapped:false})
+   );
+   ring.position.copy(editorGizmoCenter);ring.rotation.set(...rd.rot);ring.renderOrder=2999;
+   ring.userData.editorHelper=true;ring.userData.editorGizmo={type:'rotateAxis',axis:rd.axis};
+   root.add(ring);editorGizmoHandles.push(ring);
+ }
 }
 function rebuildEditHelpers(){
  clearEditHelpers();
@@ -2542,6 +2552,23 @@ function editorRayPointAtY(clientX,clientY,y){
  editorTransformPlane.constant=-y;
  return editRay.ray.intersectPlane(editorTransformPlane,editorTransformPoint)?editorTransformPoint.clone():null;
 }
+function editorRayPointOnPlane(clientX,clientY,normal,pointOnPlane){
+ const rect=renderer.domElement.getBoundingClientRect();
+ editMouse.x=((clientX-rect.left)/rect.width)*2-1;editMouse.y=-((clientY-rect.top)/rect.height)*2+1;editRay.setFromCamera(editMouse,activeCamera());
+ editorTransformPlane.setFromNormalAndCoplanarPoint(normal,pointOnPlane);
+ return editRay.ray.intersectPlane(editorTransformPlane,editorTransformPoint)?editorTransformPoint.clone():null;
+}
+function rotationBasisForAxis(axis){
+ if(axis==='x')return {normal:new THREE.Vector3(1,0,0),u:new THREE.Vector3(0,1,0),v:new THREE.Vector3(0,0,1)};
+ if(axis==='z')return {normal:new THREE.Vector3(0,0,1),u:new THREE.Vector3(1,0,0),v:new THREE.Vector3(0,1,0)};
+ return {normal:new THREE.Vector3(0,1,0),u:new THREE.Vector3(1,0,0),v:new THREE.Vector3(0,0,1)};
+}
+function rotationAngleOnAxis(clientX,clientY,axis,center){
+ const b=rotationBasisForAxis(axis);
+ const p=editorRayPointOnPlane(clientX,clientY,b.normal,center);if(!p)return null;
+ const v=p.sub(center).normalize();
+ return Math.atan2(v.dot(b.v),v.dot(b.u));
+}
 function startEditorTransform(g,e){
  if(!selectedEdit||selectedEdits.size!==1)return false;
  editorGizmoBox.setFromObject(selectedEdit.o);editorGizmoBox.getCenter(editorGizmoCenter);
@@ -2559,10 +2586,10 @@ function startEditorTransform(g,e){
    if(screenLen<10){sx=axis==='y'?0:1;sy=axis==='y'?-1:0;screenLen=60}
    sx/=screenLen;sy/=screenLen;
    editorTransformDrag={type:'axisScale',axis,sign,pointerId:e.pointerId,startScale:selectedEdit.o.scale.clone(),startX:e.clientX,startY:e.clientY,screenX:sx,screenY:sy,screenLen:Math.max(45,screenLen)};
- }else{
-   const planeY=Number.isFinite(g.data.planeY)?g.data.planeY:center.y;
-   const p=editorRayPointAtY(e.clientX,e.clientY,planeY);if(!p)return false;
-   editorTransformDrag={type:'rotate',pointerId:e.pointerId,startRotation:selectedEdit.o.rotation.y,center,planeY,startAngle:Math.atan2(p.z-center.z,p.x-center.x)};
+ }else if(g.data.type==='rotateAxis'){
+   const axis=g.data.axis||'y';
+   const angle=rotationAngleOnAxis(e.clientX,e.clientY,axis,center);if(angle==null)return false;
+   editorTransformDrag={type:'rotateAxis',axis,pointerId:e.pointerId,startRotation:selectedEdit.o.rotation[axis],center,startAngle:angle};
  }
  renderer.domElement.setPointerCapture?.(e.pointerId);return true;
 }
@@ -2584,11 +2611,13 @@ function updateEditorTransform(e){
    if(e.shiftKey)ratio=Math.round(ratio*20)/20;
    const ns=t.startScale.clone();ns[t.axis]=THREE.MathUtils.clamp(t.startScale[t.axis]*ratio,.15,12);
    selectedEdit.o.scale.copy(ns);
- }else{
-   const p=editorRayPointAtY(e.clientX,e.clientY,t.planeY);if(!p)return true;
-   let delta=Math.atan2(p.z-t.center.z,p.x-t.center.x)-t.startAngle;
+ }else if(t.type==='rotateAxis'){
+   const angle=rotationAngleOnAxis(e.clientX,e.clientY,t.axis,t.center);if(angle==null)return true;
+   let delta=angle-t.startAngle;
+   if(delta>Math.PI)delta-=Math.PI*2;
+   if(delta<-Math.PI)delta+=Math.PI*2;
    if(e.shiftKey){const step=THREE.MathUtils.degToRad(15);delta=Math.round(delta/step)*step}
-   selectedEdit.o.rotation.y=t.startRotation+delta;
+   selectedEdit.o.rotation[t.axis]=t.startRotation+delta;
  }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();return true;
 }
@@ -2601,9 +2630,9 @@ function refreshEditorFields(){
  if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';quickStyleBar?.classList.add('hidden');updateScreenMediaStatus();return}
  const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit)+(selectedEdits.size>1?'  + altri '+(selectedEdits.size-1):'');
  quickStyleBar?.classList.remove('hidden');if(quickObjectColor)quickObjectColor.value=editorObjectColor(selectedEdit);
- editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);
+ editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRotX.value=THREE.MathUtils.radToDeg(o.rotation.x);editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);editRotZ.value=THREE.MathUtils.radToDeg(o.rotation.z);
  editSX.value=o.scale.x;editSY.value=o.scale.y;editSZ.value=o.scale.z;
- editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';
+ editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotXv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.x))+'°';editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';editRotZv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.z))+'°';
  editSXv.textContent=o.scale.x.toFixed(2)+'×';editSYv.textContent=o.scale.y.toFixed(2)+'×';editSZv.textContent=o.scale.z.toFixed(2)+'×';
  if(selectedEdit.type==='monitor'&&selectedEdit.screenPreset!=null)screenPreset.value=String(selectedEdit.screenPreset);
  if(surfaceColor&&selectedEdit.styleColor)surfaceColor.value=selectedEdit.styleColor;
@@ -2665,7 +2694,11 @@ function updateSelectedFromUI(){
      THREE.MathUtils.clamp(d.o.scale.z*ratio.z,.20,12)
    );
  }
- anchor.rotation.y=THREE.MathUtils.degToRad(parseFloat(editRot.value));
+ anchor.rotation.set(
+   THREE.MathUtils.degToRad(parseFloat(editRotX.value)),
+   THREE.MathUtils.degToRad(parseFloat(editRot.value)),
+   THREE.MathUtils.degToRad(parseFloat(editRotZ.value))
+ );
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 }
 function clearTopPlanHelpers(){
@@ -2918,7 +2951,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,ry:d.o.rotation.y,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,rx:d.o.rotation.x,ry:d.o.rotation.y,rz:d.o.rotation.z,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -3778,7 +3811,7 @@ q('#copySelected').onclick=copySelectedObjects;
 q('#duplicateSelected').onclick=duplicateSelectedObjects;
 q('#deleteSelected').onclick=deleteSelectedObject;
 q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+'?layout='+encodeURIComponent(encodeLayoutForUrl());try{await navigator.clipboard.writeText(url);show('LINK LAYOUT COPIATO')}catch(e){prompt('Copia questo link',url)}};
-[editX,editY,editZ,editRot,editSX,editSY,editSZ].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
+[editX,editY,editZ,editRotX,editRot,editRotZ,editSX,editSY,editSZ].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
 q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>moveSelection(.2,0,0);q('#nudgeBack').onclick=()=>moveSelection(0,0,-.2);q('#nudgeFront').onclick=()=>moveSelection(0,0,.2);
 q('#createRoomKit').onclick=createRoomKit;
