@@ -74,6 +74,15 @@ scene.add(selectionBox);
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
+const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const groundPoint = new THREE.Vector3();
+const groundDragOffset = new THREE.Vector3();
+
+let currentMode = 'translate';
+let groundDragging = false;
+let groundDragSnapshot = null;
+let groundBottomOffset = 0;
+let groundPointerId = null;
 
 let selected = null;
 let idCounter = 1;
@@ -205,6 +214,7 @@ function createArchitecture(type) {
   if (type === 'floor') {
     mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 0.12, 5), defaultMaterial(0x7c6955));
     mesh.position.y = 0.06;
+    mesh.userData.isFloor = true;
     addObject(mesh, 'Pavimento');
   }
   if (type === 'door') {
@@ -277,7 +287,8 @@ function rootEditorObject(object) {
 function selectObject(object) {
   selected = object || null;
   if (selected) {
-    transform.attach(selected);
+    if (currentMode === 'ground') transform.detach();
+    else transform.attach(selected);
     selectionBox.setFromObject(selected);
     selectionBox.visible = true;
     selectedLabel.textContent = selected.name || 'Oggetto';
@@ -473,11 +484,21 @@ function deleteSelected() {
 }
 
 function setMode(mode) {
-  transform.setMode(mode);
+  currentMode = mode;
+
+  if (mode === 'ground') {
+    transform.detach();
+    orbit.enabled = true;
+    setStatus('Modalità Pavimento · trascina un oggetto sul piano');
+  } else {
+    transform.setMode(mode);
+    if (selected) transform.attach(selected);
+    setStatus(mode === 'translate' ? 'Modalità Sposta' : mode === 'rotate' ? 'Modalità Ruota' : 'Modalità Scala');
+  }
+
   document.querySelectorAll('[data-mode]').forEach(function (button) {
     button.classList.toggle('active', button.dataset.mode === mode);
   });
-  setStatus(mode === 'translate' ? 'Modalità Sposta' : mode === 'rotate' ? 'Modalità Ruota' : 'Modalità Scala');
 }
 
 function focusSelected() {
@@ -675,12 +696,145 @@ function addReferenceFromFile(file) {
   reader.readAsDataURL(file);
 }
 
-function onViewportPointerDown(event) {
-  if (transform.dragging) return;
+function setPointerFromEvent(event) {
   const rect = renderer.domElement.getBoundingClientRect();
   pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
+}
+
+function isFloorObject(object) {
+  if (!object) return false;
+  return object.userData?.isFloor === true || /^Pavimento(?:\s|$)/i.test(object.name || '');
+}
+
+function getFloorMeshes(excludeRoot) {
+  const floorMeshes = [];
+  editorRoot.children.forEach(function (root) {
+    if (root === excludeRoot || !isFloorObject(root)) return;
+    root.traverse(function (child) {
+      if (child.isMesh) floorMeshes.push(child);
+    });
+  });
+  return floorMeshes;
+}
+
+function getGroundPointFromEvent(event, excludeRoot) {
+  setPointerFromEvent(event);
+
+  const floorMeshes = getFloorMeshes(excludeRoot);
+  if (floorMeshes.length) {
+    const floorHits = raycaster.intersectObjects(floorMeshes, false);
+    if (floorHits.length) return floorHits[0].point.clone();
+  }
+
+  groundPlane.constant = 0;
+  const hit = raycaster.ray.intersectPlane(groundPlane, groundPoint);
+  return hit ? groundPoint.clone() : null;
+}
+
+function getDraggableHit(event) {
+  setPointerFromEvent(event);
+  const meshes = [];
+  editorRoot.children.forEach(function (root) {
+    if (isFloorObject(root)) return;
+    root.traverse(function (child) {
+      if (child.isMesh) meshes.push(child);
+    });
+  });
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (!hits.length) return null;
+  return rootEditorObject(hits[0].object);
+}
+
+function beginGroundDrag(event) {
+  if (currentMode !== 'ground' || event.button !== 0) return;
+
+  const object = getDraggableHit(event);
+  if (!object) return;
+
+  const point = getGroundPointFromEvent(event, object);
+  if (!point) return;
+
+  selectObject(object);
+
+  const box = new THREE.Box3().setFromObject(object);
+  groundBottomOffset = box.min.y - object.position.y;
+  groundDragOffset.set(object.position.x - point.x, 0, object.position.z - point.z);
+  groundDragSnapshot = snapshot();
+  groundDragging = true;
+  groundPointerId = event.pointerId;
+  orbit.enabled = false;
+
+  object.position.y = point.y - groundBottomOffset;
+  object.updateMatrixWorld(true);
+  selectionBox.setFromObject(object);
+  refreshInspector();
+
+  if (renderer.domElement.setPointerCapture) {
+    try { renderer.domElement.setPointerCapture(event.pointerId); } catch (error) {}
+  }
+
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function moveGroundDrag(event) {
+  if (!groundDragging || currentMode !== 'ground' || !selected) return;
+
+  const point = getGroundPointFromEvent(event, selected);
+  if (!point) return;
+
+  selected.position.x = point.x + groundDragOffset.x;
+  selected.position.z = point.z + groundDragOffset.z;
+  selected.position.y = point.y - groundBottomOffset;
+  selected.updateMatrixWorld(true);
+
+  selectionBox.setFromObject(selected);
+  refreshInspector();
+  setStatus('Spostamento sul pavimento · X ' + selected.position.x.toFixed(2) + ' · Z ' + selected.position.z.toFixed(2));
+
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function endGroundDrag(event) {
+  if (!groundDragging) return;
+  if (groundPointerId !== null && event.pointerId !== undefined && event.pointerId !== groundPointerId) return;
+
+  groundDragging = false;
+  orbit.enabled = true;
+
+  if (groundDragSnapshot) {
+    undoStack.push(groundDragSnapshot);
+    if (undoStack.length > 50) undoStack.shift();
+    redoStack = [];
+    groundDragSnapshot = null;
+  }
+
+  if (renderer.domElement.releasePointerCapture && groundPointerId !== null) {
+    try { renderer.domElement.releasePointerCapture(groundPointerId); } catch (error) {}
+  }
+  groundPointerId = null;
+
+  if (selected) {
+    selected.updateMatrixWorld(true);
+    selectionBox.setFromObject(selected);
+    refreshInspector();
+    renderTree();
+  }
+
+  setStatus('Oggetto appoggiato al pavimento');
+}
+
+renderer.domElement.addEventListener('pointerdown', beginGroundDrag, true);
+renderer.domElement.addEventListener('pointermove', moveGroundDrag, true);
+renderer.domElement.addEventListener('pointerup', endGroundDrag, true);
+renderer.domElement.addEventListener('pointercancel', endGroundDrag, true);
+
+function onViewportPointerDown(event) {
+  if (currentMode === 'ground' || transform.dragging) return;
+  setPointerFromEvent(event);
 
   const meshes = [];
   editorRoot.traverse(function (child) {
@@ -923,6 +1077,7 @@ document.addEventListener('keydown', function (event) {
     return;
   }
   if (key === 'w') setMode('translate');
+  if (key === 'g') setMode('ground');
   if (key === 'e') setMode('rotate');
   if (key === 'r') setMode('scale');
   if (event.key === 'Delete' || event.key === 'Backspace') deleteSelected();
