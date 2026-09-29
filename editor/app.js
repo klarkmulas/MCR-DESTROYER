@@ -877,20 +877,24 @@ document.querySelectorAll('[data-ai-type]').forEach(function (button) {
   });
 });
 
-document.getElementById('aiImages').addEventListener('change', function (event) {
-  aiFiles = Array.from(event.target.files).slice(0, 4);
-  const preview = document.getElementById('aiPreview');
-  preview.innerHTML = '';
-  aiFiles.forEach(function (file) {
-    const img = document.createElement('img');
-    img.alt = file.name;
-    img.src = URL.createObjectURL(file);
-    img.onload = function () { URL.revokeObjectURL(img.src); };
-    preview.appendChild(img);
+const aiImagesInput = document.getElementById('aiImages');
+if (aiImagesInput) {
+  aiImagesInput.addEventListener('change', function (event) {
+    aiFiles = Array.from(event.target.files).slice(0, 4);
+    const preview = document.getElementById('aiPreview');
+    if (preview) preview.innerHTML = '';
+    aiFiles.forEach(function (file) {
+      if (!preview) return;
+      const img = document.createElement('img');
+      img.alt = file.name;
+      img.src = URL.createObjectURL(file);
+      img.onload = function () { URL.revokeObjectURL(img.src); };
+      preview.appendChild(img);
+    });
+    const label = aiType === 'person' ? 'persona' : aiType === 'room' ? 'stanza' : 'oggetto';
+    setStatus(aiFiles.length + ' foto caricate per ' + label);
   });
-  const label = aiType === 'person' ? 'persona' : aiType === 'room' ? 'stanza' : 'oggetto';
-  setStatus(aiFiles.length + ' foto caricate per ' + label);
-});
+}
 
 document.addEventListener('keydown', function (event) {
   const tag = document.activeElement && document.activeElement.tagName;
