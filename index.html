@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.29.3';
+ const PWA_VERSION='2026.09.29.4';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -174,7 +174,7 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .editorHead{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:flex-start;padding:16px 16px 10px;background:linear-gradient(180deg,#0a1724 72%,#0a1724e8 88%,transparent);border-bottom:1px solid #ffffff10}.editorHead h3{margin:3px 0 2px!important;font-size:20px!important}.editorSectionTitle{font-size:11px;color:#85a4bf}.editorClose{width:34px;height:34px;border-radius:10px;border:1px solid #ffffff18;background:#172536;color:#fff;font-weight:900;font-size:16px}.editorClose:hover{background:#5a2029}
 .editorCameraBar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px 5px}.editorCameraBar button{padding:8px 4px;border-radius:9px;border:1px solid #ffffff15;background:#112233;color:#dff2ff;font-size:9px;font-weight:900}.editorCameraBar button:hover{background:#176bb0}.editorCameraHint{padding:0 15px 10px;font-size:9px;color:#718ca5;text-align:center}
 .editorNav{position:sticky;top:73px;z-index:4;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 10px;background:#09141ff4;border-top:1px solid #ffffff0c;border-bottom:1px solid #ffffff12}.editorNavBtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:9px;background:transparent;color:#7992a8;font-size:15px}.editorNavBtn span{font-size:7px;font-weight:900;letter-spacing:.25px}.editorNavBtn.active{background:#176bb029;color:#77c8ff}.editorNavBtn:hover{background:#ffffff0a;color:#fff}
-.editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}.quickStyleBar{margin:7px 14px 0;display:grid;grid-template-columns:1fr 46px 74px;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid #46bfff2c;background:#0b1b28}.quickStyleBar.hidden{display:none!important}.quickStyleText{font-size:8px;color:#7894aa;margin-top:2px}.quickStyleBar input[type=color]{width:46px;height:34px;padding:2px;border-radius:8px;border:1px solid #ffffff1a;background:#122435}.quickStyleBar button{height:34px;border-radius:8px;border:1px solid #52c1ff33;background:#176bb0;color:#fff;font-size:8px;font-weight:900}
+.editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}.editorSelectionActions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.editorTinyBtn:disabled{opacity:.32;cursor:default}.editorTinyBtn:not(:disabled):hover{background:#1d3b53;color:#fff}#editorUndo:not(:disabled){border-color:#66c9ff45}#editorRedo:not(:disabled){border-color:#b887ff45}.quickStyleBar{margin:7px 14px 0;display:grid;grid-template-columns:1fr 46px 74px;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid #46bfff2c;background:#0b1b28}.quickStyleBar.hidden{display:none!important}.quickStyleText{font-size:8px;color:#7894aa;margin-top:2px}.quickStyleBar input[type=color]{width:46px;height:34px;padding:2px;border-radius:8px;border:1px solid #ffffff1a;background:#122435}.quickStyleBar button{height:34px;border-radius:8px;border:1px solid #52c1ff33;background:#176bb0;color:#fff;font-size:8px;font-weight:900}
 .quickTextureBar{margin:7px 14px 0;padding:10px;border-radius:11px;border:1px solid #b888ff30;background:#121626}.quickTextureBar.hidden{display:none!important}.quickTextureHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.quickTextureHead>span{font-size:7px;font-weight:900;letter-spacing:.7px;color:#b99be7;background:#9b62dc18;border:1px solid #ad7be633;border-radius:7px;padding:5px 7px}.quickTextureBar>input[type=file]{width:100%;margin:8px 0 6px;padding:7px;border-radius:8px;background:#0d1420;color:#dcecff;border:1px solid #ffffff14;font-size:9px}.quickTextureControls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.quickTextureControls label{display:block;margin:0;font-size:7px;color:#91a8ba;font-weight:800}.quickTextureControls label span{display:block;margin-bottom:3px}.quickTextureControls input{width:100%;padding:6px;border-radius:7px;background:#0b1520;color:#fff;border:1px solid #ffffff18;font-size:9px}.quickTextureActions{display:grid;grid-template-columns:1.3fr 1fr .75fr;gap:6px;margin-top:7px}.quickTextureActions button{padding:8px 5px;border-radius:8px;border:1px solid #ffffff15;background:#6e49a3;color:#fff;font-size:8px;font-weight:900}.quickTextureActions button:nth-child(2){background:#203449}.quickTextureActions .danger{background:#54212a}
 
 .editorSection{display:none;padding:14px 14px 90px}.editorSection.active{display:block}.editorSectionHead{display:flex;gap:10px;align-items:center;margin:2px 0 12px}.editorSectionHead>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#176bb025;border:1px solid #51baff33;font-size:20px}.editorSectionHead h4{margin:0;font-size:14px;color:#f3f9ff}.editorSectionHead p{margin:3px 0 0;font-size:9px;color:#7f9ab1}
@@ -449,7 +449,11 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
       <div id="selectedName">Nessun oggetto selezionato</div>
       <div id="selectionCount" class="selectionCount">0 oggetti selezionati</div>
     </div>
-    <button id="clearSelection" class="editorTinyBtn">DESELEZIONA</button>
+    <div class="editorSelectionActions">
+      <button id="editorUndo" class="editorTinyBtn" disabled>↶ ANNULLA</button>
+      <button id="editorRedo" class="editorTinyBtn" disabled>↷ RIPETI</button>
+      <button id="clearSelection" class="editorTinyBtn">DESELEZIONA</button>
+    </div>
   </div>
   <div id="quickStyleBar" class="quickStyleBar hidden">
     <div>
@@ -709,6 +713,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 
     <div class="editorShortcutHelp">
       <b>SCORCIATOIE</b>
+      <span>Ctrl+Z · annulla · Ctrl+Y / Ctrl+Shift+Z · ripeti</span>
       <span>Ctrl+C / Ctrl+V · copia/incolla</span>
       <span>Ctrl+D · duplica</span>
       <span>Canc · elimina</span>
@@ -755,6 +760,7 @@ const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacter
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const quickStyleBar=q('#quickStyleBar'),quickObjectColor=q('#quickObjectColor'),quickApplyColor=q('#quickApplyColor');
 const quickTextureBar=q('#quickTextureBar'),quickTextureFile=q('#quickTextureFile'),quickTextureRepeatX=q('#quickTextureRepeatX'),quickTextureRepeatY=q('#quickTextureRepeatY'),quickTextureRotation=q('#quickTextureRotation'),quickTextureStatus=q('#quickTextureStatus');
+const editorUndoBtn=q('#editorUndo'),editorRedoBtn=q('#editorRedo');
 const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
 const npcModelPanel=q('#npcModelPanel'),npcHeight=q('#npcHeight'),npcBuild=q('#npcBuild'),npcShoulders=q('#npcShoulders'),npcHeadSize=q('#npcHeadSize'),npcArms=q('#npcArms'),npcLegs=q('#npcLegs'),npcTorsoDepth=q('#npcTorsoDepth');
 const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null,colorsEdited:false};
@@ -1130,12 +1136,14 @@ function editorObjectColor(d){
 }
 function applyUniversalObjectColor(color){
  if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  for(const d of selectedEdits){
    d.styleColor=color;
    applyAppearanceState(d,{styleColor:color});
  }
  if(surfaceColor)surfaceColor.value=color;
  show('COLORE APPLICATO A '+selectedEdits.size+' OGGETT'+(selectedEdits.size===1?'O':'I'));
+ if(before)commitEditorSnapshot(before,'Colore');
 }
 
 function currentTextureSettings(){
@@ -1152,6 +1160,7 @@ function updateTextureStatus(){
 }
 function updateTextureTransformSelected(){
  if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  const settings=currentTextureSettings();
  let n=0;
  for(const d of selectedEdits){
@@ -1160,15 +1169,18 @@ function updateTextureTransformSelected(){
  }
  updateTextureStatus();
  show(n?('TEXTURE AGGIORNATA SU '+n+' OGGETT'+(n===1?'O':'I')):'NESSUNA TEXTURE DA AGGIORNARE');
+ if(before)commitEditorSnapshot(before,'Regolazione texture');
 }
 function removeTextureFromSelected(){
  if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  for(const d of selectedEdits){
    d.textureUrl=null;
    applyAppearanceState(d,{textureUrl:null});
  }
  updateTextureStatus();
  show('TEXTURE RIMOSSA · MATERIALE ORIGINALE RIPRISTINATO');
+ if(before)commitEditorSnapshot(before,'Rimozione texture');
 }
 
 function applyAppearanceState(d,state={}){
@@ -2925,7 +2937,7 @@ function updateEditorTransform(e){
 }
 function endEditorTransform(e){
  if(!editorTransformDrag)return;
- if(!e||e.pointerId===editorTransformDrag.pointerId){editorTransformDrag=null}
+ if(!e||e.pointerId===editorTransformDrag.pointerId){editorTransformDrag=null;commitEditorHistoryGesture()}
 }
 function refreshEditorFields(){
  selectionCount.textContent=selectedEdits.size+' oggett'+(selectedEdits.size===1?'o':'i')+' selezionat'+(selectedEdits.size===1?'o':'i');
@@ -2976,12 +2988,14 @@ function setMoveAllMode(on){
 }
 
 function moveSelection(dx,dy,dz){
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  for(const d of selectedEdits){
    d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-EDITOR_LIMIT,EDITOR_LIMIT);
    d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,-EDITOR_LIMIT,EDITOR_LIMIT);
    d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-EDITOR_LIMIT,EDITOR_LIMIT);
  }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
+ if(before)commitEditorSnapshot(before,'Spostamento');
 }
 function updateSelectedFromUI(){
  if(!selectedEdit)return;
@@ -3273,6 +3287,106 @@ function layoutData(){
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
 }
+
+const EDITOR_HISTORY_LIMIT=40;
+const editorUndoStack=[],editorRedoStack=[];
+let editorHistoryRestoring=false,editorGestureHistory=null;
+
+function captureEditorSnapshot(){
+ const data=layoutData();
+ return {
+   exposure:data.exposure,
+   items:data.items.map(item=>({...item}))
+ };
+}
+function editorSnapshotSignature(s){
+ if(!s)return '';
+ return s.items.map((x,i)=>[
+   i,x.type,x.customKind||'',x.sourceIndex,x.visible!==false?1:0,
+   Number(x.x||0).toFixed(4),Number(x.y||0).toFixed(4),Number(x.z||0).toFixed(4),
+   Number(x.rx||0).toFixed(4),Number(x.ry||0).toFixed(4),Number(x.rz||0).toFixed(4),
+   Number(x.sx??1).toFixed(4),Number(x.sy??1).toFixed(4),Number(x.sz??1).toFixed(4),
+   x.styleColor||'',x.materialPreset||'',x.textureUrl||'',
+   Number(x.textureRepeatX??1).toFixed(3),Number(x.textureRepeatY??1).toFixed(3),Number(x.textureRotation??0).toFixed(2)
+ ].join(':')).join('|');
+}
+function updateEditorHistoryUI(){
+ if(editorUndoBtn){
+   editorUndoBtn.disabled=!editorUndoStack.length;
+   editorUndoBtn.title=editorUndoStack.length?'Annulla: '+(editorUndoStack.at(-1).label||'ultima modifica'):'Niente da annullare';
+ }
+ if(editorRedoBtn){
+   editorRedoBtn.disabled=!editorRedoStack.length;
+   editorRedoBtn.title=editorRedoStack.length?'Ripeti: '+(editorRedoStack.at(-1).label||'ultima modifica'):'Niente da ripetere';
+ }
+}
+function commitEditorSnapshot(before,label='Modifica'){
+ if(editorHistoryRestoring||!before)return false;
+ const after=captureEditorSnapshot();
+ if(editorSnapshotSignature(before)===editorSnapshotSignature(after))return false;
+ editorUndoStack.push({snapshot:before,label});
+ if(editorUndoStack.length>EDITOR_HISTORY_LIMIT)editorUndoStack.shift();
+ editorRedoStack.length=0;
+ updateEditorHistoryUI();
+ return true;
+}
+function beginEditorHistoryGesture(label='Modifica'){
+ if(editorHistoryRestoring||editorGestureHistory)return;
+ editorGestureHistory={snapshot:captureEditorSnapshot(),label};
+}
+function cancelEditorHistoryGesture(){editorGestureHistory=null}
+function commitEditorHistoryGesture(){
+ if(!editorGestureHistory)return false;
+ const tx=editorGestureHistory;editorGestureHistory=null;
+ return commitEditorSnapshot(tx.snapshot,tx.label);
+}
+function restoreEditorHistorySnapshot(snapshot){
+ if(!snapshot)return;
+ editorHistoryRestoring=true;
+ try{
+   applyStableLayoutItems(snapshot.items||[]);
+   if(Number.isFinite(Number(snapshot.exposure))){
+     renderer.toneMappingExposure=Number(snapshot.exposure);
+     editLight.value=String(snapshot.exposure);
+     editLightv.textContent=Number(snapshot.exposure).toFixed(2);
+   }
+   setMoveAllMode(false);
+   selectEdit(null);
+   if(topViewMode)buildTopPlanHelpers();
+   updateBlackoutHud();
+ }finally{
+   editorHistoryRestoring=false;
+ }
+}
+function editorUndo(){
+ if(!editorUndoStack.length){show('NIENTE DA ANNULLARE');return}
+ editorGestureHistory=null;
+ const entry=editorUndoStack.pop();
+ const current=captureEditorSnapshot();
+ editorRedoStack.push({snapshot:current,label:entry.label});
+ restoreEditorHistorySnapshot(entry.snapshot);
+ updateEditorHistoryUI();
+ show('↶ ANNULLATO · '+entry.label.toUpperCase());
+}
+function editorRedo(){
+ if(!editorRedoStack.length){show('NIENTE DA RIPETERE');return}
+ editorGestureHistory=null;
+ const entry=editorRedoStack.pop();
+ const current=captureEditorSnapshot();
+ editorUndoStack.push({snapshot:current,label:entry.label});
+ if(editorUndoStack.length>EDITOR_HISTORY_LIMIT)editorUndoStack.shift();
+ restoreEditorHistorySnapshot(entry.snapshot);
+ updateEditorHistoryUI();
+ show('↷ RIPETUTO · '+entry.label.toUpperCase());
+}
+function runEditorHistoryAction(label,fn){
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
+ const result=fn();
+ if(before)commitEditorSnapshot(before,label);
+ return result;
+}
+updateEditorHistoryUI();
+
 function encodeLayoutForUrl(){return btoa(unescape(encodeURIComponent(JSON.stringify(layoutData()))))}
 function applyLayoutData(data){
  if(!data)return;
@@ -3297,6 +3411,7 @@ function copySelectedObjects(){
 }
 function duplicateObjectList(list,baseOffset=.55){
  if(!list?.length)return;
+ const historyBefore=editorHistoryRestoring?null:captureEditorSnapshot();
  const step=baseOffset*(1+pasteStep*.35);
  const created=[];
  for(const d of list){
@@ -3308,6 +3423,7 @@ function duplicateObjectList(list,baseOffset=.55){
  pasteStep++;
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
  show(created.length+' OGGETT'+(created.length===1?'O DUPLICATO':'I DUPLICATI'));
+ if(historyBefore)commitEditorSnapshot(historyBefore,'Duplicazione');
 }
 function duplicateSelectedObjects(){
  if(!selectedEdits.size){show('NESSUN OGGETTO SELEZIONATO');return}
@@ -3318,11 +3434,18 @@ function pasteCopiedObjects(){
  duplicateObjectList(editorClipboard,.55);
 }
 function deleteSelectedObject(){
- if(!selectedEdits.size)return;for(const d of selectedEdits){d.o.visible=false;d.startVis=false}show(selectedEdits.size+' oggetti eliminati');selectEdit(null);if(topViewMode)buildTopPlanHelpers();
+ if(!selectedEdits.size)return;
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
+ const n=selectedEdits.size;
+ for(const d of selectedEdits){d.o.visible=false;d.startVis=false}
+ show(n+' oggetti eliminati');selectEdit(null);if(topViewMode)buildTopPlanHelpers();
+ if(before)commitEditorSnapshot(before,'Eliminazione');
 }
 function resetSelectedObjects(){
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  for(const d of selectedEdits){d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}}
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
+ if(before)commitEditorSnapshot(before,'Ripristino selezione');
 }
 function restoreOriginalLayout(){
  destruct.forEach(d=>{d.o.position.copy(d.origPos);d.o.quaternion.copy(d.origQuat);d.o.scale.copy(d.origScale);d.o.visible=true;d.startVis=true;d.startPos.copy(d.origPos);d.startQuat.copy(d.origQuat);d.startScale.copy(d.origScale);if(d.type==='monitor'){stopMonitorVideo(d,false);applyMonitorPreset(d,d.origScreenPreset??0)}});renderer.toneMappingExposure=.92;editLight.value='.92';editLightv.textContent='.92';localStorage.removeItem('mcrDestroyerLayoutV1');localStorage.removeItem('mcrDestroyerLayoutV2');selectEdit(null);if(topViewMode)buildTopPlanHelpers();show('LAYOUT ORIGINALE RIPRISTINATO');
@@ -3992,6 +4115,9 @@ addEventListener('keydown',e=>{
  }
  if(editorMode){
    const mod=e.ctrlKey||e.metaKey;
+   if(mod&&e.code==='KeyZ'&&e.shiftKey){editorRedo();e.preventDefault();return}
+   if(mod&&e.code==='KeyZ'){editorUndo();e.preventDefault();return}
+   if(mod&&e.code==='KeyY'){editorRedo();e.preventDefault();return}
    if(mod&&e.code==='KeyA'){selectAllObjects();e.preventDefault();return}
    if(mod&&e.code==='KeyC'){copySelectedObjects();e.preventDefault();return}
    if(mod&&e.code==='KeyV'){pasteCopiedObjects();e.preventDefault();return}
@@ -4031,6 +4157,7 @@ addEventListener('mousemove',e=>{
  }
 });
 function endEditorDrag(){
+ if(editDragging)commitEditorHistoryGesture();
  editDragging=false;dragStartPoint=null;dragStartPositions.clear();dragTargets=[];dragPointerId=null;
 }
 renderer.domElement.addEventListener('contextmenu',e=>{if(editorMode)e.preventDefault()});
@@ -4047,7 +4174,11 @@ renderer.domElement.addEventListener('pointerdown',e=>{
  if(!editorMode||e.button!==0)return;
  e.preventDefault();
  const gizmoHit=editorGizmoPick(e.clientX,e.clientY);
- if(gizmoHit&&startEditorTransform(gizmoHit,e))return;
+ if(gizmoHit){
+   beginEditorHistoryGesture(gizmoHit.data?.type==='rotateAxis'?'Rotazione':'Ridimensionamento');
+   if(startEditorTransform(gizmoHit,e))return;
+   cancelEditorHistoryGesture();
+ }
  const npcHit=editorNpcPick(e.clientX,e.clientY);
  if(npcHit){
    const value='npc:'+npcHit.id;
@@ -4074,6 +4205,7 @@ renderer.domElement.addEventListener('pointerdown',e=>{
        : [...selectedEdits].filter(d=>d?.o?.visible&&!d.dead);
      const p=editorDragPoint(e.clientX,e.clientY,selectedEdit.o.position.y);
      if(p&&dragTargets.length){
+       beginEditorHistoryGesture('Spostamento');
        dragStartPoint=p;
        dragStartPositions.clear();
        for(const d of dragTargets)dragStartPositions.set(d,d.o.position.clone());
@@ -4183,6 +4315,8 @@ document.querySelectorAll('[data-editor-open]').forEach(btn=>btn.addEventListene
 q('#selectAll').onclick=()=>{setMoveAllMode(false);selectAllObjects()};
 q('#moveAll').onclick=()=>setMoveAllMode(!moveAllMode);
 q('#clearSelection').onclick=()=>{setMoveAllMode(false);selectEdit(null)};
+editorUndoBtn.onclick=editorUndo;
+editorRedoBtn.onclick=editorRedo;
 q('#saveLayout').onclick=publishLayoutGlobal;
 q('#publishLayout').onclick=saveLayout;
 q('#resetLayout').onclick=restoreOriginalLayout;
@@ -4191,27 +4325,36 @@ q('#copySelected').onclick=copySelectedObjects;
 q('#duplicateSelected').onclick=duplicateSelectedObjects;
 q('#deleteSelected').onclick=deleteSelectedObject;
 q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+'?layout='+encodeURIComponent(encodeLayoutForUrl());try{await navigator.clipboard.writeText(url);show('LINK LAYOUT COPIATO')}catch(e){prompt('Copia questo link',url)}};
-[editX,editY,editZ,editRotX,editRot,editRotZ,editSX,editSY,editSZ].forEach(el=>el.addEventListener('input',updateSelectedFromUI));
+[editX,editY,editZ,editRotX,editRot,editRotZ,editSX,editSY,editSZ].forEach(el=>{
+ el.addEventListener('focus',()=>beginEditorHistoryGesture('Trasformazione'));
+ el.addEventListener('pointerdown',()=>beginEditorHistoryGesture('Trasformazione'));
+ el.addEventListener('input',updateSelectedFromUI);
+ el.addEventListener('change',commitEditorHistoryGesture);
+ el.addEventListener('blur',commitEditorHistoryGesture);
+});
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
 q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>moveSelection(.2,0,0);q('#nudgeBack').onclick=()=>moveSelection(0,0,-.2);q('#nudgeFront').onclick=()=>moveSelection(0,0,.2);
-q('#createRoomKit').onclick=createRoomKit;
-q('#addFloor').onclick=()=>createCustomPrimitive('floor');
-q('#addCeiling').onclick=()=>createCustomPrimitive('ceiling');
-q('#addDoor').onclick=()=>createCustomPrimitive('door');
-q('#addLight').onclick=()=>createCustomPrimitive('light');
-q('#addPicture').onclick=()=>createCustomPrimitive('picture');
-q('#addWallPro').onclick=()=>createCustomPrimitive('roomWall');
+q('#createRoomKit').onclick=()=>runEditorHistoryAction('Creazione stanza',createRoomKit);
+q('#addFloor').onclick=()=>runEditorHistoryAction('Aggiunta pavimento',()=>createCustomPrimitive('floor'));
+q('#addCeiling').onclick=()=>runEditorHistoryAction('Aggiunta soffitto',()=>createCustomPrimitive('ceiling'));
+q('#addDoor').onclick=()=>runEditorHistoryAction('Aggiunta porta',()=>createCustomPrimitive('door'));
+q('#addLight').onclick=()=>runEditorHistoryAction('Aggiunta luce',()=>createCustomPrimitive('light'));
+q('#addPicture').onclick=()=>runEditorHistoryAction('Aggiunta immagine',()=>createCustomPrimitive('picture'));
+q('#addWallPro').onclick=()=>runEditorHistoryAction('Aggiunta parete',()=>createCustomPrimitive('roomWall'));
 quickApplyColor?.addEventListener('click',()=>applyUniversalObjectColor(quickObjectColor.value));
 quickObjectColor?.addEventListener('dblclick',()=>applyUniversalObjectColor(quickObjectColor.value));
 q('#applySurfaceStyle').onclick=()=>{
  if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  const color=surfaceColor.value,preset=surfaceMaterial.value;
  for(const d of selectedEdits){d.styleColor=color;d.materialPreset=preset;if(d.type==='light')d.lightColor=color;applyAppearanceState(d,{styleColor:color,materialPreset:preset,lightColor:d.type==='light'?color:d.lightColor})}
  show('ASPETTO APPLICATO A '+selectedEdits.size+' OGGETTI');
+ if(before)commitEditorSnapshot(before,'Aspetto materiale');
 };
 async function applySurfaceImageFile(file,useQuickSettings=false){
  if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
  if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}
+ const before=editorHistoryRestoring?null:captureEditorSnapshot();
  try{
    show('CARICAMENTO TEXTURE…');
    const url=await uploadSharedMedia(file,'textures');
@@ -4225,6 +4368,7 @@ async function applySurfaceImageFile(file,useQuickSettings=false){
    }
    updateTextureStatus();
    show('TEXTURE APPLICATA A '+selectedEdits.size+' OGGETT'+(selectedEdits.size===1?'O':'I'));
+   if(before)commitEditorSnapshot(before,'Texture');
  }catch(e){console.error('Texture upload error',e);show('ERRORE CARICAMENTO TEXTURE')}
 }
 q('#applySurfaceImage').onclick=()=>applySurfaceImageFile(surfaceImageFile.files?.[0],false);
@@ -4238,11 +4382,11 @@ lightIntensity.addEventListener('input',()=>{
  const v=Number(lightIntensity.value);
  for(const d of selectedEdits)if(d.type==='light'){d.lightIntensity=v;applyAppearanceState(d,{lightIntensity:v})}
 });
-q('#addCube').onclick=()=>createCustomPrimitive('cube');
-q('#addColumn').onclick=()=>createCustomPrimitive('column');
-q('#addGlassPanel').onclick=()=>createCustomPrimitive('glassPanel');
-q('#addWall').onclick=()=>createCustomPrimitive('wall');
-q('#addGreenPanel').onclick=()=>createCustomPrimitive('panel');
+q('#addCube').onclick=()=>runEditorHistoryAction('Aggiunta cubo',()=>createCustomPrimitive('cube'));
+q('#addColumn').onclick=()=>runEditorHistoryAction('Aggiunta colonna',()=>createCustomPrimitive('column'));
+q('#addGlassPanel').onclick=()=>runEditorHistoryAction('Aggiunta vetrata',()=>createCustomPrimitive('glassPanel'));
+q('#addWall').onclick=()=>runEditorHistoryAction('Aggiunta parete',()=>createCustomPrimitive('wall'));
+q('#addGreenPanel').onclick=()=>runEditorHistoryAction('Aggiunta pannello',()=>createCustomPrimitive('panel'));
 
 characterTarget?.addEventListener('change',()=>{openEditorSection('characters',false);syncCharacterEditorUI();focusCharacterTarget()});
 q('#focusCharacter').onclick=()=>{openEditorSection('characters',false);focusCharacterTarget()};
