@@ -1,35 +1,25 @@
-.ai-backend-config{
-  margin:14px 0 0;padding:12px;border:1px solid #28364a;border-radius:11px;background:#0a1017
-}
-.ai-backend-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-.ai-backend-title strong{font-size:10px;letter-spacing:.08em}
-.ai-backend-title span{font-size:9px;color:#6f8094}
-.ai-config-grid{display:grid;grid-template-columns:1.3fr .9fr auto auto;gap:7px}
-.ai-config-grid input{
-  width:100%;min-width:0;background:#080d13;border:1px solid #29364a;color:#dbe5f2;
-  border-radius:8px;padding:8px 9px;outline:none;font-size:10px
-}
-.ai-config-grid button{
-  border:1px solid #304058;background:#121a24;border-radius:8px;padding:7px 9px;
-  color:#b9c7d9;cursor:pointer;font-size:10px
-}
-.ai-bridge-message{margin-top:8px;font-size:9px;color:#8392a5;line-height:1.4}
-.ai-bridge-message[data-kind="ok"]{color:#63dfbd}
-.ai-bridge-message[data-kind="warn"]{color:#e4bd65}
-.ai-bridge-message[data-kind="error"]{color:#ff7b8d}
-.ai-progress-wrap{margin-top:12px;border:1px solid #263449;background:#080d13;border-radius:10px;padding:9px}
-.ai-progress-track{height:8px;background:#141d28;border-radius:999px;overflow:hidden}
-.ai-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#7457ff,#38d6b5);transition:width .35s ease}
-.ai-progress-text{display:block;margin-top:6px;color:#8f9eaf;font-size:9px}
-[data-action="ai-generate"]:disabled{opacity:.55;cursor:wait}
+.free-ai-card{width:min(760px,96vw)}
+.free-ai-badge-row{display:flex;gap:7px;flex-wrap:wrap;margin:6px 0 14px}
+.free-badge{display:inline-flex;align-items:center;border:1px solid rgba(50,214,180,.35);background:rgba(50,214,180,.10);color:#79e8cf;border-radius:999px;padding:5px 8px;font-size:9px;font-weight:900;letter-spacing:.06em}
+.free-badge.soft{border-color:#334057;background:#111923;color:#9eacbd}
+.free-ai-warning{display:grid;gap:4px;border:1px solid #304057;background:#0a1017;border-radius:11px;padding:11px;margin-bottom:12px}
+.free-ai-warning strong{font-size:10px;color:#e5ebf3}
+.free-ai-warning span{font-size:10px;line-height:1.5;color:#8493a6}
+.free-flow{display:grid;gap:8px}
+.free-step{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #253248;background:#0b1118;border-radius:12px;padding:10px}
+.free-step-num{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#211d35;border:1px solid #493d7a;color:#d9d1ff;font-weight:900;font-size:11px}
+.free-step strong,.free-step small{display:block}
+.free-step strong{font-size:11px}
+.free-step small{margin-top:3px;color:#7d8ca0;font-size:9px;line-height:1.45}
+.free-main-btn,.free-import-btn{border-radius:9px;padding:8px 11px;cursor:pointer;font-size:10px;white-space:nowrap}
+.free-main-btn{border:0}
+.free-import-btn{border:1px solid rgba(50,214,180,.35);background:rgba(50,214,180,.10);color:#7de4ca}
+.free-quota-note{margin-top:12px;border:1px solid rgba(228,189,101,.28);background:rgba(228,189,101,.07);border-radius:11px;padding:10px;display:grid;gap:3px}
+.free-quota-note strong{font-size:9px;color:#e2bd69;text-transform:uppercase;letter-spacing:.07em}
+.free-quota-note span{font-size:9px;color:#968c74;line-height:1.45}
+.free-ai-links{display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.free-ai-links button{border:1px solid #304058;background:#111923;border-radius:8px;padding:8px 10px;color:#b9c7d9;cursor:pointer;font-size:10px}
 @media(max-width:760px){
-  .ai-config-grid{grid-template-columns:1fr}
+  .free-step{grid-template-columns:32px 1fr}
+  .free-step button{grid-column:1 / -1;width:100%}
 }
-
-.ai-config-help{display:flex;gap:8px;align-items:baseline;margin-bottom:8px;flex-wrap:wrap}
-.ai-config-help strong{font-size:9px;color:#dbe4f1;letter-spacing:.08em}
-.ai-config-help span{font-size:9px;color:#8190a3}
-.ai-config-field{display:grid;gap:4px;min-width:0}
-.ai-config-field span{font-size:8px;color:#7e8da0;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
-.ai-config-example{margin-top:7px;font-size:8px;color:#68788b}
-.ai-config-example code{color:#aebbd0;background:#080d13;border:1px solid #253145;border-radius:5px;padding:2px 4px}
