@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.29.2';
+ const PWA_VERSION='2026.09.29.3';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -175,6 +175,8 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 .editorCameraBar{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px 5px}.editorCameraBar button{padding:8px 4px;border-radius:9px;border:1px solid #ffffff15;background:#112233;color:#dff2ff;font-size:9px;font-weight:900}.editorCameraBar button:hover{background:#176bb0}.editorCameraHint{padding:0 15px 10px;font-size:9px;color:#718ca5;text-align:center}
 .editorNav{position:sticky;top:73px;z-index:4;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:7px 10px;background:#09141ff4;border-top:1px solid #ffffff0c;border-bottom:1px solid #ffffff12}.editorNavBtn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border:0;border-radius:9px;background:transparent;color:#7992a8;font-size:15px}.editorNavBtn span{font-size:7px;font-weight:900;letter-spacing:.25px}.editorNavBtn.active{background:#176bb029;color:#77c8ff}.editorNavBtn:hover{background:#ffffff0a;color:#fff}
 .editorSelectionBar{margin:10px 14px 0;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border:1px solid #ffffff12;border-radius:11px;background:#ffffff05}.editorMiniLabel{font-size:7px;color:#7190aa;font-weight:900;letter-spacing:1px}.editorSelectionBar #selectedName{padding:0;margin:2px 0;background:none;border:0;font-size:11px}.editorSelectionBar .selectionCount{margin:0;font-size:9px}.editorTinyBtn{padding:6px 8px;border-radius:8px;border:1px solid #ffffff14;background:#132334;color:#b9cfe1;font-size:8px;font-weight:900}.quickStyleBar{margin:7px 14px 0;display:grid;grid-template-columns:1fr 46px 74px;align-items:center;gap:8px;padding:9px 10px;border-radius:11px;border:1px solid #46bfff2c;background:#0b1b28}.quickStyleBar.hidden{display:none!important}.quickStyleText{font-size:8px;color:#7894aa;margin-top:2px}.quickStyleBar input[type=color]{width:46px;height:34px;padding:2px;border-radius:8px;border:1px solid #ffffff1a;background:#122435}.quickStyleBar button{height:34px;border-radius:8px;border:1px solid #52c1ff33;background:#176bb0;color:#fff;font-size:8px;font-weight:900}
+.quickTextureBar{margin:7px 14px 0;padding:10px;border-radius:11px;border:1px solid #b888ff30;background:#121626}.quickTextureBar.hidden{display:none!important}.quickTextureHead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.quickTextureHead>span{font-size:7px;font-weight:900;letter-spacing:.7px;color:#b99be7;background:#9b62dc18;border:1px solid #ad7be633;border-radius:7px;padding:5px 7px}.quickTextureBar>input[type=file]{width:100%;margin:8px 0 6px;padding:7px;border-radius:8px;background:#0d1420;color:#dcecff;border:1px solid #ffffff14;font-size:9px}.quickTextureControls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.quickTextureControls label{display:block;margin:0;font-size:7px;color:#91a8ba;font-weight:800}.quickTextureControls label span{display:block;margin-bottom:3px}.quickTextureControls input{width:100%;padding:6px;border-radius:7px;background:#0b1520;color:#fff;border:1px solid #ffffff18;font-size:9px}.quickTextureActions{display:grid;grid-template-columns:1.3fr 1fr .75fr;gap:6px;margin-top:7px}.quickTextureActions button{padding:8px 5px;border-radius:8px;border:1px solid #ffffff15;background:#6e49a3;color:#fff;font-size:8px;font-weight:900}.quickTextureActions button:nth-child(2){background:#203449}.quickTextureActions .danger{background:#54212a}
+
 .editorSection{display:none;padding:14px 14px 90px}.editorSection.active{display:block}.editorSectionHead{display:flex;gap:10px;align-items:center;margin:2px 0 12px}.editorSectionHead>span{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#176bb025;border:1px solid #51baff33;font-size:20px}.editorSectionHead h4{margin:0;font-size:14px;color:#f3f9ff}.editorSectionHead p{margin:3px 0 0;font-size:9px;color:#7f9ab1}
 .editorWelcome{text-align:center;padding:18px 8px 12px}.editorWelcomeIcon{font-size:38px}.editorWelcome h4{font-size:18px;margin:7px 0}.editorWelcome p{font-size:10px;color:#88a0b5;line-height:1.45;max-width:390px;margin:0 auto}.editorChoiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.editorChoiceGrid button{min-height:92px;text-align:left;padding:12px;border-radius:12px;border:1px solid #ffffff12;background:#0f1d2a;color:white}.editorChoiceGrid button:first-child{grid-column:1/-1}.editorChoiceGrid button:hover{background:#142b3e;border-color:#4db8ff44}.editorChoiceGrid b{display:block;font-size:11px;margin-bottom:5px}.editorChoiceGrid span{font-size:9px;color:#829bb0;line-height:1.35}.editorTip{margin-top:10px;padding:9px 10px;border-radius:9px;background:#176bb014;color:#86aac5;font-size:9px;line-height:1.4}
 .editorCard{margin:9px 0;padding:12px;border-radius:12px;background:#ffffff05;border:1px solid #ffffff10}.editorCardTitle{font-size:9px;font-weight:900;color:#9ac8e8;letter-spacing:.8px;margin-bottom:8px}.editorSubTitle{margin:13px 0 6px;font-size:8px;font-weight:900;color:#7897af;letter-spacing:.7px}.editorCard input[type=text],.editorCard input[type=number],.editorCard input[type=url],.editorCard input[type=file],.editorCard select{width:100%;margin:4px 0 7px;padding:8px;border-radius:8px;background:#0d1924;color:#eaf6ff;border:1px solid #ffffff16;box-sizing:border-box}.editorPrimaryWide,.editorSecondaryWide{width:100%;padding:9px;border-radius:9px;border:1px solid #ffffff15;background:#176bb0;color:white;font-weight:900;font-size:10px}.editorSecondaryWide{margin-top:10px;background:#172839}.editorButtonGrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.editorButtonGrid3 button,.editorActionGrid button{padding:9px 5px;border-radius:9px;background:#122435;color:#eaf6ff;border:1px solid #ffffff12;font-size:9px;font-weight:900}.editorButtonGrid3 button:hover,.editorActionGrid button:hover{background:#176bb0}.editorActionGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:9px}.editorActionGrid .danger{background:#54212a}.editorDirectHint{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:0 0 10px;padding:9px 10px;border-radius:10px;background:#0c1e2c;border:1px solid #4cbaff22;color:#8ca9bf;font-size:9px;line-height:1.35}.editorDirectHint b{color:#d7efff}.gizmoScaleDot,.gizmoRotateDot{display:inline-block;width:9px;height:9px;border-radius:3px;background:#45c9ff;box-shadow:0 0 8px #45c9ff88}.gizmoRotateDot{border-radius:50%;background:#ffab3d;box-shadow:0 0 8px #ffab3d88}.gizmoXDot,.gizmoYDot,.gizmoZDot{display:inline-block;width:9px;height:9px;border-radius:50%}.gizmoXDot{background:#ff5353;box-shadow:0 0 8px #ff535388}.gizmoYDot{background:#57dc71;box-shadow:0 0 8px #57dc7188}.gizmoZDot{background:#4f7dff;box-shadow:0 0 8px #4f7dff88}.npcModelPanel{margin:12px 0 4px;padding:10px;border-radius:10px;background:#0b1925;border:1px solid #ffffff10}.npcShapeHint{font-size:9px;color:#7895aa;line-height:1.35;margin-bottom:8px}.npcShapeRow{display:grid;grid-template-columns:82px 1fr 42px;gap:7px;align-items:center;margin:7px 0}.npcShapeRow label{font-size:9px;font-weight:800;color:#a3bdd1}.npcShapeRow input{width:100%}.npcShapeRow span{font-size:9px;text-align:right;color:#fff}.editorShortcutHelp{display:flex;flex-direction:column;gap:5px;padding:11px;border-radius:11px;background:#ffffff04;border:1px solid #ffffff0d;font-size:9px;color:#7e98ad}.editorShortcutHelp b{color:#a8cbe6}
@@ -457,6 +459,26 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     <input id="quickObjectColor" type="color" value="#445566" title="Scegli colore">
     <button id="quickApplyColor">APPLICA</button>
   </div>
+  <div id="quickTextureBar" class="quickTextureBar hidden">
+    <div class="quickTextureHead">
+      <div>
+        <div class="editorMiniLabel">TEXTURE UNIVERSALE</div>
+        <div class="quickStyleText">Applica una texture a qualsiasi oggetto selezionato. Supporta anche selezione multipla.</div>
+      </div>
+      <span id="quickTextureStatus">NESSUNA</span>
+    </div>
+    <input id="quickTextureFile" type="file" accept="image/png,image/jpeg,image/webp">
+    <div class="quickTextureControls">
+      <label><span>Ripeti X</span><input id="quickTextureRepeatX" type="number" min="0.01" max="100" step="0.1" value="1"></label>
+      <label><span>Ripeti Y</span><input id="quickTextureRepeatY" type="number" min="0.01" max="100" step="0.1" value="1"></label>
+      <label><span>Rotazione</span><input id="quickTextureRotation" type="number" min="-360" max="360" step="1" value="0"></label>
+    </div>
+    <div class="quickTextureActions">
+      <button id="quickApplyTexture">APPLICA TEXTURE</button>
+      <button id="quickUpdateTexture">AGGIORNA SCALA</button>
+      <button id="quickRemoveTexture" class="danger">RIMUOVI</button>
+    </div>
+  </div>
 
   <section class="editorSection active" data-editor-section="home">
     <div class="editorWelcome">
@@ -732,6 +754,7 @@ const q=s=>document.querySelector(s), game=q('#game'), start=q('#start'), hud=q(
 const characterFile=q('#characterFile'), uploadCharacterFile=q('#uploadCharacterFile'), removeCharacterModel=q('#removeCharacterModel'), characterStatus=q('#characterStatus');
 const roomNameInput=q('#roomNameInput'),roomWidthInput=q('#roomWidthInput'),roomDepthInput=q('#roomDepthInput'),roomHeightInput=q('#roomHeightInput'),surfaceColor=q('#surfaceColor'),surfaceMaterial=q('#surfaceMaterial'),surfaceImageFile=q('#surfaceImageFile'),lightIntensity=q('#lightIntensity');
 const quickStyleBar=q('#quickStyleBar'),quickObjectColor=q('#quickObjectColor'),quickApplyColor=q('#quickApplyColor');
+const quickTextureBar=q('#quickTextureBar'),quickTextureFile=q('#quickTextureFile'),quickTextureRepeatX=q('#quickTextureRepeatX'),quickTextureRepeatY=q('#quickTextureRepeatY'),quickTextureRotation=q('#quickTextureRotation'),quickTextureStatus=q('#quickTextureStatus');
 const characterTarget=q('#characterTarget'),charSkinColor=q('#charSkinColor'),charShirtColor=q('#charShirtColor'),charPantsColor=q('#charPantsColor'),charHairColor=q('#charHairColor'),charShoesColor=q('#charShoesColor'),facePhotoFile=q('#facePhotoFile'),clothingImageFile=q('#clothingImageFile'),characterEditStatus=q('#characterEditStatus');
 const npcModelPanel=q('#npcModelPanel'),npcHeight=q('#npcHeight'),npcBuild=q('#npcBuild'),npcShoulders=q('#npcShoulders'),npcHeadSize=q('#npcHeadSize'),npcArms=q('#npcArms'),npcLegs=q('#npcLegs'),npcTorsoDepth=q('#npcTorsoDepth');
 const DEFAULT_PLAYER_STYLE={skin:'#c88a68',shirt:'#7f7f79',pants:'#24262b',hair:'#2b211c',shoes:'#202329',faceUrl:null,clothingUrl:null,colorsEdited:false};
@@ -1084,6 +1107,10 @@ function editableMeshes(d){
  d?.o?.traverse(ch=>{
    if(!ch.isMesh||!ch.material)return;
    if(d.type==='monitor'&&ch===d.o.userData?.screen)return;
+   if(!ch.userData.editorOriginalMaps){
+     const mats=Array.isArray(ch.material)?ch.material:[ch.material];
+     ch.userData.editorOriginalMaps=mats.map(m=>m?.map||null);
+   }
    out.push(ch);
  });
  return out;
@@ -1107,12 +1134,51 @@ function applyUniversalObjectColor(color){
  show('COLORE APPLICATO A '+selectedEdits.size+' OGGETT'+(selectedEdits.size===1?'O':'I'));
 }
 
+function currentTextureSettings(){
+ return {
+   textureRepeatX:Math.max(.01,Number(quickTextureRepeatX?.value)||1),
+   textureRepeatY:Math.max(.01,Number(quickTextureRepeatY?.value)||1),
+   textureRotation:Number(quickTextureRotation?.value)||0
+ };
+}
+function updateTextureStatus(){
+ if(!quickTextureStatus)return;
+ if(!selectedEdit){quickTextureStatus.textContent='NESSUNA';return}
+ quickTextureStatus.textContent=selectedEdit.textureUrl?'ATTIVA':'NESSUNA';
+}
+function updateTextureTransformSelected(){
+ if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ const settings=currentTextureSettings();
+ let n=0;
+ for(const d of selectedEdits){
+   d.textureRepeatX=settings.textureRepeatX;d.textureRepeatY=settings.textureRepeatY;d.textureRotation=settings.textureRotation;
+   if(d.textureUrl){applyAppearanceState(d,settings);n++}
+ }
+ updateTextureStatus();
+ show(n?('TEXTURE AGGIORNATA SU '+n+' OGGETT'+(n===1?'O':'I')):'NESSUNA TEXTURE DA AGGIORNARE');
+}
+function removeTextureFromSelected(){
+ if(!selectedEdits.size){show('SELEZIONA PRIMA UN OGGETTO');return}
+ for(const d of selectedEdits){
+   d.textureUrl=null;
+   applyAppearanceState(d,{textureUrl:null});
+ }
+ updateTextureStatus();
+ show('TEXTURE RIMOSSA · MATERIALE ORIGINALE RIPRISTINATO');
+}
+
 function applyAppearanceState(d,state={}){
  if(!d?.o)return;
  if(state.roomName!=null)d.roomName=state.roomName;
  if(state.styleColor)d.styleColor=state.styleColor;
  if(state.materialPreset)d.materialPreset=state.materialPreset;
  if(state.textureUrl!==undefined)d.textureUrl=state.textureUrl||null;
+ if(state.textureRepeatX!=null)d.textureRepeatX=Math.max(.01,Number(state.textureRepeatX)||1);
+ if(state.textureRepeatY!=null)d.textureRepeatY=Math.max(.01,Number(state.textureRepeatY)||1);
+ if(state.textureRotation!=null)d.textureRotation=Number(state.textureRotation)||0;
+ if(d.textureRepeatX==null)d.textureRepeatX=1;
+ if(d.textureRepeatY==null)d.textureRepeatY=1;
+ if(d.textureRotation==null)d.textureRotation=0;
  if(state.lightIntensity!=null)d.lightIntensity=Number(state.lightIntensity);
  if(state.lightColor)d.lightColor=state.lightColor;
  const preset=d.materialPreset||'matte',color=d.styleColor||null;
@@ -1125,18 +1191,25 @@ function applyAppearanceState(d,state={}){
      if('metalness' in nm)nm.metalness=preset==='metal'?.85:preset==='plastic'?.08:0;
      if(preset==='glass'){nm.transparent=true;nm.opacity=.32;nm.depthWrite=false}
      else if(d.customKind!=='glassPanel'){nm.transparent=false;nm.opacity=1;nm.depthWrite=true}
-     if(state.textureUrl===null)nm.map=null;
+     if(state.textureUrl===null){
+       const originalMaps=mesh.userData.editorOriginalMaps||[];
+       nm.map=originalMaps[Math.min(originalMaps.length-1,mats.indexOf(m))]||null;
+     }
      nm.needsUpdate=true;
      return nm;
    });
    mesh.material=Array.isArray(mesh.material)?next:next[0];
  }
  if(d.textureUrl){
-   textureLoader.load(d.textureUrl,tex=>{
-     tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=4;
+   textureLoader.load(d.textureUrl,baseTex=>{
+     baseTex.colorSpace=THREE.SRGBColorSpace;baseTex.wrapS=baseTex.wrapT=THREE.RepeatWrapping;baseTex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+     baseTex.repeat.set(d.textureRepeatX||1,d.textureRepeatY||1);
+     baseTex.center.set(.5,.5);
+     baseTex.rotation=THREE.MathUtils.degToRad(d.textureRotation||0);
+     baseTex.needsUpdate=true;
      for(const mesh of editableMeshes(d)){
        const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
-       for(const m of mats){m.map=tex;m.needsUpdate=true}
+       for(const m of mats){m.map=baseTex;m.needsUpdate=true}
      }
    },undefined,e=>console.warn('Texture superficie non caricata',e));
  }
@@ -1391,7 +1464,7 @@ function applyOneLayoutState(d,s){
    else if(s.screenData)applyMonitorData(d,s.screenData);
    else if(s.screenPreset!=null)applyMonitorPreset(d,s.screenPreset);
  }
- if(d.customKind||s.styleColor||s.textureUrl||s.materialPreset)applyAppearanceState(d,s);
+ if(d.customKind||s.styleColor||s.textureUrl||s.materialPreset||s.textureRepeatX!=null||s.textureRepeatY!=null||s.textureRotation!=null)applyAppearanceState(d,s);
 }
 function clearAppliedLayoutExtras(){
  if(destruct.length<=baseObjectCount)return;
@@ -2844,9 +2917,13 @@ function endEditorTransform(e){
 }
 function refreshEditorFields(){
  selectionCount.textContent=selectedEdits.size+' oggett'+(selectedEdits.size===1?'o':'i')+' selezionat'+(selectedEdits.size===1?'o':'i');
- if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';quickStyleBar?.classList.add('hidden');updateScreenMediaStatus();return}
+ if(!selectedEdit){selectedName.textContent='Nessun oggetto selezionato';quickStyleBar?.classList.add('hidden');quickTextureBar?.classList.add('hidden');updateTextureStatus();updateScreenMediaStatus();return}
  const o=selectedEdit.o;selectedName.textContent=editorLabel(selectedEdit)+(selectedEdits.size>1?'  + altri '+(selectedEdits.size-1):'');
- quickStyleBar?.classList.remove('hidden');if(quickObjectColor)quickObjectColor.value=editorObjectColor(selectedEdit);
+ quickStyleBar?.classList.remove('hidden');quickTextureBar?.classList.remove('hidden');if(quickObjectColor)quickObjectColor.value=editorObjectColor(selectedEdit);
+ if(quickTextureRepeatX)quickTextureRepeatX.value=String(selectedEdit.textureRepeatX??1);
+ if(quickTextureRepeatY)quickTextureRepeatY.value=String(selectedEdit.textureRepeatY??1);
+ if(quickTextureRotation)quickTextureRotation.value=String(selectedEdit.textureRotation??0);
+ updateTextureStatus();
  editX.value=o.position.x;editY.value=o.position.y;editZ.value=o.position.z;editRotX.value=THREE.MathUtils.radToDeg(o.rotation.x);editRot.value=THREE.MathUtils.radToDeg(o.rotation.y);editRotZ.value=THREE.MathUtils.radToDeg(o.rotation.z);
  editSX.value=o.scale.x;editSY.value=o.scale.y;editSZ.value=o.scale.z;
  editXv.textContent=o.position.x.toFixed(1);editYv.textContent=o.position.y.toFixed(2);editZv.textContent=o.position.z.toFixed(1);editRotXv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.x))+'°';editRotv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.y))+'°';editRotZv.textContent=Math.round(THREE.MathUtils.radToDeg(o.rotation.z))+'°';
@@ -3179,7 +3256,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,rx:d.o.rotation.x,ry:d.o.rotation.y,rz:d.o.rotation.z,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,textureRepeatX:d.textureRepeatX??1,textureRepeatY:d.textureRepeatY??1,textureRotation:d.textureRotation??0,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,rx:d.o.rotation.x,ry:d.o.rotation.y,rz:d.o.rotation.z,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -4120,23 +4197,31 @@ q('#applySurfaceStyle').onclick=()=>{
  for(const d of selectedEdits){d.styleColor=color;d.materialPreset=preset;if(d.type==='light')d.lightColor=color;applyAppearanceState(d,{styleColor:color,materialPreset:preset,lightColor:d.type==='light'?color:d.lightColor})}
  show('ASPETTO APPLICATO A '+selectedEdits.size+' OGGETTI');
 };
-async function applySurfaceImageFile(file){
+async function applySurfaceImageFile(file,useQuickSettings=false){
  if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
  if(!file){show('SCEGLI PRIMA UN\'IMMAGINE');return}
  try{
    show('CARICAMENTO TEXTURE…');
    const url=await uploadSharedMedia(file,'textures');
-   for(const d of selectedEdits){d.textureUrl=url;applyAppearanceState(d,{textureUrl:url})}
-   show('IMMAGINE APPLICATA A '+selectedEdits.size+' OGGETTI');
+   const settings=useQuickSettings?currentTextureSettings():{};
+   for(const d of selectedEdits){
+     d.textureUrl=url;
+     if(useQuickSettings){
+       d.textureRepeatX=settings.textureRepeatX;d.textureRepeatY=settings.textureRepeatY;d.textureRotation=settings.textureRotation;
+     }
+     applyAppearanceState(d,{textureUrl:url,...settings});
+   }
+   updateTextureStatus();
+   show('TEXTURE APPLICATA A '+selectedEdits.size+' OGGETT'+(selectedEdits.size===1?'O':'I'));
  }catch(e){console.error('Texture upload error',e);show('ERRORE CARICAMENTO TEXTURE')}
 }
-q('#applySurfaceImage').onclick=()=>applySurfaceImageFile(surfaceImageFile.files?.[0]);
+q('#applySurfaceImage').onclick=()=>applySurfaceImageFile(surfaceImageFile.files?.[0],false);
+q('#quickApplyTexture').onclick=()=>applySurfaceImageFile(quickTextureFile.files?.[0],true);
+quickTextureFile.addEventListener('change',()=>{const file=quickTextureFile.files?.[0];if(file)applySurfaceImageFile(file,true)});
+q('#quickUpdateTexture').onclick=updateTextureTransformSelected;
+q('#quickRemoveTexture').onclick=removeTextureFromSelected;
 surfaceImageFile.addEventListener('change',()=>{const file=surfaceImageFile.files?.[0];if(file)applySurfaceImageFile(file)});
-q('#clearSurfaceTexture').onclick=()=>{
- if(!selectedEdits.size){show('SELEZIONA ALMENO UN OGGETTO');return}
- for(const d of selectedEdits){d.textureUrl=null;applyAppearanceState(d,{textureUrl:null})}
- show('IMMAGINE RIMOSSA');
-};
+q('#clearSurfaceTexture').onclick=removeTextureFromSelected;
 lightIntensity.addEventListener('input',()=>{
  const v=Number(lightIntensity.value);
  for(const d of selectedEdits)if(d.type==='light'){d.lightIntensity=v;applyAppearanceState(d,{lightIntensity:v})}
