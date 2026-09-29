@@ -25,3 +25,11 @@
 @media(max-width:760px){
   .ai-config-grid{grid-template-columns:1fr}
 }
+
+.ai-config-help{display:flex;gap:8px;align-items:baseline;margin-bottom:8px;flex-wrap:wrap}
+.ai-config-help strong{font-size:9px;color:#dbe4f1;letter-spacing:.08em}
+.ai-config-help span{font-size:9px;color:#8190a3}
+.ai-config-field{display:grid;gap:4px;min-width:0}
+.ai-config-field span{font-size:8px;color:#7e8da0;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.ai-config-example{margin-top:7px;font-size:8px;color:#68788b}
+.ai-config-example code{color:#aebbd0;background:#080d13;border:1px solid #253145;border-radius:5px;padding:2px 4px}
