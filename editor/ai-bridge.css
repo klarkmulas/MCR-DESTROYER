@@ -1,0 +1,27 @@
+.ai-backend-config{
+  margin:14px 0 0;padding:12px;border:1px solid #28364a;border-radius:11px;background:#0a1017
+}
+.ai-backend-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.ai-backend-title strong{font-size:10px;letter-spacing:.08em}
+.ai-backend-title span{font-size:9px;color:#6f8094}
+.ai-config-grid{display:grid;grid-template-columns:1.3fr .9fr auto auto;gap:7px}
+.ai-config-grid input{
+  width:100%;min-width:0;background:#080d13;border:1px solid #29364a;color:#dbe5f2;
+  border-radius:8px;padding:8px 9px;outline:none;font-size:10px
+}
+.ai-config-grid button{
+  border:1px solid #304058;background:#121a24;border-radius:8px;padding:7px 9px;
+  color:#b9c7d9;cursor:pointer;font-size:10px
+}
+.ai-bridge-message{margin-top:8px;font-size:9px;color:#8392a5;line-height:1.4}
+.ai-bridge-message[data-kind="ok"]{color:#63dfbd}
+.ai-bridge-message[data-kind="warn"]{color:#e4bd65}
+.ai-bridge-message[data-kind="error"]{color:#ff7b8d}
+.ai-progress-wrap{margin-top:12px;border:1px solid #263449;background:#080d13;border-radius:10px;padding:9px}
+.ai-progress-track{height:8px;background:#141d28;border-radius:999px;overflow:hidden}
+.ai-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#7457ff,#38d6b5);transition:width .35s ease}
+.ai-progress-text{display:block;margin-top:6px;color:#8f9eaf;font-size:9px}
+[data-action="ai-generate"]:disabled{opacity:.55;cursor:wait}
+@media(max-width:760px){
+  .ai-config-grid{grid-template-columns:1fr}
+}
