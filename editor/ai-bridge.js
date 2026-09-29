@@ -53,7 +53,11 @@
   }
 
   function hydrateConfig() {
-    if ($("aiBackendUrl")) $("aiBackendUrl").value = localStorage.getItem(CONFIG_URL_KEY) || "";
+    if ($("aiBackendUrl")) {
+      const saved = localStorage.getItem(CONFIG_URL_KEY) || "";
+      const sameOrigin = location.hostname.endsWith(".vercel.app") ? (location.origin + "/api/meshy") : "";
+      $("aiBackendUrl").value = saved || sameOrigin;
+    }
     if ($("aiAccessKey")) $("aiAccessKey").value = sessionStorage.getItem(ACCESS_KEY) || "";
   }
 
@@ -114,7 +118,7 @@
     message("Ottimizzo le immagini prima dell'invio…", "info");
     const result = [];
     for (const file of list) {
-      result.push(await fileToCompressedJpeg(file, 1280, 0.82));
+      result.push(await fileToCompressedJpeg(file, 1024, 0.80));
     }
     return result;
   }
