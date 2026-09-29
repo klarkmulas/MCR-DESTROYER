@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b0f14">
   <title>Forge3D Studio</title>
-  <link rel="stylesheet" href="./styles.css?v=0.2.2">
-  <link rel="stylesheet" href="./ai-bridge.css?v=0.2.2">
+  <link rel="stylesheet" href="./styles.css?v=0.3.0">
+  <link rel="stylesheet" href="./ai-bridge.css?v=0.3.0">
   <script type="importmap">
   {
     "imports": {
@@ -23,7 +23,7 @@
         <div class="brand-mark">F3</div>
         <div>
           <strong>FORGE3D</strong>
-          <span>STUDIO · v0.2.2 FREE AI</span>
+          <span>STUDIO · v0.3.0 RIG NPC</span>
         </div>
       </div>
 
@@ -65,11 +65,23 @@
       </section>
 
       <section>
-        <div class="section-title">PERSONAGGI</div>
+        <div class="section-title">PERSONAGGI / NPC</div>
         <button class="wide-tool" data-add="mannequin">
           <span class="big-icon">♙</span>
           <span><strong>Manichino base</strong><small>Corpo 3D modificabile</small></span>
         </button>
+
+        <button class="wide-tool rig-main-tool" data-action="rig-add">
+          <span class="big-icon">🦴</span>
+          <span><strong>Aggiungi scheletro NPC</strong><small>Auto-fit umanoide nel modello selezionato</small></span>
+        </button>
+
+        <div class="rig-tool-grid">
+          <button class="rig-tool" data-action="rig-edit" title="Seleziona e modifica le ossa">✥ Modifica ossa</button>
+          <button class="rig-tool" data-action="rig-bind" title="Collega automaticamente la mesh alle ossa">⛓ Bind automatico</button>
+          <button class="rig-tool" data-action="rig-toggle" title="Mostra o nascondi lo scheletro">◉ Scheletro</button>
+        </div>
+        <div id="rigStatus" class="rig-status">Seleziona un modello 3D per aggiungere un rig.</div>
       </section>
 
       <section>
@@ -271,7 +283,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="./ai-bridge.js?v=0.2.2"></script>
-  <script type="module" src="./app.js?v=0.2.2"></script>
+  <script src="./ai-bridge.js?v=0.3.0"></script>
+  <script type="module" src="./app.js?v=0.3.0"></script>
 </body>
 </html>
