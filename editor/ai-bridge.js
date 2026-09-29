@@ -35,6 +35,28 @@
   function normalizedBackendUrl() {
     let url = ($("aiBackendUrl")?.value || localStorage.getItem(CONFIG_URL_KEY) || "").trim();
     url = url.replace(/\/+$/, "");
+
+    if (!url) return "";
+
+    if (url.includes("@") && !/^https?:\/\//i.test(url)) {
+      throw new Error("Nel campo URL backend hai inserito un'email. Devi incollare l'indirizzo Vercel, ad esempio https://nome-progetto.vercel.app/api/meshy");
+    }
+
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw new Error("URL backend non valido. Deve essere un indirizzo completo che inizia con https://");
+    }
+
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      throw new Error("URL backend non valido: usa un indirizzo https://");
+    }
+
+    if (location.protocol === "https:" && parsed.protocol !== "https:") {
+      throw new Error("Il backend deve usare HTTPS.");
+    }
+
     return url;
   }
 
@@ -43,13 +65,19 @@
   }
 
   function saveConfig() {
-    const url = normalizedBackendUrl();
-    const key = ($("aiAccessKey")?.value || "").trim();
-    if (url) localStorage.setItem(CONFIG_URL_KEY, url);
-    else localStorage.removeItem(CONFIG_URL_KEY);
-    if (key) sessionStorage.setItem(ACCESS_KEY, key);
-    else sessionStorage.removeItem(ACCESS_KEY);
-    message(url ? "Configurazione backend salvata su questo browser." : "Inserisci l'URL del backend.", url ? "ok" : "warn");
+    try {
+      const url = normalizedBackendUrl();
+      const key = ($("aiAccessKey")?.value || "").trim();
+      if (url) localStorage.setItem(CONFIG_URL_KEY, url);
+      else localStorage.removeItem(CONFIG_URL_KEY);
+      if (key) sessionStorage.setItem(ACCESS_KEY, key);
+      else sessionStorage.removeItem(ACCESS_KEY);
+      message(url ? "Configurazione salvata. Ora premi Test." : "Inserisci l'URL del backend Vercel.", url ? "ok" : "warn");
+      return true;
+    } catch (error) {
+      message(error.message, "error");
+      return false;
+    }
   }
 
   function hydrateConfig() {
@@ -197,7 +225,7 @@
       throw new Error("Per Alta precisione carica almeno 2 fotografie.");
     }
 
-    saveConfig();
+    if (!saveConfig()) return;
     setBusy(true);
     setProgress(2, "Preparazione immagini");
 
@@ -230,13 +258,20 @@
   }
 
   async function testBackend() {
-    saveConfig();
+    if (!saveConfig()) return;
     try {
       message("Verifico il backend…", "info");
       await api("?action=health", { method: "GET" });
-      message("Backend collegato e pronto.", "ok");
+      message("Backend collegato e pronto. Puoi generare il modello 3D.", "ok");
     } catch (error) {
-      message(error.message, "error");
+      const text = String(error.message || "");
+      if (/HTTP 405/.test(text)) {
+        message("Questo indirizzo non è il backend FORGE3D. Incolla l'URL Vercel completo che termina con /api/meshy.", "error");
+      } else if (/Failed to fetch|NetworkError|Load failed/i.test(text)) {
+        message("Backend non raggiungibile. Controlla l'URL Vercel e che il progetto sia stato pubblicato.", "error");
+      } else {
+        message(text, "error");
+      }
     }
   }
 
