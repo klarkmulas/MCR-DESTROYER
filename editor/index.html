@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b0f14">
   <title>Forge3D Studio</title>
-  <link rel="stylesheet" href="./styles.css?v=0.3.0">
-  <link rel="stylesheet" href="./ai-bridge.css?v=0.3.0">
+  <link rel="stylesheet" href="./styles.css?v=0.4.0">
+  <link rel="stylesheet" href="./ai-bridge.css?v=0.4.0">
   <script type="importmap">
   {
     "imports": {
@@ -23,7 +23,7 @@
         <div class="brand-mark">F3</div>
         <div>
           <strong>FORGE3D</strong>
-          <span>STUDIO · v0.3.0 RIG NPC</span>
+          <span>STUDIO · v0.4.0 GAME MODE</span>
         </div>
       </div>
 
@@ -33,6 +33,7 @@
         <button data-action="load" title="Carica salvataggio locale">Carica</button>
         <button data-action="import" title="Importa GLB/GLTF/OBJ">Importa</button>
         <button class="accent" data-action="export" title="Esporta GLB">Esporta GLB</button>
+        <button id="gamePlayTop" class="game-play-top" data-action="game-play" title="Avvia/ferma il gioco">▶ GIOCA</button>
       </nav>
 
       <div class="history-actions">
@@ -96,6 +97,19 @@
         </button>
       </section>
 
+      <section class="game-creator-section">
+        <div class="section-title">GAME CREATOR</div>
+        <button class="wide-tool player-tool" data-action="game-set-player">
+          <span class="big-icon">🎮</span>
+          <span><strong>Imposta come giocatore</strong><small>Usa il modello selezionato in terza persona</small></span>
+        </button>
+        <div class="game-tool-grid">
+          <button class="game-tool" data-action="game-toggle-collider">▣ Collisione ON/OFF</button>
+          <button class="game-tool game-play-tool" data-action="game-play">▶ Gioca</button>
+        </div>
+        <div id="gameStatus" class="game-status">Nessun giocatore impostato.</div>
+      </section>
+
       <section>
         <div class="section-title">SCENA</div>
         <button class="row-btn" data-action="focus">◎ Inquadra selezione</button>
@@ -121,6 +135,18 @@
       <div class="view-badge">
         <span class="status-dot"></span>
         <span id="statusText">Pronto</span>
+      </div>
+
+      <div id="gameHud" class="game-hud hidden">
+        <div class="game-hud-title">FORGE3D · GAME MODE</div>
+        <div class="game-hud-controls">
+          <span><b>WASD / Frecce</b> Muovi</span>
+          <span><b>SHIFT</b> Corri</span>
+          <span><b>SPAZIO</b> Salta</span>
+          <span><b>Mouse</b> Telecamera</span>
+          <span><b>ESC</b> Esci</span>
+        </div>
+        <button data-action="game-stop">■ TORNA ALL'EDITOR</button>
       </div>
 
       <div class="shortcut-hint">W Sposta · G Pavimento · E Ruota · R Scala · Canc Elimina · Ctrl+D Duplica · Ctrl+Z Annulla</div>
@@ -283,7 +309,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="./ai-bridge.js?v=0.3.0"></script>
-  <script type="module" src="./app.js?v=0.3.0"></script>
+  <script src="./ai-bridge.js?v=0.4.0"></script>
+  <script type="module" src="./app.js?v=0.4.0"></script>
 </body>
 </html>
