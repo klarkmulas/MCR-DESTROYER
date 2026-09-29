@@ -1109,7 +1109,11 @@ function editableMeshes(d){
    if(d.type==='monitor'&&ch===d.o.userData?.screen)return;
    if(!ch.userData.editorOriginalMaps){
      const mats=Array.isArray(ch.material)?ch.material:[ch.material];
-     ch.userData.editorOriginalMaps=mats.map(m=>m?.map||null);
+     ch.userData.editorOriginalMaps=mats.map(m=>({
+       map:m?.map||null,
+       bumpMap:m?.bumpMap||null,
+       normalMap:m?.normalMap||null
+     }));
    }
    out.push(ch);
  });
@@ -1193,7 +1197,10 @@ function applyAppearanceState(d,state={}){
      else if(d.customKind!=='glassPanel'){nm.transparent=false;nm.opacity=1;nm.depthWrite=true}
      if(state.textureUrl===null){
        const originalMaps=mesh.userData.editorOriginalMaps||[];
-       nm.map=originalMaps[Math.min(originalMaps.length-1,mats.indexOf(m))]||null;
+       const original=originalMaps[Math.min(originalMaps.length-1,mats.indexOf(m))]||{};
+       nm.map=original.map||null;
+       if('bumpMap' in nm)nm.bumpMap=original.bumpMap||null;
+       if('normalMap' in nm)nm.normalMap=original.normalMap||null;
      }
      nm.needsUpdate=true;
      return nm;
@@ -1209,7 +1216,12 @@ function applyAppearanceState(d,state={}){
      baseTex.needsUpdate=true;
      for(const mesh of editableMeshes(d)){
        const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material];
-       for(const m of mats){m.map=baseTex;m.needsUpdate=true}
+       for(const m of mats){
+         m.map=baseTex;
+         if('bumpMap' in m)m.bumpMap=null;
+         if('normalMap' in m)m.normalMap=null;
+         m.needsUpdate=true
+       }
      }
    },undefined,e=>console.warn('Texture superficie non caricata',e));
  }
