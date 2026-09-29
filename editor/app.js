@@ -88,6 +88,21 @@ let rigEditMode = false;
 let rigEditRoot = null;
 let selectedBone = null;
 
+let gameMode = false;
+let gamePlayer = null;
+let gameVelocityY = 0;
+let gameGrounded = false;
+let gameStartTransform = null;
+let gameViewState = null;
+let gameRigVisibility = [];
+const gameKeys = Object.create(null);
+const gameClock = new THREE.Clock(false);
+const gameMove = new THREE.Vector3();
+const gameForward = new THREE.Vector3();
+const gameRight = new THREE.Vector3();
+const gameUp = new THREE.Vector3(0, 1, 0);
+const gameRaycaster = new THREE.Raycaster();
+
 let selected = null;
 let idCounter = 1;
 let undoStack = [];
@@ -140,6 +155,9 @@ function prepareMesh(mesh) {
 
 function prepareObject(object) {
   if (!object.userData.editorId) object.userData.editorId = 'obj-' + idCounter++;
+  if (object.userData.gameCollider === undefined) {
+    object.userData.gameCollider = object.userData.referenceImage ? false : true;
+  }
   object.traverse(function (child) {
     if (child.isMesh) {
       child.castShadow = true;
@@ -574,7 +592,7 @@ function selectRigBone(root, boneName) {
 }
 
 function onRigPointerDown(event) {
-  if (!rigEditMode || !rigEditRoot || currentMode === 'ground' || transform.dragging || transform.axis) return;
+  if (gameMode || !rigEditMode || !rigEditRoot || currentMode === 'ground' || transform.dragging || transform.axis) return;
 
   setPointerFromEvent(event);
   const visuals = getRigVisualGroup(rigEditRoot);
@@ -773,6 +791,403 @@ async function bindSelectedToRig() {
   toast('Bind automatico completato ✓');
 }
 
+
+function getGamePlayer() {
+  return editorRoot.children.find(function (object) {
+    return object.userData && object.userData.gameRole === 'player';
+  }) || null;
+}
+
+function updateGameStatus() {
+  const el = document.getElementById('gameStatus');
+  if (!el) return;
+
+  const player = getGamePlayer();
+  if (!player) {
+    el.textContent = 'Nessun giocatore impostato.';
+    el.dataset.state = 'idle';
+    return;
+  }
+
+  const selectedInfo = selected
+    ? ' · selezione: ' + (selected.name || 'Oggetto') + ' · collisione ' + (selected.userData.gameCollider === false ? 'OFF' : 'ON')
+    : '';
+
+  el.textContent = 'Giocatore: ' + (player.name || 'Player') + selectedInfo;
+  el.dataset.state = gameMode ? 'play' : 'ready';
+}
+
+function setSelectedAsPlayer() {
+  if (gameMode) return;
+  if (!selected) return toast('Seleziona prima il personaggio da controllare.');
+  if (isFloorObject(selected) || selected.userData.referenceImage) {
+    return toast('Seleziona un personaggio o un modello 3D.');
+  }
+
+  checkpoint();
+
+  editorRoot.children.forEach(function (object) {
+    if (object.userData && object.userData.gameRole === 'player') {
+      delete object.userData.gameRole;
+    }
+  });
+
+  selected.userData.gameRole = 'player';
+  selected.userData.gameCollider = false;
+  renderTree();
+  updateGameStatus();
+  toast((selected.name || 'Modello') + ' impostato come giocatore');
+  setStatus('Giocatore impostato · premi ▶ GIOCA');
+}
+
+function toggleSelectedCollider() {
+  if (gameMode) return;
+  if (!selected) return toast('Seleziona prima un oggetto.');
+  if (selected.userData && selected.userData.gameRole === 'player') {
+    return toast('Il giocatore usa un collider dedicato durante il Game Mode.');
+  }
+
+  checkpoint();
+  selected.userData.gameCollider = selected.userData.gameCollider === false;
+  updateGameStatus();
+  toast('Collisione ' + (selected.userData.gameCollider ? 'ON' : 'OFF') + ' · ' + (selected.name || 'Oggetto'));
+}
+
+function getGameplayBounds(root) {
+  const box = new THREE.Box3();
+  box.makeEmpty();
+  if (!root) return box;
+
+  root.updateMatrixWorld(true);
+
+  root.traverse(function (child) {
+    if (!child.isMesh || !child.geometry) return;
+    if (child.userData && child.userData.forgeRigVisual) return;
+    if (child.userData && child.userData.referenceImage) return;
+    if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+    if (!child.geometry.boundingBox) return;
+
+    const childBox = child.geometry.boundingBox.clone();
+    childBox.applyMatrix4(child.matrixWorld);
+    box.union(childBox);
+  });
+
+  return box;
+}
+
+function getPlayerCollisionBox(player) {
+  const box = getGameplayBounds(player);
+  if (box.isEmpty()) return box;
+
+  const size = box.getSize(new THREE.Vector3());
+  const shrinkX = Math.min(0.14, Math.max(0, size.x * 0.16));
+  const shrinkZ = Math.min(0.14, Math.max(0, size.z * 0.16));
+
+  if (size.x > shrinkX * 2 + 0.03) {
+    box.min.x += shrinkX;
+    box.max.x -= shrinkX;
+  }
+  if (size.z > shrinkZ * 2 + 0.03) {
+    box.min.z += shrinkZ;
+    box.max.z -= shrinkZ;
+  }
+
+  box.min.y += Math.min(0.04, size.y * 0.02);
+  return box;
+}
+
+function getHorizontalColliderRoots(player) {
+  return editorRoot.children.filter(function (root) {
+    if (root === player) return false;
+    if (root.userData && root.userData.referenceImage) return false;
+    if (root.userData && root.userData.gameCollider === false) return false;
+    if (isFloorObject(root)) return false;
+    return true;
+  });
+}
+
+function playerHitsCollider(player) {
+  const playerBox = getPlayerCollisionBox(player);
+  if (playerBox.isEmpty()) return false;
+
+  const roots = getHorizontalColliderRoots(player);
+  for (const root of roots) {
+    const box = getGameplayBounds(root);
+    if (box.isEmpty()) continue;
+    if (playerBox.intersectsBox(box)) return true;
+  }
+  return false;
+}
+
+function getGroundMeshes(player) {
+  const meshes = [];
+  editorRoot.children.forEach(function (root) {
+    if (root === player) return;
+    if (root.userData && root.userData.referenceImage) return;
+    if (root.userData && root.userData.gameCollider === false) return;
+
+    root.traverse(function (child) {
+      if (!child.isMesh) return;
+      if (child.userData && child.userData.forgeRigVisual) return;
+      meshes.push(child);
+    });
+  });
+  return meshes;
+}
+
+function findGroundHeight(player, playerBox) {
+  if (!playerBox || playerBox.isEmpty()) return 0;
+
+  const center = playerBox.getCenter(new THREE.Vector3());
+  const origin = new THREE.Vector3(
+    center.x,
+    playerBox.min.y + Math.min(0.45, Math.max(0.18, (playerBox.max.y - playerBox.min.y) * 0.22)),
+    center.z
+  );
+
+  gameRaycaster.set(origin, new THREE.Vector3(0, -1, 0));
+  gameRaycaster.near = 0;
+  gameRaycaster.far = 1.2;
+
+  const hits = gameRaycaster.intersectObjects(getGroundMeshes(player), false);
+  if (hits.length) return hits[0].point.y;
+
+  return 0;
+}
+
+function getPlayerTarget(player) {
+  const box = getGameplayBounds(player);
+  if (box.isEmpty()) return player.getWorldPosition(new THREE.Vector3());
+
+  const center = box.getCenter(new THREE.Vector3());
+  const height = box.max.y - box.min.y;
+  center.y = box.min.y + height * 0.66;
+  return center;
+}
+
+function syncGameCamera(player, force) {
+  const target = getPlayerTarget(player);
+  const delta = target.clone().sub(orbit.target);
+
+  if (force) {
+    orbit.target.copy(target);
+    camera.position.copy(target).add(new THREE.Vector3(0, 2.0, 4.4));
+  } else {
+    orbit.target.copy(target);
+    camera.position.add(delta);
+  }
+
+  orbit.update();
+}
+
+function updatePlayButtons() {
+  document.querySelectorAll('[data-action="game-play"]').forEach(function (button) {
+    button.textContent = gameMode ? '■ STOP' : (button.id === 'gamePlayTop' ? '▶ GIOCA' : '▶ Gioca');
+    button.classList.toggle('playing', gameMode);
+  });
+}
+
+function startGame() {
+  if (gameMode) return;
+
+  const player = getGamePlayer();
+  if (!player) return toast('Prima seleziona un personaggio e premi “Imposta come giocatore”.');
+
+  if (rigEditMode) stopRigEdit(true);
+  closeAiModal();
+
+  gamePlayer = player;
+  gameStartTransform = {
+    position: player.position.clone(),
+    quaternion: player.quaternion.clone(),
+    scale: player.scale.clone()
+  };
+
+  gameViewState = {
+    cameraPosition: camera.position.clone(),
+    cameraQuaternion: camera.quaternion.clone(),
+    orbitTarget: orbit.target.clone(),
+    enablePan: orbit.enablePan,
+    minDistance: orbit.minDistance,
+    maxDistance: orbit.maxDistance,
+    gridVisible: grid.visible
+  };
+
+  gameRigVisibility = [];
+  editorRoot.traverse(function (object) {
+    if (object.userData && object.userData.forgeRigVisualGroup) {
+      gameRigVisibility.push({ object: object, visible: object.visible });
+      object.visible = false;
+    }
+  });
+
+  gameMode = true;
+  gameVelocityY = 0;
+  gameGrounded = false;
+  Object.keys(gameKeys).forEach(function (key) { delete gameKeys[key]; });
+
+  transform.detach();
+  selectionBox.visible = false;
+  grid.visible = false;
+  orbit.enabled = true;
+  orbit.enablePan = false;
+  orbit.minDistance = 1.4;
+  orbit.maxDistance = 8;
+
+  syncGameCamera(player, true);
+
+  document.body.classList.add('game-mode');
+  document.getElementById('gameHud')?.classList.remove('hidden');
+  updatePlayButtons();
+  updateGameStatus();
+
+  gameClock.start();
+  gameClock.getDelta();
+  renderer.domElement.focus();
+
+  setStatus('GAME MODE · WASD muovi · Shift corri · Spazio salta · ESC esci');
+}
+
+function stopGame() {
+  if (!gameMode) return;
+
+  const player = gamePlayer;
+
+  gameMode = false;
+  gameClock.stop();
+  gameVelocityY = 0;
+  gameGrounded = false;
+  Object.keys(gameKeys).forEach(function (key) { delete gameKeys[key]; });
+
+  if (player && gameStartTransform) {
+    player.position.copy(gameStartTransform.position);
+    player.quaternion.copy(gameStartTransform.quaternion);
+    player.scale.copy(gameStartTransform.scale);
+    player.updateMatrixWorld(true);
+  }
+
+  gameRigVisibility.forEach(function (entry) {
+    if (entry.object) entry.object.visible = entry.visible;
+  });
+  gameRigVisibility = [];
+
+  if (gameViewState) {
+    camera.position.copy(gameViewState.cameraPosition);
+    camera.quaternion.copy(gameViewState.cameraQuaternion);
+    orbit.target.copy(gameViewState.orbitTarget);
+    orbit.enablePan = gameViewState.enablePan;
+    orbit.minDistance = gameViewState.minDistance;
+    orbit.maxDistance = gameViewState.maxDistance;
+    grid.visible = gameViewState.gridVisible;
+  }
+
+  orbit.enabled = true;
+  orbit.update();
+
+  document.body.classList.remove('game-mode');
+  document.getElementById('gameHud')?.classList.add('hidden');
+
+  gamePlayer = null;
+  gameStartTransform = null;
+  gameViewState = null;
+
+  updatePlayButtons();
+  if (player) selectObject(player);
+  updateGameStatus();
+  setStatus('Editor · Game Mode terminato');
+}
+
+function toggleGameMode() {
+  if (gameMode) stopGame();
+  else startGame();
+}
+
+function updateGame(dt) {
+  if (!gameMode || !gamePlayer) return;
+
+  dt = Math.min(Math.max(dt || 0, 0), 0.05);
+
+  const forwardPressed = gameKeys.KeyW || gameKeys.ArrowUp;
+  const backPressed = gameKeys.KeyS || gameKeys.ArrowDown;
+  const leftPressed = gameKeys.KeyA || gameKeys.ArrowLeft;
+  const rightPressed = gameKeys.KeyD || gameKeys.ArrowRight;
+
+  const inputForward = (forwardPressed ? 1 : 0) - (backPressed ? 1 : 0);
+  const inputRight = (rightPressed ? 1 : 0) - (leftPressed ? 1 : 0);
+
+  gameForward.copy(orbit.target).sub(camera.position);
+  gameForward.y = 0;
+  if (gameForward.lengthSq() < 1e-8) gameForward.set(0, 0, -1);
+  gameForward.normalize();
+
+  gameRight.crossVectors(gameForward, gameUp).normalize();
+
+  gameMove.set(0, 0, 0);
+  gameMove.addScaledVector(gameForward, inputForward);
+  gameMove.addScaledVector(gameRight, inputRight);
+
+  if (gameMove.lengthSq() > 0.001) {
+    gameMove.normalize();
+    const speed = (gameKeys.ShiftLeft || gameKeys.ShiftRight) ? 6.5 : 3.6;
+    const distance = speed * dt;
+
+    const oldX = gamePlayer.position.x;
+    gamePlayer.position.x += gameMove.x * distance;
+    gamePlayer.updateMatrixWorld(true);
+    if (playerHitsCollider(gamePlayer)) {
+      gamePlayer.position.x = oldX;
+      gamePlayer.updateMatrixWorld(true);
+    }
+
+    const oldZ = gamePlayer.position.z;
+    gamePlayer.position.z += gameMove.z * distance;
+    gamePlayer.updateMatrixWorld(true);
+    if (playerHitsCollider(gamePlayer)) {
+      gamePlayer.position.z = oldZ;
+      gamePlayer.updateMatrixWorld(true);
+    }
+
+    const desiredYaw = Math.atan2(gameMove.x, gameMove.z);
+    let deltaYaw = desiredYaw - gamePlayer.rotation.y;
+    while (deltaYaw > Math.PI) deltaYaw -= Math.PI * 2;
+    while (deltaYaw < -Math.PI) deltaYaw += Math.PI * 2;
+    gamePlayer.rotation.y += deltaYaw * Math.min(1, dt * 12);
+  }
+
+  gameVelocityY -= 18 * dt;
+  gamePlayer.position.y += gameVelocityY * dt;
+  gamePlayer.updateMatrixWorld(true);
+
+  let playerBox = getPlayerCollisionBox(gamePlayer);
+  const groundY = findGroundHeight(gamePlayer, playerBox);
+
+  if (!playerBox.isEmpty() && gameVelocityY <= 0) {
+    const bottom = playerBox.min.y;
+    if (bottom <= groundY + 0.08 && bottom >= groundY - 0.75) {
+      gamePlayer.position.y += groundY - bottom;
+      gamePlayer.updateMatrixWorld(true);
+      gameVelocityY = 0;
+      gameGrounded = true;
+    } else {
+      gameGrounded = false;
+    }
+  }
+
+  if (gamePlayer.position.y < -30) {
+    gamePlayer.position.copy(gameStartTransform.position);
+    gamePlayer.quaternion.copy(gameStartTransform.quaternion);
+    gameVelocityY = 0;
+    gamePlayer.updateMatrixWorld(true);
+  }
+
+  syncGameCamera(gamePlayer, false);
+  setStatus(
+    'GAME MODE · ' +
+    ((gameKeys.ShiftLeft || gameKeys.ShiftRight) ? 'Corsa' : 'Movimento') +
+    (gameGrounded ? ' · a terra' : ' · in aria')
+  );
+}
+
 function addObject(object, name, skipCheckpoint) {
   if (!skipCheckpoint) checkpoint();
   object.name = uniqueName(name || object.name || 'Oggetto');
@@ -925,6 +1340,7 @@ function selectObject(object) {
   renderTree();
   refreshInspector();
   updateRigStatus();
+  updateGameStatus();
 }
 
 function renderTree() {
@@ -937,7 +1353,7 @@ function renderTree() {
   editorRoot.children.forEach(function (object) {
     const item = document.createElement('div');
     item.className = 'tree-item' + (selected === object ? ' selected' : '');
-    const icon = object.isGroup ? '◇' : '◆';
+    const icon = object.userData && object.userData.gameRole === 'player' ? '🎮' : (object.isGroup ? '◇' : '◆');
     item.innerHTML = '<span class="tree-icon">' + icon + '</span><span></span>';
     item.querySelector('span:last-child').textContent = object.name || object.type;
     item.addEventListener('click', function () { selectObject(object); });
@@ -1396,7 +1812,7 @@ function getDraggableHit(event) {
 }
 
 function beginGroundDrag(event) {
-  if (currentMode !== 'ground' || event.button !== 0) return;
+  if (gameMode || currentMode !== 'ground' || event.button !== 0) return;
 
   const object = getDraggableHit(event);
   if (!object) return;
@@ -1482,7 +1898,7 @@ renderer.domElement.addEventListener('pointerup', endGroundDrag, true);
 renderer.domElement.addEventListener('pointercancel', endGroundDrag, true);
 
 function onViewportPointerDown(event) {
-  if (rigEditMode || currentMode === 'ground' || transform.dragging) return;
+  if (gameMode || rigEditMode || currentMode === 'ground' || transform.dragging) return;
   setPointerFromEvent(event);
 
   const meshes = [];
@@ -1602,6 +2018,7 @@ document.getElementById('wireframe').addEventListener('change', function (event)
 
 document.querySelectorAll('[data-add]').forEach(function (button) {
   button.addEventListener('click', function () {
+    if (gameMode) return;
     const type = button.dataset.add;
     if (['box', 'sphere', 'cylinder', 'cone', 'plane', 'torus'].includes(type)) createPrimitive(type);
     else if (['wall', 'floor', 'door', 'window'].includes(type)) createArchitecture(type);
@@ -1610,7 +2027,10 @@ document.querySelectorAll('[data-add]').forEach(function (button) {
 });
 
 document.querySelectorAll('[data-mode]').forEach(function (button) {
-  button.addEventListener('click', function () { setMode(button.dataset.mode); });
+  button.addEventListener('click', function () {
+    if (gameMode) return;
+    setMode(button.dataset.mode);
+  });
 });
 
 const importFile = document.getElementById('importFile');
@@ -1631,6 +2051,10 @@ referenceFile.addEventListener('change', function () {
 });
 
 function handleAction(action) {
+  if (action === 'game-play') return toggleGameMode();
+  if (action === 'game-stop') return stopGame();
+  if (gameMode) return;
+
   if (action === 'new') newProject();
   if (action === 'save') saveProject();
   if (action === 'load') loadProject();
@@ -1651,6 +2075,8 @@ function handleAction(action) {
   if (action === 'camera-home') cameraHome();
   if (action === 'camera-top') cameraTop();
   if (action === 'toggle-grid') grid.visible = !grid.visible;
+  if (action === 'game-set-player') setSelectedAsPlayer();
+  if (action === 'game-toggle-collider') toggleSelectedCollider();
   if (action === 'rig-add') createHumanoidRig(selected);
   if (action === 'rig-edit') toggleRigEdit();
   if (action === 'rig-bind') bindSelectedToRig();
@@ -1719,6 +2145,27 @@ document.addEventListener('keydown', function (event) {
   const tag = document.activeElement && document.activeElement.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
+  if (gameMode) {
+    gameKeys[event.code] = true;
+
+    if (
+      ['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight'].includes(event.code)
+    ) {
+      event.preventDefault();
+    }
+
+    if (event.code === 'Space' && gameGrounded) {
+      gameVelocityY = 6.4;
+      gameGrounded = false;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      stopGame();
+    }
+    return;
+  }
+
   const key = event.key.toLowerCase();
 
   if ((event.ctrlKey || event.metaKey) && key === 'z') {
@@ -1757,6 +2204,11 @@ document.addEventListener('keydown', function (event) {
   }
 });
 
+document.addEventListener('keyup', function (event) {
+  if (!gameMode) return;
+  gameKeys[event.code] = false;
+});
+
 window.addEventListener('beforeunload', function () {
   if (editorRoot.children.length) {
     try {
@@ -1766,7 +2218,12 @@ window.addEventListener('beforeunload', function () {
 });
 
 function animate() {
-  orbit.update();
+  if (gameMode) {
+    updateGame(gameClock.getDelta());
+  } else {
+    orbit.update();
+  }
+
   updateAllRigVisuals();
   if (selected && selectionBox.visible) selectionBox.setFromObject(selected);
   renderer.render(scene, camera);
@@ -1778,4 +2235,6 @@ updateCounts();
 refreshInspector();
 setMode('translate');
 updateRigStatus();
+updateGameStatus();
+updatePlayButtons();
 setStatus('Pronto · aggiungi un oggetto o importa un GLB');
