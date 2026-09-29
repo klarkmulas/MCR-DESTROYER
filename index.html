@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.29.1';
+ const PWA_VERSION='2026.09.29.2';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -430,7 +430,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     <button id="editorFocusSelection">🎯 FOCUS</button>
     <button id="editorResetCamera">↺ RESET</button>
   </div>
-  <div class="editorCameraHint">WASD muove · Q/E altezza · tasto destro ruota · rotella avanza · Shift accelera</div>
+  <div class="editorCameraHint">3D: WASD muove · Q/E altezza · tasto destro ruota · rotella avanza · PIANTA: tasto destro trascina la mappa · rotella zoom · nessun limite della sala</div>
 
   <div class="editorNav">
     <button class="editorNavBtn active" data-editor-open="home">⌂<span>HOME</span></button>
@@ -526,22 +526,22 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
   </section>
 
   <section class="editorSection" data-editor-section="objects">
-    <div class="editorSectionHead"><span>🪑</span><div><h4>OGGETTI</h4><p>Posizione, rotazione e dimensioni dell'elemento selezionato.</p></div></div>
+    <div class="editorSectionHead"><span>🪑</span><div><h4>TRASFORMA TUTTO</h4><p>Oggetti, pareti, pavimento, soffitto, vetri e strutture: sposta, ruota e ridimensiona senza limiti della sala.</p></div></div>
     <div class="editorDirectHint"><span class="gizmoScaleDot"></span><b>Angoli azzurri</b> = proporzioni · <span class="gizmoXDot"></span><b>Rosso</b> = larghezza · <span class="gizmoYDot"></span><b>Verde</b> = altezza · <span class="gizmoZDot"></span><b>Blu</b> = profondità · <span class="gizmoRotateDot"></span><b>Anelli</b> = ruota X/Y/Z.</div>
 
     <div class="editorCard">
       <div class="editorCardTitle">TRASFORMA</div>
-      <div class="editorRow"><label>X</label><input id="editX" type="range" min="-38" max="38" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
-      <div class="editorRow"><label>Y</label><input id="editY" type="range" min="-2" max="12" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
-      <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-38" max="38" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
+      <div class="editorRow"><label>X</label><input id="editX" type="range" min="-500" max="500" step="0.1" value="0"><span id="editXv" class="editorValue">0.0</span></div>
+      <div class="editorRow"><label>Y</label><input id="editY" type="range" min="-100" max="100" step="0.05" value="0"><span id="editYv" class="editorValue">0.00</span></div>
+      <div class="editorRow"><label>Z</label><input id="editZ" type="range" min="-500" max="500" step="0.1" value="0"><span id="editZv" class="editorValue">0.0</span></div>
       <div class="editorSubTitle">ROTAZIONE 3D</div>
       <div class="editorRow"><label>Rot X</label><input id="editRotX" type="range" min="-180" max="180" step="1" value="0"><span id="editRotXv" class="editorValue">0°</span></div>
       <div class="editorRow"><label>Rot Y</label><input id="editRot" type="range" min="-180" max="180" step="1" value="0"><span id="editRotv" class="editorValue">0°</span></div>
       <div class="editorRow"><label>Rot Z</label><input id="editRotZ" type="range" min="-180" max="180" step="1" value="0"><span id="editRotZv" class="editorValue">0°</span></div>
       <div class="editorSubTitle">DIMENSIONI</div>
-      <div class="editorRow"><label>Larghezza</label><input id="editSX" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
-      <div class="editorRow"><label>Altezza</label><input id="editSY" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
-      <div class="editorRow"><label>Profondità</label><input id="editSZ" type="range" min="0.20" max="12.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
+      <div class="editorRow"><label>Larghezza</label><input id="editSX" type="range" min="0.02" max="100.00" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
+      <div class="editorRow"><label>Altezza</label><input id="editSY" type="range" min="0.02" max="100.00" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
+      <div class="editorRow"><label>Profondità</label><input id="editSZ" type="range" min="0.02" max="100.00" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
       <div class="nudge"><button id="nudgeLeft">← X</button><button id="nudgeRight">X →</button><button id="nudgeBack">← Z</button><button id="nudgeFront">Z →</button></div>
     </div>
 
@@ -781,6 +781,7 @@ function createBlackoutGraphics(){
 }
 const blackoutGraphics=createBlackoutGraphics();
 const WORLD_LIMIT=9;
+const EDITOR_LIMIT=500; // spazio di lavoro editor indipendente dalla sala giocabile
 const keys=new Set(), destruct=[], dynamics=[], particles=[], obstacles=[], topViewHidden=[];let topPlanHelpers=[];
 let yaw=0,pitch=-.05,dist=5.3,thirdPersonDistance=3.25,thirdPersonYaw=Math.PI,thirdPersonPitch=.20,started=false,gameCompleted=false,attacking=false,attackT=0,hitDone=false,jumpV=0,grounded=true,damage=0,destroyed=0,combo=1,comboUntil=0,countdown=150,countdownOn=false,shake=0,last=performance.now(),pointer=false,cameraMode='first';let officeRig=null,walkPhase=0,fpRig=null,fpWalk=0,recoilPitch=0,recoilYaw=0,recoilRoll=0,impactPulse=0;const MAX_FRAGMENTS=110;const npcs=[];let npcIdSeed=0;let headEndGuy=null,headEndTimer=null;
 const ANALYTICS_SESSION_KEY='mcrAnalyticsSessionV1';
@@ -881,6 +882,7 @@ const floorMat=new THREE.MeshPhysicalMaterial({map:blackoutWood,bumpMap:blackout
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xb9d0dd,transparent:true,opacity:.13,roughness:.06,transmission:.42,thickness:.06});
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
 const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
+let topPanActive=false,topPanPointerId=null,topPanLastX=0,topPanLastY=0;
 let editorGizmoRoot=null,editorGizmoHandles=[],editorTransformDrag=null;
 const editorGizmoBox=new THREE.Box3(),editorGizmoCenter=new THREE.Vector3(),editorGizmoSize=new THREE.Vector3(),editorTransformPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editorTransformPoint=new THREE.Vector3(),_axisScaleWorldQ=new THREE.Quaternion(),_rotatePlaneNormal=new THREE.Vector3(),_rotateBasisU=new THREE.Vector3(),_rotateBasisV=new THREE.Vector3(),_rotateVec=new THREE.Vector3();
 
@@ -1194,8 +1196,8 @@ function roomAnchorPoint(depth=6){
  const dir=new THREE.Vector3(0,0,-1).applyAxisAngle(up,yaw);
  const dist=Math.max(5,depth*.5+3.5);
  const p=player.position.clone().addScaledVector(dir,dist);
- p.x=THREE.MathUtils.clamp(p.x,-WORLD_LIMIT+3,WORLD_LIMIT-3);
- p.z=THREE.MathUtils.clamp(p.z,-WORLD_LIMIT+3,WORLD_LIMIT-3);
+ p.x=THREE.MathUtils.clamp(p.x,-EDITOR_LIMIT,EDITOR_LIMIT);
+ p.z=THREE.MathUtils.clamp(p.z,-EDITOR_LIMIT,EDITOR_LIMIT);
  p.y=0;return p;
 }
 function createRoomKit(){
@@ -1251,7 +1253,10 @@ function buildRoom(){
 
  // Recessed luminaires.
  const lumMat=new THREE.MeshStandardMaterial({color:0xe8f4ff,metalness:0,roughness:.2,emissive:0xd5e9ff,emissiveIntensity:1.5});
- for(const x of [-4,0,4])for(const z of [-6,-1,5])blackoutBox(scene,x,4.18,z,.16,.04,1.6,lumMat);
+ for(const x of [-4,0,4])for(const z of [-6,-1,5]){
+   const lum=blackoutBox(scene,x,4.18,z,.16,.04,1.6,lumMat.clone());
+   regEditorSurface(lum,'light');
+ }
 
  // Glass partitions and translucent blinds at the far end.
  const glass=new THREE.MeshPhysicalMaterial({color:0xb4d1da,metalness:.12,roughness:.19,transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false});
@@ -1338,8 +1343,8 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
    clone.scale.set(state.sx??clone.scale.x,state.sy??clone.scale.y,state.sz??clone.scale.z);
    clone.visible=state.visible!==false;
  }else{
-   clone.position.x=THREE.MathUtils.clamp(clone.position.x+offsetX,-WORLD_LIMIT,WORLD_LIMIT);
-   clone.position.z=THREE.MathUtils.clamp(clone.position.z+offsetZ,-WORLD_LIMIT,WORLD_LIMIT);
+   clone.position.x=THREE.MathUtils.clamp(clone.position.x+offsetX,-EDITOR_LIMIT,EDITOR_LIMIT);
+   clone.position.z=THREE.MathUtils.clamp(clone.position.z+offsetZ,-EDITOR_LIMIT,EDITOR_LIMIT);
  }
  nd.origPos.copy(clone.position);nd.origQuat.copy(clone.quaternion);nd.origScale.copy(clone.scale);nd.startPos.copy(clone.position);nd.startQuat.copy(clone.quaternion);nd.startScale.copy(clone.scale);nd.startVis=clone.visible;
  clone.userData.d=nd;
@@ -2679,7 +2684,6 @@ function openEditorSection(name='home',announce=false){
 function editorSectionForObject(d){
  if(!d)return null;
  if(d.type==='monitor')return 'screens';
- if(['wall','floor','ceiling','door','light','picture','glass','column','panel'].includes(d.type)||['roomWall','floor','ceiling','door','light','picture','glassPanel'].includes(d.customKind))return 'map';
  return 'objects';
 }
 function editorLabel(d){const base=({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete',floor:'Pavimento',ceiling:'Soffitto',door:'Porta',light:'Luce',picture:'Pannello immagine'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1);return d?.roomName?base+' · '+d.roomName:base}
@@ -2812,9 +2816,9 @@ function updateEditorTransform(e){
    const cp=editorClientPoint(t.center),dist=Math.max(8,Math.hypot(e.clientX-cp.x,e.clientY-cp.y));
    let ratio=dist/t.startDistance;if(e.shiftKey)ratio=Math.round(ratio*20)/20;
    selectedEdit.o.scale.set(
-     THREE.MathUtils.clamp(t.startScale.x*ratio,.15,12),
-     THREE.MathUtils.clamp(t.startScale.y*ratio,.15,12),
-     THREE.MathUtils.clamp(t.startScale.z*ratio,.15,12)
+     THREE.MathUtils.clamp(t.startScale.x*ratio,.02,100),
+     THREE.MathUtils.clamp(t.startScale.y*ratio,.02,100),
+     THREE.MathUtils.clamp(t.startScale.z*ratio,.02,100)
    );
  }else if(t.type==='axisScale'){
    const dx=e.clientX-t.startX,dy=e.clientY-t.startY;
@@ -2822,7 +2826,7 @@ function updateEditorTransform(e){
    let ratio=1+delta/Math.max(55,t.screenLen);
    ratio=THREE.MathUtils.clamp(ratio,.12,8);
    if(e.shiftKey)ratio=Math.round(ratio*20)/20;
-   const ns=t.startScale.clone();ns[t.axis]=THREE.MathUtils.clamp(t.startScale[t.axis]*ratio,.15,12);
+   const ns=t.startScale.clone();ns[t.axis]=THREE.MathUtils.clamp(t.startScale[t.axis]*ratio,.02,100);
    selectedEdit.o.scale.copy(ns);
  }else if(t.type==='rotateAxis'){
    const angle=rotationAngleOnAxis(e.clientX,e.clientY,t.axis,t.center);if(angle==null)return true;
@@ -2883,7 +2887,11 @@ function setMoveAllMode(on){
 }
 
 function moveSelection(dx,dy,dz){
- for(const d of selectedEdits){d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-WORLD_LIMIT,WORLD_LIMIT);d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,-2,12);d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-WORLD_LIMIT,WORLD_LIMIT)}
+ for(const d of selectedEdits){
+   d.o.position.x=THREE.MathUtils.clamp(d.o.position.x+dx,-EDITOR_LIMIT,EDITOR_LIMIT);
+   d.o.position.y=THREE.MathUtils.clamp(d.o.position.y+dy,-EDITOR_LIMIT,EDITOR_LIMIT);
+   d.o.position.z=THREE.MathUtils.clamp(d.o.position.z+dz,-EDITOR_LIMIT,EDITOR_LIMIT);
+ }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 }
 function updateSelectedFromUI(){
@@ -2902,9 +2910,9 @@ function updateSelectedFromUI(){
  for(const d of selectedEdits){
    d.o.position.add(delta);
    d.o.scale.set(
-     THREE.MathUtils.clamp(d.o.scale.x*ratio.x,.20,12),
-     THREE.MathUtils.clamp(d.o.scale.y*ratio.y,.20,12),
-     THREE.MathUtils.clamp(d.o.scale.z*ratio.z,.20,12)
+     THREE.MathUtils.clamp(d.o.scale.x*ratio.x,.02,100),
+     THREE.MathUtils.clamp(d.o.scale.y*ratio.y,.02,100),
+     THREE.MathUtils.clamp(d.o.scale.z*ratio.z,.02,100)
    );
  }
  anchor.rotation.set(
@@ -2920,7 +2928,7 @@ function clearTopPlanHelpers(){
 }
 function buildTopPlanHelpers(){
  clearTopPlanHelpers();
- const grid=new THREE.GridHelper(28,28,0x3d86b8,0x1b3c53);
+ const grid=new THREE.GridHelper(400,200,0x3d86b8,0x1b3c53);
  grid.position.y=.03;
  grid.material.transparent=true;grid.material.opacity=.72;grid.material.depthTest=false;grid.renderOrder=980;
  scene.add(grid);topPlanHelpers.push(grid);
@@ -2940,13 +2948,13 @@ function setTopView(on){
  for(const o of topViewHidden)o.visible=!on;
  scene.fog=on?null:normalSceneFog;
  if(on){
-   const a=innerWidth/innerHeight,halfH=42;
+   const a=innerWidth/innerHeight,halfH=18;
    topCamera.left=-halfH*a;topCamera.right=halfH*a;topCamera.top=halfH;topCamera.bottom=-halfH;
-   topCamera.position.set(0,36,.001);
+   topCamera.position.set(0,80,.001);
    topCamera.up.set(0,0,-1);
    topCamera.lookAt(0,0,0);
    topCamera.zoom=1;
-   topCamera.near=.1;topCamera.far=100;
+   topCamera.near=.1;topCamera.far=1000;
    topCamera.updateProjectionMatrix();
    buildTopPlanHelpers();
    show('PIANTA SALA ATTIVA');
@@ -2978,8 +2986,15 @@ function focusEditorPoint(point,announce=true){
 function focusEditorSelection(){
  if(selectedEdit){
    const box=new THREE.Box3().setFromObject(selectedEdit.o),center=box.getCenter(new THREE.Vector3());
+   if(topViewMode){
+     topCamera.position.x=center.x;topCamera.position.z=center.z;
+     const size=box.getSize(new THREE.Vector3()),span=Math.max(2,size.x,size.z);
+     topCamera.zoom=THREE.MathUtils.clamp(18/span,.15,8);
+     topCamera.updateProjectionMatrix();buildTopPlanHelpers();show('PIANTA CENTRATA SULLA SELEZIONE');return;
+   }
    focusEditorPoint(center);return;
  }
+ if(topViewMode){topCamera.position.x=0;topCamera.position.z=0;topCamera.zoom=1;topCamera.updateProjectionMatrix();return}
  focusEditorPoint(player.position.clone().add(new THREE.Vector3(0,1,0)));
 }
 function focusCharacterTarget(){
@@ -3009,9 +3024,9 @@ function updateEditorCamera(dt){
    editorCamPos.addScaledVector(right,mx*speed*dt);
    editorCamPos.addScaledVector(forward,mz*speed*dt);
    editorCamPos.y+=my*speed*dt;
-   editorCamPos.x=THREE.MathUtils.clamp(editorCamPos.x,-WORLD_LIMIT-8,WORLD_LIMIT+8);
-   editorCamPos.z=THREE.MathUtils.clamp(editorCamPos.z,-WORLD_LIMIT-8,WORLD_LIMIT+8);
-   editorCamPos.y=THREE.MathUtils.clamp(editorCamPos.y,.25,24);
+   editorCamPos.x=THREE.MathUtils.clamp(editorCamPos.x,-EDITOR_LIMIT,EDITOR_LIMIT);
+   editorCamPos.z=THREE.MathUtils.clamp(editorCamPos.z,-EDITOR_LIMIT,EDITOR_LIMIT);
+   editorCamPos.y=THREE.MathUtils.clamp(editorCamPos.y,-EDITOR_LIMIT,EDITOR_LIMIT);
  }
  camera.position.copy(editorCamPos);camera.rotation.order='YXZ';camera.rotation.y=editorCamYaw;camera.rotation.x=editorCamPitch;camera.rotation.z=0;
 }
@@ -3931,8 +3946,14 @@ function endEditorDrag(){
 }
 renderer.domElement.addEventListener('contextmenu',e=>{if(editorMode)e.preventDefault()});
 renderer.domElement.addEventListener('pointerdown',e=>{
- if(editorMode&&e.button===2&&!topViewMode){
-   e.preventDefault();initEditorCamera();editorCamRotating=true;editorCamPointerId=e.pointerId;editorCamLastX=e.clientX;editorCamLastY=e.clientY;renderer.domElement.setPointerCapture?.(e.pointerId);return;
+ if(editorMode&&e.button===2){
+   e.preventDefault();
+   if(topViewMode){
+     topPanActive=true;topPanPointerId=e.pointerId;topPanLastX=e.clientX;topPanLastY=e.clientY;
+   }else{
+     initEditorCamera();editorCamRotating=true;editorCamPointerId=e.pointerId;editorCamLastX=e.clientX;editorCamLastY=e.clientY;
+   }
+   renderer.domElement.setPointerCapture?.(e.pointerId);return;
  }
  if(!editorMode||e.button!==0)return;
  e.preventDefault();
@@ -3980,6 +4001,16 @@ renderer.domElement.addEventListener('pointermove',e=>{
  if(editorMode&&editorTransformDrag&&e.pointerId===editorTransformDrag.pointerId){
    e.preventDefault();updateEditorTransform(e);return;
  }
+ if(editorMode&&topViewMode&&topPanActive&&e.pointerId===topPanPointerId){
+   e.preventDefault();
+   const dx=e.clientX-topPanLastX,dy=e.clientY-topPanLastY;topPanLastX=e.clientX;topPanLastY=e.clientY;
+   const rect=renderer.domElement.getBoundingClientRect();
+   const worldPerPxX=(topCamera.right-topCamera.left)/(Math.max(1,rect.width)*topCamera.zoom);
+   const worldPerPxZ=(topCamera.top-topCamera.bottom)/(Math.max(1,rect.height)*topCamera.zoom);
+   topCamera.position.x=THREE.MathUtils.clamp(topCamera.position.x-dx*worldPerPxX,-EDITOR_LIMIT,EDITOR_LIMIT);
+   topCamera.position.z=THREE.MathUtils.clamp(topCamera.position.z-dy*worldPerPxZ,-EDITOR_LIMIT,EDITOR_LIMIT);
+   return;
+ }
  if(editorMode&&editorCamRotating&&e.pointerId===editorCamPointerId&&!topViewMode){
    e.preventDefault();const dx=e.clientX-editorCamLastX,dy=e.clientY-editorCamLastY;editorCamLastX=e.clientX;editorCamLastY=e.clientY;
    editorCamYaw-=dx*.0045;editorCamPitch=THREE.MathUtils.clamp(editorCamPitch-dy*.0038,-1.45,1.35);return;
@@ -3990,12 +4021,15 @@ renderer.domElement.addEventListener('pointermove',e=>{
  if(!p)return;
  const dx=p.x-dragStartPoint.x,dz=p.z-dragStartPoint.z;
  for(const [d,pos] of dragStartPositions){
-   d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-WORLD_LIMIT,WORLD_LIMIT);
-   d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-WORLD_LIMIT,WORLD_LIMIT);
+   d.o.position.x=THREE.MathUtils.clamp(pos.x+dx,-EDITOR_LIMIT,EDITOR_LIMIT);
+   d.o.position.z=THREE.MathUtils.clamp(pos.z+dz,-EDITOR_LIMIT,EDITOR_LIMIT);
  }
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
 },{passive:false});
-function endEditorCameraRotate(e){if(!e||e.pointerId===editorCamPointerId){editorCamRotating=false;editorCamPointerId=null}}
+function endEditorCameraRotate(e){
+ if(!e||e.pointerId===editorCamPointerId){editorCamRotating=false;editorCamPointerId=null}
+ if(!e||e.pointerId===topPanPointerId){topPanActive=false;topPanPointerId=null}
+}
 renderer.domElement.addEventListener('pointerup',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorTransform(e);endEditorCameraRotate(e)});
 renderer.domElement.addEventListener('pointercancel',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorTransform(e);endEditorCameraRotate(e)});
 renderer.domElement.addEventListener('lostpointercapture',e=>{if(e.pointerId===dragPointerId)endEditorDrag();endEditorTransform(e);endEditorCameraRotate(e)});
@@ -4006,7 +4040,7 @@ renderer.domElement.addEventListener('mousedown',e=>{
 });
 renderer.domElement.addEventListener('wheel',e=>{
  if(editorMode&&topViewMode){
-   topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.55,2.4);
+   topCamera.zoom=THREE.MathUtils.clamp(topCamera.zoom-e.deltaY*.0015,.08,12);
    topCamera.updateProjectionMatrix();
    return;
  }
