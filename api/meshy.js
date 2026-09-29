@@ -96,7 +96,7 @@ async function startTask(body) {
 
   // Defensive request-size check after client-side compression.
   const totalChars = images.reduce((sum, img) => sum + img.length, 0);
-  if (totalChars > 5_000_000) {
+  if (totalChars > 3_500_000) {
     const e = new Error("Immagini troppo pesanti dopo la compressione.");
     e.status = 413;
     throw e;
