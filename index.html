@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.28.19';
+ const PWA_VERSION='2026.09.29.1';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -149,6 +149,10 @@ button{cursor:pointer;border:0}.primary{margin-top:12px;padding:15px 34px;border
 #msg{position:fixed;top:20%;left:0;width:100%;text-align:center;transform:none;opacity:0;transition:.2s;padding:0;background:none;border:0;font-size:13px;letter-spacing:3px;color:#b0ff80;font-weight:400;backdrop-filter:none}#msg.on{opacity:1;transform:none}
 #cross{position:fixed;top:48%;left:50%;width:auto;height:auto;transform:none;opacity:1;color:#ffffff66;font-size:16px;line-height:1}#cross:before{content:"+";position:static;background:none;width:auto;height:auto}#cross:after{display:none}
 .blackoutFooter{position:fixed;bottom:25px;left:40px;right:40px;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:1px;color:#c4ced8;pointer-events:none}.blackoutFooterBrand b{margin-left:20px;color:#7c8c9c}.blackoutDot{display:inline-block;background:#b0ff80;width:5px;height:5px;margin-right:8px;border-radius:50%}.blackoutFooterHint{font-size:11px;letter-spacing:.3px}
+.resetQuick{position:fixed;right:40px;top:78px;z-index:90;pointer-events:auto;padding:9px 13px;background:#122030dc;border:1px solid #ffffff3f;color:#f5f7fb;font:800 10px Arial,Helvetica,sans-serif;letter-spacing:1.4px;box-shadow:0 8px 24px #0005;backdrop-filter:blur(8px)}
+.resetQuick:hover{background:#1c3044;border-color:#b0ff8099;color:#b0ff80}
+@media(max-width:700px){.resetQuick{right:10px;top:112px;padding:8px 10px;font-size:8px}}
+
 
 #help{position:fixed;z-index:40;left:16px;bottom:16px;padding:12px 14px;border-radius:12px;background:#07101ae8;border:1px solid #77baff33;color:#b1c1d3;font-size:12px;line-height:1.55}
 #touch{position:fixed;inset:0;z-index:30;pointer-events:none;touch-action:none}
@@ -384,9 +388,10 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
   <div id="msg"></div><div id="cross"></div>
   <div class="blackoutFooter">
     <span class="blackoutFooterBrand"><i class="blackoutDot"></i>MEDIASET / MCR <b>01</b></span>
-    <span class="blackoutFooterHint">WASD movimento · Mouse visuale · Shift corsa · Spazio salto · Click colpisci · V visuale</span>
+    <span class="blackoutFooterHint">WASD movimento · Mouse visuale · Shift corsa · Spazio salto · Click colpisci · V visuale · R reset sala</span>
   </div>
   <button id="viewToggle" class="hidden">🎮 TERZA PERSONA</button>
+  <button id="resetQuick" class="resetQuick hidden">↻ RESET SALA</button>
 </div>
 <button id="soundToggle" class="hidden">🔊 AUDIO ON</button>
 <button id="homeGameBtn" class="hidden">⌂ HOME</button>
@@ -3256,7 +3261,7 @@ function restoreRuntimeSession(){
    if(Number.isFinite(s.thirdPersonYaw))thirdPersonYaw=s.thirdPersonYaw;
    if(Number.isFinite(s.thirdPersonPitch))thirdPersonPitch=s.thirdPersonPitch;
    if(Number.isFinite(s.thirdPersonDistance))thirdPersonDistance=s.thirdPersonDistance;
-   if(s.cameraMode)setCameraMode(s.cameraMode,false);updateSoundUI();q('#homeGameBtn').classList.remove('hidden');
+   if(s.cameraMode)setCameraMode(s.cameraMode,false);updateSoundUI();q('#homeGameBtn').classList.remove('hidden');q('#resetQuick').classList.remove('hidden');
    damage=Number(s.damage)||0;destroyed=Number(s.destroyed)||0;combo=Number(s.combo)||1;
    countdown=Number.isFinite(s.countdown)?s.countdown:150;countdownOn=!!s.countdownOn;
    damageEl.textContent='€ '+damage.toLocaleString('it-IT');destroyedEl.textContent=String(destroyed);comboEl.textContent='COMBO x'+combo;updateBlackoutHud();
@@ -3543,11 +3548,45 @@ function hit(){
 }
 function resetRoom(){
  gameCompleted=false;q('#completePopup')?.classList.add('hidden');
- damage=0;destroyed=0;combo=1;countdown=150;countdownOn=false;damageEl.textContent='€ 0';destroyedEl.textContent='0';timerEl.textContent='02:30';updateBlackoutHud();
- for(let i=dynamics.length-1;i>=0;i--){if(dynamics[i].fragment)scene.remove(dynamics[i].o)}
- destruct.forEach(d=>{d.hp=d.max;d.dead=false;d.o.visible=d.startVis;d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);d.vel.set(0,0,0);d.spin.set(0,0,0);d.impactVel?.set(0,0,0);d.impactSpin?.set(0,0,0);if(d.type==='monitor'){d.o.userData.screen.material.map=d.o.userData.intactMap||texInt;d.o.userData.screen.material.needsUpdate=true}});
- dynamics.length=0;impactBodies.length=0;moveVel.set(0,0,0);player.position.set(.5,0,5.2);jumpV=0;grounded=true;
- for(const n of npcs){n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;n.pelvis.rotation.set(0,0,0);n.torso.rotation.set(0,0,0);n.head.rotation.set(0,0,0);for(const limb of [n.lArm,n.rArm,n.lFore,n.rFore,n.lLeg,n.rLeg,n.lShin,n.rShin])limb.rotation.set(0,0,0);n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;if(n.path[0])n.root.position.copy(n.path[0])} try{speechSynthesis?.cancel?.()}catch(e){}
+ damage=0;destroyed=0;combo=1;comboUntil=0;countdown=150;countdownOn=false;
+ damageEl.textContent='€ 0';destroyedEl.textContent='0';timerEl.textContent='02:30';comboEl.textContent='COMBO x1';comboEl.classList.remove('on');
+
+ // Elimina frammenti e scintille della distruzione precedente.
+ for(const dyn of dynamics){if(dyn?.fragment&&dyn.o)scene.remove(dyn.o)}
+ dynamics.length=0;
+ for(const p of particles){if(p?.m)scene.remove(p.m)}
+ particles.length=0;
+ impactBodies.length=0;
+
+ // Ripristina tutti gli oggetti allo stato del layout corrente.
+ destruct.forEach(d=>{
+   d.hp=d.max;d.dead=false;
+   d.o.visible=d.startVis!==false;
+   d.o.position.copy(d.startPos);d.o.quaternion.copy(d.startQuat);d.o.scale.copy(d.startScale);
+   d.vel?.set(0,0,0);d.spin?.set(0,0,0);d.impactVel?.set(0,0,0);d.impactSpin?.set(0,0,0);
+   if(d.type==='monitor'&&d.o.userData?.screen){
+     const intact=d.o.userData.intactMap||texInt;
+     d.o.userData.screen.material.map=intact;
+     if('emissiveMap' in d.o.userData.screen.material)d.o.userData.screen.material.emissiveMap=intact;
+     d.o.userData.screen.material.needsUpdate=true;
+   }
+   d.o.updateMatrixWorld(true);
+ });
+
+ moveVel.set(0,0,0);player.position.set(.5,0,5.2);jumpV=0;grounded=true;
+ for(const n of npcs){
+   n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;
+   n.pelvis.rotation.set(0,0,0);n.torso.rotation.set(0,0,0);n.head.rotation.set(0,0,0);
+   for(const limb of [n.lArm,n.rArm,n.lFore,n.rFore,n.lLeg,n.rLeg,n.lShin,n.rShin])limb.rotation.set(0,0,0);
+   n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;
+   if(n.path[0])n.root.position.copy(n.path[0]);
+ }
+ try{speechSynthesis?.cancel?.()}catch(e){}
+ updateBlackoutHud();
+
+ // Salva immediatamente lo stato pulito, così un refresh non riporta i vecchi contatori.
+ try{sessionStorage.removeItem(RUNTIME_SESSION_KEY)}catch(e){}
+ if(started)saveRuntimeSession();
  show('SALA RIPRISTINATA')
 }
 const collisionBox=new THREE.Box3();
@@ -3782,7 +3821,7 @@ function exitToHome(){
  hud.classList.add('hidden');
  touch.classList.add('hidden');
  q('#soundToggle').classList.add('hidden');
- q('#homeGameBtn').classList.add('hidden');
+ q('#homeGameBtn').classList.add('hidden');q('#resetQuick').classList.add('hidden');
  q('#viewToggle').classList.add('hidden');
  help.classList.add('hidden');
  adminBtn.classList.add('hidden');
@@ -3808,7 +3847,7 @@ function beginGameFromObjective(){
  updateAdminUI();
  setCameraMode(cameraMode,false);
  updateSoundUI();
- q('#homeGameBtn').classList.remove('hidden');
+ q('#homeGameBtn').classList.remove('hidden');q('#resetQuick').classList.remove('hidden');
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
  ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
  saveRuntimeSession();
@@ -3825,6 +3864,7 @@ q('#play').onclick=()=>{
 q('#objectiveStart').onclick=beginGameFromObjective;
 q('#objectiveBack').onclick=()=>{q('#objectivePopup').classList.add('hidden');start.classList.remove('hidden')};
 q('#reset').onclick=resetRoom;
+q('#resetQuick').onclick=resetRoom;
 q('#exitHome').onclick=exitToHome;
 q('#homeGameBtn').onclick=exitToHome;
 q('#completeHome').onclick=exitToHome;
