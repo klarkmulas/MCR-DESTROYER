@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f14">
+  <title>Forge3D Studio</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">F3</div>
+        <div>
+          <strong>FORGE3D</strong>
+          <span>STUDIO · v0.1</span>
+        </div>
+      </div>
+
+      <nav class="top-actions">
+        <button data-action="new" title="Nuovo progetto">Nuovo</button>
+        <button data-action="save" title="Salva nel browser">Salva</button>
+        <button data-action="load" title="Carica salvataggio locale">Carica</button>
+        <button data-action="import" title="Importa GLB/GLTF/OBJ">Importa</button>
+        <button class="accent" data-action="export" title="Esporta GLB">Esporta GLB</button>
+      </nav>
+
+      <div class="history-actions">
+        <button class="icon-btn" data-action="undo" title="Annulla · Ctrl+Z">↶</button>
+        <button class="icon-btn" data-action="redo" title="Ripeti · Ctrl+Y">↷</button>
+      </div>
+    </header>
+
+    <aside class="leftbar panel">
+      <section>
+        <div class="section-title">AGGIUNGI</div>
+        <div class="tool-grid">
+          <button class="tool" data-add="box"><span>▣</span>Cubo</button>
+          <button class="tool" data-add="sphere"><span>●</span>Sfera</button>
+          <button class="tool" data-add="cylinder"><span>⬭</span>Cilindro</button>
+          <button class="tool" data-add="cone"><span>▲</span>Cono</button>
+          <button class="tool" data-add="plane"><span>▱</span>Piano</button>
+          <button class="tool" data-add="torus"><span>◉</span>Toride</button>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">ARCHITETTURA</div>
+        <div class="tool-grid">
+          <button class="tool" data-add="wall"><span>▥</span>Parete</button>
+          <button class="tool" data-add="floor"><span>▰</span>Pavimento</button>
+          <button class="tool" data-add="door"><span>▯</span>Porta</button>
+          <button class="tool" data-add="window"><span>▧</span>Finestra</button>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-title">PERSONAGGI</div>
+        <button class="wide-tool" data-add="mannequin">
+          <span class="big-icon">♙</span>
+          <span><strong>Manichino base</strong><small>Corpo 3D modificabile</small></span>
+        </button>
+      </section>
+
+      <section>
+        <div class="section-title">AI LAB</div>
+        <button class="ai-tool" data-action="ai-photo">
+          <span class="spark">✦</span>
+          <span><strong>Foto → 3D</strong><small>Persona · Oggetto · Stanza</small></span>
+        </button>
+        <button class="wide-tool" data-action="reference-photo">
+          <span class="big-icon">▧</span>
+          <span><strong>Foto riferimento</strong><small>Inseriscila nella scena</small></span>
+        </button>
+      </section>
+
+      <section>
+        <div class="section-title">SCENA</div>
+        <button class="row-btn" data-action="focus">◎ Inquadra selezione</button>
+        <button class="row-btn" data-action="camera-home">⌂ Vista prospettica</button>
+        <button class="row-btn" data-action="camera-top">↓ Vista dall'alto</button>
+        <button class="row-btn" data-action="toggle-grid"># Mostra/Nascondi griglia</button>
+      </section>
+    </aside>
+
+    <main class="viewport-wrap">
+      <div id="viewport"></div>
+
+      <div class="viewport-toolbar">
+        <button class="mode active" data-mode="translate" title="Sposta · W">↔ <span>Sposta</span></button>
+        <button class="mode" data-mode="rotate" title="Ruota · E">⟳ <span>Ruota</span></button>
+        <button class="mode" data-mode="scale" title="Scala · R">⤢ <span>Scala</span></button>
+        <div class="separator"></div>
+        <button class="mini" data-action="duplicate" title="Duplica · Ctrl+D">⧉</button>
+        <button class="mini danger" data-action="delete" title="Elimina · Canc">⌫</button>
+      </div>
+
+      <div class="view-badge">
+        <span class="status-dot"></span>
+        <span id="statusText">Pronto</span>
+      </div>
+
+      <div class="shortcut-hint">W Sposta · E Ruota · R Scala · Canc Elimina · Ctrl+D Duplica · Ctrl+Z Annulla</div>
+    </main>
+
+    <aside class="rightbar panel">
+      <section class="scene-section">
+        <div class="section-title section-title-row">
+          <span>GERARCHIA</span>
+          <button class="tiny" data-action="deselect" title="Deseleziona">×</button>
+        </div>
+        <div id="sceneTree" class="scene-tree">
+          <div class="empty-state">La scena è vuota</div>
+        </div>
+      </section>
+
+      <section class="inspector-section">
+        <div class="section-title">PROPRIETÀ</div>
+        <div id="emptyInspector" class="empty-inspector">
+          Seleziona un oggetto nella scena.
+        </div>
+
+        <div id="inspector" class="inspector hidden">
+          <label class="field full">
+            <span>Nome</span>
+            <input id="propName" type="text">
+          </label>
+
+          <div class="prop-group">
+            <div class="prop-head">POSIZIONE</div>
+            <div class="triple">
+              <label><span>X</span><input id="posX" type="number" step="0.01"></label>
+              <label><span>Y</span><input id="posY" type="number" step="0.01"></label>
+              <label><span>Z</span><input id="posZ" type="number" step="0.01"></label>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <div class="prop-head">ROTAZIONE °</div>
+            <div class="triple">
+              <label><span>X</span><input id="rotX" type="number" step="1"></label>
+              <label><span>Y</span><input id="rotY" type="number" step="1"></label>
+              <label><span>Z</span><input id="rotZ" type="number" step="1"></label>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <div class="prop-head">SCALA</div>
+            <div class="triple">
+              <label><span>X</span><input id="scaleX" type="number" step="0.01" min="0.001"></label>
+              <label><span>Y</span><input id="scaleY" type="number" step="0.01" min="0.001"></label>
+              <label><span>Z</span><input id="scaleZ" type="number" step="0.01" min="0.001"></label>
+            </div>
+          </div>
+
+          <div id="materialPanel" class="prop-group">
+            <div class="prop-head">MATERIALE</div>
+            <div class="material-row">
+              <label class="color-field"><span>Colore</span><input id="matColor" type="color"></label>
+              <label><span>Rugosità</span><input id="roughness" type="range" min="0" max="1" step="0.01"></label>
+              <label><span>Metallo</span><input id="metalness" type="range" min="0" max="1" step="0.01"></label>
+            </div>
+            <button class="row-btn" data-action="texture">▧ Carica texture</button>
+            <label class="check"><input id="wireframe" type="checkbox"> Wireframe</label>
+          </div>
+
+          <div class="inspector-actions">
+            <button data-action="duplicate">Duplica</button>
+            <button class="danger-fill" data-action="delete">Elimina</button>
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <footer class="statusbar">
+      <span>FORGE3D · Editor WebGL</span>
+      <span id="objectCount">0 oggetti</span>
+      <span id="selectedLabel">Nessuna selezione</span>
+    </footer>
+  </div>
+
+  <div id="aiModal" class="modal hidden">
+    <div class="modal-card ai-card">
+      <button class="modal-close" data-action="close-ai">×</button>
+      <div class="modal-kicker">FORGE3D AI LAB</div>
+      <h2>Ricrea in 3D da immagini</h2>
+      <p class="modal-lead">Prepara fotografie di una persona, un oggetto o una stanza. L'editor è già predisposto per collegare un servizio AI tramite backend sicuro.</p>
+
+      <div class="ai-type-grid">
+        <button class="ai-type active" data-ai-type="object"><span>🪑</span><strong>Oggetto</strong><small>1–4 foto</small></button>
+        <button class="ai-type" data-ai-type="person"><span>👤</span><strong>Persona</strong><small>fronte/lati/retro</small></button>
+        <button class="ai-type" data-ai-type="room"><span>🏠</span><strong>Stanza</strong><small>foto multiple</small></button>
+      </div>
+
+      <label class="drop-zone" id="aiDropZone">
+        <input id="aiImages" type="file" accept="image/*" multiple>
+        <span class="drop-icon">＋</span>
+        <strong>Carica le fotografie</strong>
+        <small>JPG, PNG, WEBP · fino a 4 immagini per questa versione</small>
+      </label>
+
+      <div id="aiPreview" class="ai-preview"></div>
+
+      <div class="quality-row">
+        <label><input type="radio" name="quality" value="rapid" checked> Rapida · 1 foto</label>
+        <label><input type="radio" name="quality" value="precision"> Alta precisione · 2–4 foto</label>
+      </div>
+
+      <div class="ai-info">
+        <strong>Stato modulo AI</strong>
+        <span>Interfaccia pronta. La generazione completa richiede un backend/API: la chiave non verrà mai salvata nel codice pubblico di GitHub Pages.</span>
+      </div>
+
+      <div class="modal-actions">
+        <button data-action="ai-reference">Usa prima foto come riferimento</button>
+        <button class="accent" data-action="ai-generate">Genera 3D</button>
+      </div>
+    </div>
+  </div>
+
+  <input id="importFile" class="hidden" type="file" accept=".glb,.gltf,.obj">
+  <input id="textureFile" class="hidden" type="file" accept="image/*">
+  <input id="referenceFile" class="hidden" type="file" accept="image/*">
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
