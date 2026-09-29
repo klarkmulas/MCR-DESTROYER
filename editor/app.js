@@ -84,6 +84,10 @@ let groundDragSnapshot = null;
 let groundBottomOffset = 0;
 let groundPointerId = null;
 
+let rigEditMode = false;
+let rigEditRoot = null;
+let selectedBone = null;
+
 let selected = null;
 let idCounter = 1;
 let undoStack = [];
@@ -150,6 +154,623 @@ function uniqueName(base) {
   let i = 2;
   while (names.has(base + ' ' + i)) i++;
   return base + ' ' + i;
+}
+
+function getRigContainer(root) {
+  if (!root) return null;
+  return root.children.find(function (child) {
+    return child.userData && child.userData.forgeRigContainer;
+  }) || root.getObjectByName('__FORGE3D_RIG__') || null;
+}
+
+function getRigVisualGroup(root) {
+  const rig = getRigContainer(root);
+  if (!rig) return null;
+  return rig.children.find(function (child) {
+    return child.userData && child.userData.forgeRigVisualGroup;
+  }) || rig.getObjectByName('__FORGE3D_RIG_VISUALS__') || null;
+}
+
+function getRigBones(root) {
+  const rig = getRigContainer(root);
+  const bones = [];
+  if (!rig) return bones;
+  rig.traverse(function (object) {
+    if (object.isBone && object.userData && object.userData.forgeRigBone) bones.push(object);
+  });
+  return bones;
+}
+
+function findRigBone(root, name) {
+  return getRigBones(root).find(function (bone) { return bone.name === name; }) || null;
+}
+
+function isInsideForgeRig(object, root) {
+  let current = object;
+  while (current && current !== root) {
+    if (current.userData && current.userData.forgeRigContainer) return true;
+    current = current.parent;
+  }
+  return false;
+}
+
+function getModelLocalBounds(root) {
+  root.updateMatrixWorld(true);
+  const inverseRoot = root.matrixWorld.clone().invert();
+  const box = new THREE.Box3();
+  box.makeEmpty();
+
+  root.traverse(function (child) {
+    if (!child.isMesh || !child.geometry || isInsideForgeRig(child, root)) return;
+    if (!child.geometry.boundingBox) child.geometry.computeBoundingBox();
+    if (!child.geometry.boundingBox) return;
+
+    const childBox = child.geometry.boundingBox.clone();
+    const toRoot = new THREE.Matrix4().multiplyMatrices(inverseRoot, child.matrixWorld);
+    childBox.applyMatrix4(toRoot);
+    box.union(childBox);
+  });
+
+  return box;
+}
+
+function updateRigStatus() {
+  const el = document.getElementById('rigStatus');
+  if (!el) return;
+
+  if (!selected) {
+    el.textContent = 'Seleziona un modello 3D per aggiungere un rig.';
+    el.dataset.state = 'idle';
+    return;
+  }
+
+  const rig = getRigContainer(selected);
+  if (!rig) {
+    el.textContent = 'Modello selezionato: ' + (selected.name || 'Oggetto') + ' · nessuno scheletro.';
+    el.dataset.state = 'idle';
+    return;
+  }
+
+  if (rigEditMode && rigEditRoot === selected) {
+    el.textContent = selectedBone
+      ? 'Modifica ossa attiva · ' + selectedBone.name
+      : 'Modifica ossa attiva · clicca un punto dello scheletro.';
+    el.dataset.state = 'edit';
+    return;
+  }
+
+  if (selected.userData && selected.userData.rigBound) {
+    el.textContent = 'Scheletro collegato alla mesh ✓ · pronto per pose e animazioni.';
+    el.dataset.state = 'bound';
+  } else {
+    el.textContent = 'Scheletro inserito ✓ · regola le ossa, poi usa Bind automatico.';
+    el.dataset.state = 'ready';
+  }
+}
+
+function createRigVisuals(root, rig, bones, radius) {
+  const old = getRigVisualGroup(root);
+  if (old) rig.remove(old);
+
+  const visuals = new THREE.Group();
+  visuals.name = '__FORGE3D_RIG_VISUALS__';
+  visuals.userData.forgeRigVisualGroup = true;
+
+  bones.forEach(function (bone) {
+    const handle = new THREE.Mesh(
+      new THREE.SphereGeometry(radius, 12, 8),
+      new THREE.MeshBasicMaterial({
+        color: 0xffc857,
+        transparent: true,
+        opacity: 0.92,
+        depthTest: false
+      })
+    );
+    handle.name = '__RIG_HANDLE__' + bone.name;
+    handle.userData.forgeRigVisual = true;
+    handle.userData.forgeRigHandle = bone.name;
+    handle.renderOrder = 1000;
+    visuals.add(handle);
+  });
+
+  const segmentCount = Math.max(0, bones.filter(function (bone) { return bone.parent && bone.parent.isBone; }).length);
+  const lineGeometry = new THREE.BufferGeometry();
+  lineGeometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(segmentCount * 2 * 3), 3));
+  const lines = new THREE.LineSegments(
+    lineGeometry,
+    new THREE.LineBasicMaterial({
+      color: 0x70e1ff,
+      transparent: true,
+      opacity: 0.95,
+      depthTest: false
+    })
+  );
+  lines.name = '__FORGE3D_RIG_LINES__';
+  lines.userData.forgeRigVisual = true;
+  lines.userData.forgeRigLines = true;
+  lines.renderOrder = 999;
+  visuals.add(lines);
+
+  rig.add(visuals);
+  updateRigVisuals(root);
+}
+
+function updateRigVisuals(root) {
+  const rig = getRigContainer(root);
+  const visuals = getRigVisualGroup(root);
+  if (!rig || !visuals) return;
+
+  const bones = getRigBones(root);
+  if (!bones.length) return;
+
+  root.updateMatrixWorld(true);
+  const inverseRoot = root.matrixWorld.clone().invert();
+  const world = new THREE.Vector3();
+  const local = new THREE.Vector3();
+  const boneLocalPositions = new Map();
+
+  bones.forEach(function (bone) {
+    bone.getWorldPosition(world);
+    local.copy(world).applyMatrix4(inverseRoot);
+    boneLocalPositions.set(bone.name, local.clone());
+  });
+
+  visuals.children.forEach(function (child) {
+    if (!child.userData || !child.userData.forgeRigHandle) return;
+    const p = boneLocalPositions.get(child.userData.forgeRigHandle);
+    if (p) child.position.copy(p);
+    if (child.material && child.material.color) {
+      child.material.color.set(selectedBone && selectedBone.name === child.userData.forgeRigHandle ? 0xff4f87 : 0xffc857);
+    }
+  });
+
+  const lines = visuals.children.find(function (child) {
+    return child.userData && child.userData.forgeRigLines;
+  });
+  if (!lines) return;
+
+  const segments = bones.filter(function (bone) { return bone.parent && bone.parent.isBone; });
+  let attr = lines.geometry.getAttribute('position');
+  const expectedLength = segments.length * 2 * 3;
+  if (!attr || attr.array.length !== expectedLength) {
+    attr = new THREE.BufferAttribute(new Float32Array(expectedLength), 3);
+    lines.geometry.setAttribute('position', attr);
+  }
+
+  let offset = 0;
+  segments.forEach(function (bone) {
+    const a = boneLocalPositions.get(bone.parent.name);
+    const b = boneLocalPositions.get(bone.name);
+    if (!a || !b) return;
+    attr.array[offset++] = a.x; attr.array[offset++] = a.y; attr.array[offset++] = a.z;
+    attr.array[offset++] = b.x; attr.array[offset++] = b.y; attr.array[offset++] = b.z;
+  });
+  attr.needsUpdate = true;
+  lines.geometry.computeBoundingSphere();
+}
+
+function updateAllRigVisuals() {
+  editorRoot.children.forEach(function (root) {
+    if (getRigContainer(root)) updateRigVisuals(root);
+  });
+}
+
+function createHumanoidRig(root) {
+  if (!root) return toast('Seleziona prima un modello 3D.');
+  if (isFloorObject(root) || root.userData.referenceImage) return toast('Seleziona un modello NPC, non il pavimento o una foto.');
+
+  if (getRigContainer(root)) {
+    toast('Questo modello ha già uno scheletro FORGE3D.');
+    updateRigStatus();
+    return;
+  }
+
+  let hasExistingBone = false;
+  root.traverse(function (object) { if (object.isBone) hasExistingBone = true; });
+  if (hasExistingBone) {
+    toast('Il modello contiene già uno scheletro importato.');
+    return;
+  }
+
+  const box = getModelLocalBounds(root);
+  if (box.isEmpty()) return toast('Non trovo una mesh 3D valida nel modello selezionato.');
+
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  if (size.y < 0.001) return toast('Il modello è troppo piccolo per creare un rig.');
+
+  checkpoint();
+
+  const min = box.min;
+  const h = size.y;
+  const w = Math.max(size.x, h * 0.12);
+  const d = Math.max(size.z, h * 0.08);
+
+  function p(xFraction, yFraction, zFraction) {
+    return new THREE.Vector3(
+      center.x + w * xFraction,
+      min.y + h * yFraction,
+      center.z + d * (zFraction || 0)
+    );
+  }
+
+  const positions = {
+    Hips: p(0, 0.52, 0),
+    Spine: p(0, 0.63, 0),
+    Chest: p(0, 0.75, 0),
+    Neck: p(0, 0.86, 0),
+    Head: p(0, 0.94, 0),
+
+    LeftShoulder: p(-0.18, 0.78, 0),
+    LeftUpperArm: p(-0.28, 0.76, 0),
+    LeftLowerArm: p(-0.38, 0.68, 0),
+    LeftHand: p(-0.45, 0.59, 0),
+
+    RightShoulder: p(0.18, 0.78, 0),
+    RightUpperArm: p(0.28, 0.76, 0),
+    RightLowerArm: p(0.38, 0.68, 0),
+    RightHand: p(0.45, 0.59, 0),
+
+    LeftUpperLeg: p(-0.105, 0.49, 0),
+    LeftLowerLeg: p(-0.105, 0.27, 0),
+    LeftFoot: p(-0.105, 0.055, 0.08),
+
+    RightUpperLeg: p(0.105, 0.49, 0),
+    RightLowerLeg: p(0.105, 0.27, 0),
+    RightFoot: p(0.105, 0.055, 0.08)
+  };
+
+  const hierarchy = [
+    ['Hips', null],
+    ['Spine', 'Hips'],
+    ['Chest', 'Spine'],
+    ['Neck', 'Chest'],
+    ['Head', 'Neck'],
+
+    ['LeftShoulder', 'Chest'],
+    ['LeftUpperArm', 'LeftShoulder'],
+    ['LeftLowerArm', 'LeftUpperArm'],
+    ['LeftHand', 'LeftLowerArm'],
+
+    ['RightShoulder', 'Chest'],
+    ['RightUpperArm', 'RightShoulder'],
+    ['RightLowerArm', 'RightUpperArm'],
+    ['RightHand', 'RightLowerArm'],
+
+    ['LeftUpperLeg', 'Hips'],
+    ['LeftLowerLeg', 'LeftUpperLeg'],
+    ['LeftFoot', 'LeftLowerLeg'],
+
+    ['RightUpperLeg', 'Hips'],
+    ['RightLowerLeg', 'RightUpperLeg'],
+    ['RightFoot', 'RightLowerLeg']
+  ];
+
+  const rig = new THREE.Group();
+  rig.name = '__FORGE3D_RIG__';
+  rig.userData.forgeRigContainer = true;
+  rig.userData.rigVersion = 1;
+
+  const boneMap = new Map();
+  const bones = [];
+
+  hierarchy.forEach(function (entry) {
+    const name = entry[0];
+    const parentName = entry[1];
+    const bone = new THREE.Bone();
+    bone.name = name;
+    bone.userData.forgeRigBone = true;
+
+    if (parentName) {
+      const parent = boneMap.get(parentName);
+      bone.position.copy(positions[name]).sub(positions[parentName]);
+      parent.add(bone);
+    } else {
+      bone.position.copy(positions[name]);
+      rig.add(bone);
+    }
+
+    boneMap.set(name, bone);
+    bones.push(bone);
+  });
+
+  root.add(rig);
+  root.userData.forgeRig = true;
+  root.userData.rigBound = false;
+
+  createRigVisuals(root, rig, bones, Math.max(h * 0.012, 0.008));
+  root.updateMatrixWorld(true);
+
+  startRigEdit(root);
+  toast('Scheletro umanoide inserito nel modello.');
+  setStatus('Rig NPC creato · regola le articolazioni prima del Bind');
+}
+
+function stopRigEdit(reattach) {
+  rigEditMode = false;
+  rigEditRoot = null;
+  selectedBone = null;
+
+  const button = document.querySelector('[data-action="rig-edit"]');
+  if (button) button.classList.remove('active');
+
+  if (reattach !== false && selected && currentMode !== 'ground') {
+    transform.attach(selected);
+    selectionBox.setFromObject(selected);
+    selectionBox.visible = true;
+  } else if (!selected) {
+    transform.detach();
+    selectionBox.visible = false;
+  }
+
+  updateRigStatus();
+}
+
+function startRigEdit(root) {
+  root = root || selected;
+  if (!root || !getRigContainer(root)) return toast('Prima aggiungi uno scheletro al modello.');
+
+  if (selected !== root) selectObject(root);
+
+  rigEditMode = true;
+  rigEditRoot = root;
+  selectedBone = null;
+  selectionBox.visible = false;
+  transform.detach();
+
+  const visuals = getRigVisualGroup(root);
+  if (visuals) visuals.visible = true;
+
+  const button = document.querySelector('[data-action="rig-edit"]');
+  if (button) button.classList.add('active');
+
+  currentMode = 'translate';
+  transform.setMode('translate');
+  transform.setSpace('world');
+  document.querySelectorAll('[data-mode]').forEach(function (modeButton) {
+    modeButton.classList.toggle('active', modeButton.dataset.mode === 'translate');
+  });
+
+  updateRigVisuals(root);
+  updateRigStatus();
+  setStatus('Modifica scheletro · clicca un giunto giallo');
+}
+
+function toggleRigEdit() {
+  if (rigEditMode) {
+    stopRigEdit(true);
+    setStatus('Modifica scheletro terminata');
+    return;
+  }
+  startRigEdit(selected);
+}
+
+function toggleRigVisibility() {
+  if (!selected) return toast('Seleziona prima un modello NPC.');
+  const visuals = getRigVisualGroup(selected);
+  if (!visuals) return toast('Il modello selezionato non ha uno scheletro FORGE3D.');
+  visuals.visible = !visuals.visible;
+  if (!visuals.visible && rigEditMode) stopRigEdit(true);
+  updateRigStatus();
+  toast(visuals.visible ? 'Scheletro visibile' : 'Scheletro nascosto');
+}
+
+function selectRigBone(root, boneName) {
+  if (!root) return;
+  if (!rigEditMode || rigEditRoot !== root) startRigEdit(root);
+
+  const bone = findRigBone(root, boneName);
+  if (!bone) return;
+
+  selectedBone = bone;
+  transform.setMode(currentMode === 'rotate' ? 'rotate' : 'translate');
+  transform.setSpace(currentMode === 'rotate' ? 'local' : 'world');
+  transform.attach(bone);
+  selectionBox.visible = false;
+
+  updateRigVisuals(root);
+  updateRigStatus();
+  setStatus('Osso selezionato: ' + bone.name + ' · W sposta · E ruota');
+}
+
+function onRigPointerDown(event) {
+  if (!rigEditMode || !rigEditRoot || currentMode === 'ground' || transform.dragging || transform.axis) return;
+
+  setPointerFromEvent(event);
+  const visuals = getRigVisualGroup(rigEditRoot);
+  if (!visuals || !visuals.visible) return;
+
+  const handles = [];
+  visuals.traverse(function (object) {
+    if (object.isMesh && object.userData && object.userData.forgeRigHandle) handles.push(object);
+  });
+
+  const hits = raycaster.intersectObjects(handles, false);
+  if (!hits.length) return;
+
+  const handle = hits[0].object;
+  selectRigBone(rigEditRoot, handle.userData.forgeRigHandle);
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function pointSegmentDistanceSq(px, py, pz, ax, ay, az, bx, by, bz) {
+  const abx = bx - ax;
+  const aby = by - ay;
+  const abz = bz - az;
+  const apx = px - ax;
+  const apy = py - ay;
+  const apz = pz - az;
+  const denom = abx * abx + aby * aby + abz * abz;
+  let t = denom > 1e-12 ? (apx * abx + apy * aby + apz * abz) / denom : 0;
+  t = Math.max(0, Math.min(1, t));
+  const dx = px - (ax + abx * t);
+  const dy = py - (ay + aby * t);
+  const dz = pz - (az + abz * t);
+  return dx * dx + dy * dy + dz * dz;
+}
+
+async function bindSelectedToRig() {
+  const root = selected;
+  if (!root) return toast('Seleziona prima il modello NPC.');
+  if (!getRigContainer(root)) return toast('Prima aggiungi lo scheletro NPC.');
+  if (root.userData && root.userData.rigBound) return toast('La mesh è già collegata allo scheletro.');
+
+  const bones = getRigBones(root);
+  if (!bones.length) return toast('Scheletro non valido.');
+
+  const meshes = [];
+  root.traverse(function (object) {
+    if (!object.isMesh || object.isSkinnedMesh || isInsideForgeRig(object, root)) return;
+    if (!object.geometry || !object.geometry.getAttribute('position')) return;
+    meshes.push(object);
+  });
+
+  if (!meshes.length) return toast('Non trovo mesh da collegare.');
+
+  checkpoint();
+  stopRigEdit(false);
+  transform.detach();
+  selectionBox.visible = false;
+  setStatus('Bind automatico · calcolo pesi della mesh...');
+  toast('Calcolo pesi automatici in corso…');
+
+  await new Promise(function (resolve) { requestAnimationFrame(resolve); });
+
+  root.updateMatrixWorld(true);
+  const inverseRoot = root.matrixWorld.clone().invert();
+  const bonePositions = [];
+  const boneIndex = new Map();
+  const temp = new THREE.Vector3();
+
+  bones.forEach(function (bone, index) {
+    boneIndex.set(bone, index);
+    bone.getWorldPosition(temp);
+    bonePositions.push(temp.clone().applyMatrix4(inverseRoot));
+  });
+
+  const segments = bones.map(function (bone, index) {
+    const b = bonePositions[index];
+    const parentIndex = bone.parent && bone.parent.isBone ? boneIndex.get(bone.parent) : undefined;
+    const a = parentIndex === undefined ? b : bonePositions[parentIndex];
+    return {
+      index: index,
+      ax: a.x, ay: a.y, az: a.z,
+      bx: b.x, by: b.y, bz: b.z
+    };
+  });
+
+  const bounds = getModelLocalBounds(root);
+  const height = Math.max(bounds.getSize(new THREE.Vector3()).y, 0.01);
+  const epsilon = Math.pow(height * 0.025, 2);
+
+  const skeleton = new THREE.Skeleton(bones);
+  skeleton.calculateInverses();
+
+  for (const mesh of meshes) {
+    mesh.updateMatrixWorld(true);
+    const geometry = mesh.geometry.clone();
+    const position = geometry.getAttribute('position');
+    const vertexCount = position.count;
+    const skinIndices = new Uint16Array(vertexCount * 4);
+    const skinWeights = new Float32Array(vertexCount * 4);
+    const toRoot = new THREE.Matrix4().multiplyMatrices(inverseRoot, mesh.matrixWorld);
+    const vertex = new THREE.Vector3();
+
+    for (let i = 0; i < vertexCount; i++) {
+      vertex.fromBufferAttribute(position, i).applyMatrix4(toRoot);
+
+      let d0 = Infinity, d1 = Infinity, d2 = Infinity, d3 = Infinity;
+      let i0 = 0, i1 = 0, i2 = 0, i3 = 0;
+
+      for (let s = 0; s < segments.length; s++) {
+        const seg = segments[s];
+        const d = pointSegmentDistanceSq(
+          vertex.x, vertex.y, vertex.z,
+          seg.ax, seg.ay, seg.az,
+          seg.bx, seg.by, seg.bz
+        );
+
+        if (d < d0) {
+          d3 = d2; i3 = i2; d2 = d1; i2 = i1; d1 = d0; i1 = i0; d0 = d; i0 = seg.index;
+        } else if (d < d1) {
+          d3 = d2; i3 = i2; d2 = d1; i2 = i1; d1 = d; i1 = seg.index;
+        } else if (d < d2) {
+          d3 = d2; i3 = i2; d2 = d; i2 = seg.index;
+        } else if (d < d3) {
+          d3 = d; i3 = seg.index;
+        }
+      }
+
+      const w0 = 1 / (d0 + epsilon);
+      const w1 = 1 / (d1 + epsilon);
+      const w2 = 1 / (d2 + epsilon);
+      const w3 = 1 / (d3 + epsilon);
+      const total = w0 + w1 + w2 + w3 || 1;
+      const o = i * 4;
+
+      skinIndices[o] = i0;
+      skinIndices[o + 1] = i1;
+      skinIndices[o + 2] = i2;
+      skinIndices[o + 3] = i3;
+
+      skinWeights[o] = w0 / total;
+      skinWeights[o + 1] = w1 / total;
+      skinWeights[o + 2] = w2 / total;
+      skinWeights[o + 3] = w3 / total;
+    }
+
+    geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinIndices, 4));
+    geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinWeights, 4));
+
+    const skinned = new THREE.SkinnedMesh(geometry, mesh.material);
+    skinned.name = mesh.name;
+    skinned.position.copy(mesh.position);
+    skinned.quaternion.copy(mesh.quaternion);
+    skinned.scale.copy(mesh.scale);
+    skinned.matrix.copy(mesh.matrix);
+    skinned.matrixAutoUpdate = mesh.matrixAutoUpdate;
+    skinned.visible = mesh.visible;
+    skinned.castShadow = mesh.castShadow;
+    skinned.receiveShadow = mesh.receiveShadow;
+    skinned.renderOrder = mesh.renderOrder;
+    skinned.frustumCulled = false;
+    skinned.userData = JSON.parse(JSON.stringify(mesh.userData || {}));
+
+    if (mesh.morphTargetInfluences) skinned.morphTargetInfluences = mesh.morphTargetInfluences.slice();
+    if (mesh.morphTargetDictionary) skinned.morphTargetDictionary = Object.assign({}, mesh.morphTargetDictionary);
+
+    const parent = mesh.parent;
+    const childIndex = parent.children.indexOf(mesh);
+    const oldChildren = mesh.children.slice();
+    oldChildren.forEach(function (child) { skinned.add(child); });
+
+    parent.remove(mesh);
+    parent.add(skinned);
+
+    const currentIndex = parent.children.indexOf(skinned);
+    if (currentIndex !== childIndex && childIndex >= 0) {
+      parent.children.splice(currentIndex, 1);
+      parent.children.splice(childIndex, 0, skinned);
+    }
+
+    root.updateMatrixWorld(true);
+    skinned.updateMatrixWorld(true);
+    skinned.bind(skeleton, skinned.matrixWorld.clone());
+    skinned.normalizeSkinWeights();
+  }
+
+  root.userData.rigBound = true;
+  root.updateMatrixWorld(true);
+  selectObject(root);
+  startRigEdit(root);
+
+  const hips = findRigBone(root, 'Hips');
+  if (hips) selectRigBone(root, 'Hips');
+
+  updateRigStatus();
+  setStatus('Bind completato · muovi o ruota le ossa per posare l’NPC');
+  toast('Bind automatico completato ✓');
 }
 
 function addObject(object, name, skipCheckpoint) {
@@ -285,12 +906,16 @@ function rootEditorObject(object) {
 }
 
 function selectObject(object) {
+  if (rigEditMode && object !== rigEditRoot) stopRigEdit(false);
+
   selected = object || null;
+  selectedBone = null;
+
   if (selected) {
-    if (currentMode === 'ground') transform.detach();
+    if (currentMode === 'ground' || rigEditMode) transform.detach();
     else transform.attach(selected);
     selectionBox.setFromObject(selected);
-    selectionBox.visible = true;
+    selectionBox.visible = !rigEditMode;
     selectedLabel.textContent = selected.name || 'Oggetto';
   } else {
     transform.detach();
@@ -299,6 +924,7 @@ function selectObject(object) {
   }
   renderTree();
   refreshInspector();
+  updateRigStatus();
 }
 
 function renderTree() {
@@ -484,6 +1110,8 @@ function deleteSelected() {
 }
 
 function setMode(mode) {
+  if (mode === 'ground' && rigEditMode) stopRigEdit(true);
+
   currentMode = mode;
 
   if (mode === 'ground') {
@@ -492,8 +1120,17 @@ function setMode(mode) {
     setStatus('Modalità Pavimento · trascina un oggetto sul piano');
   } else {
     transform.setMode(mode);
-    if (selected) transform.attach(selected);
-    setStatus(mode === 'translate' ? 'Modalità Sposta' : mode === 'rotate' ? 'Modalità Ruota' : 'Modalità Scala');
+    transform.setSpace(rigEditMode && selectedBone && mode === 'rotate' ? 'local' : 'world');
+
+    if (rigEditMode && selectedBone) transform.attach(selectedBone);
+    else if (rigEditMode) transform.detach();
+    else if (selected) transform.attach(selected);
+
+    if (rigEditMode && selectedBone) {
+      setStatus((mode === 'rotate' ? 'Ruota osso' : mode === 'translate' ? 'Sposta osso' : 'Scala osso') + ' · ' + selectedBone.name);
+    } else {
+      setStatus(mode === 'translate' ? 'Modalità Sposta' : mode === 'rotate' ? 'Modalità Ruota' : 'Modalità Scala');
+    }
   }
 
   document.querySelectorAll('[data-mode]').forEach(function (button) {
@@ -585,6 +1222,15 @@ function downloadBlob(blob, filename) {
 async function exportGLB() {
   if (!editorRoot.children.length) return toast('La scena è vuota');
   setStatus('Esportazione GLB...');
+
+  const hiddenRigVisuals = [];
+  editorRoot.traverse(function (object) {
+    if (object.userData && object.userData.forgeRigVisualGroup) {
+      hiddenRigVisuals.push({ object: object, visible: object.visible });
+      object.visible = false;
+    }
+  });
+
   try {
     const exporter = new GLTFExporter();
     const data = await exporter.parseAsync(editorRoot, {
@@ -600,6 +1246,8 @@ async function exportGLB() {
     console.error(error);
     setStatus('Errore esportazione');
     toast('Errore durante esportazione GLB');
+  } finally {
+    hiddenRigVisuals.forEach(function (entry) { entry.object.visible = entry.visible; });
   }
 }
 
@@ -827,13 +1475,14 @@ function endGroundDrag(event) {
   setStatus('Oggetto appoggiato al pavimento');
 }
 
+renderer.domElement.addEventListener('pointerdown', onRigPointerDown, true);
 renderer.domElement.addEventListener('pointerdown', beginGroundDrag, true);
 renderer.domElement.addEventListener('pointermove', moveGroundDrag, true);
 renderer.domElement.addEventListener('pointerup', endGroundDrag, true);
 renderer.domElement.addEventListener('pointercancel', endGroundDrag, true);
 
 function onViewportPointerDown(event) {
-  if (currentMode === 'ground' || transform.dragging) return;
+  if (rigEditMode || currentMode === 'ground' || transform.dragging) return;
   setPointerFromEvent(event);
 
   const meshes = [];
@@ -870,7 +1519,13 @@ transform.addEventListener('mouseUp', function () {
 });
 
 transform.addEventListener('objectChange', function () {
-  if (selected) {
+  if (rigEditMode && rigEditRoot) {
+    rigEditRoot.updateMatrixWorld(true);
+    updateRigVisuals(rigEditRoot);
+    updateRigStatus();
+  }
+
+  if (selected && !rigEditMode) {
     selectionBox.setFromObject(selected);
     refreshInspector();
   }
@@ -983,13 +1638,23 @@ function handleAction(action) {
   if (action === 'export') exportGLB();
   if (action === 'undo') undo();
   if (action === 'redo') redo();
-  if (action === 'delete') deleteSelected();
-  if (action === 'duplicate') duplicateSelected();
+  if (action === 'delete') {
+    if (rigEditMode) toast('Esci da Modifica ossa prima di eliminare il modello.');
+    else deleteSelected();
+  }
+  if (action === 'duplicate') {
+    if (rigEditMode) toast('Esci da Modifica ossa prima di duplicare il modello.');
+    else duplicateSelected();
+  }
   if (action === 'deselect') selectObject(null);
   if (action === 'focus') focusSelected();
   if (action === 'camera-home') cameraHome();
   if (action === 'camera-top') cameraTop();
   if (action === 'toggle-grid') grid.visible = !grid.visible;
+  if (action === 'rig-add') createHumanoidRig(selected);
+  if (action === 'rig-edit') toggleRigEdit();
+  if (action === 'rig-bind') bindSelectedToRig();
+  if (action === 'rig-toggle') toggleRigVisibility();
   if (action === 'texture') {
     if (!selected) toast('Seleziona prima un oggetto');
     else textureFile.click();
@@ -1080,10 +1745,14 @@ document.addEventListener('keydown', function (event) {
   if (key === 'g') setMode('ground');
   if (key === 'e') setMode('rotate');
   if (key === 'r') setMode('scale');
-  if (event.key === 'Delete' || event.key === 'Backspace') deleteSelected();
+  if (event.key === 'Delete' || event.key === 'Backspace') {
+    if (rigEditMode) toast('Esci da Modifica ossa prima di eliminare il modello.');
+    else deleteSelected();
+  }
   if (key === 'f') focusSelected();
   if (event.key === 'Escape') {
-    selectObject(null);
+    if (rigEditMode) stopRigEdit(true);
+    else selectObject(null);
     closeAiModal();
   }
 });
@@ -1098,6 +1767,7 @@ window.addEventListener('beforeunload', function () {
 
 function animate() {
   orbit.update();
+  updateAllRigVisuals();
   if (selected && selectionBox.visible) selectionBox.setFromObject(selected);
   renderer.render(scene, camera);
 }
@@ -1107,4 +1777,5 @@ renderTree();
 updateCounts();
 refreshInspector();
 setMode('translate');
+updateRigStatus();
 setStatus('Pronto · aggiungi un oggetto o importa un GLB');
