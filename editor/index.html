@@ -23,7 +23,7 @@
         <div class="brand-mark">F3</div>
         <div>
           <strong>FORGE3D</strong>
-          <span>STUDIO · v0.1</span>
+          <span>STUDIO · v0.2 FREE AI</span>
         </div>
       </div>
 
@@ -190,70 +190,76 @@
   </div>
 
   <div id="aiModal" class="modal hidden">
-    <div class="modal-card ai-card">
+    <div class="modal-card ai-card free-ai-card">
       <button class="modal-close" data-action="close-ai">×</button>
-      <div class="modal-kicker">FORGE3D AI LAB</div>
-      <h2>Ricrea in 3D da immagini</h2>
-      <p class="modal-lead">Prepara fotografie di una persona, un oggetto o una stanza. L'editor è già predisposto per collegare un servizio AI tramite backend sicuro.</p>
+      <div class="modal-kicker">FORGE3D · FREE AI</div>
+      <h2>Foto → 3D gratis</h2>
+      <p class="modal-lead">
+        Questa modalità usa <strong>Stable Fast 3D</strong> nello Space ufficiale di Stability AI su Hugging Face ZeroGPU.
+        Non servono carta di credito, Meshy, Vercel o chiavi API.
+      </p>
 
-      <div class="ai-type-grid">
-        <button class="ai-type active" data-ai-type="object"><span>🪑</span><strong>Oggetto</strong><small>1–4 foto</small></button>
-        <button class="ai-type" data-ai-type="person"><span>👤</span><strong>Persona</strong><small>fronte/lati/retro</small></button>
-        <button class="ai-type" data-ai-type="room"><span>🏠</span><strong>Stanza</strong><small>foto multiple</small></button>
+      <div class="free-ai-badge-row">
+        <span class="free-badge">✓ GRATIS</span>
+        <span class="free-badge soft">1 FOTO → GLB</span>
+        <span class="free-badge soft">TEXTURE</span>
       </div>
 
-      <label class="drop-zone" id="aiDropZone">
-        <input id="aiImages" type="file" accept="image/*" multiple>
-        <span class="drop-icon">＋</span>
-        <strong>Carica le fotografie</strong>
-        <small>JPG, PNG, WEBP · fino a 4 immagini per questa versione</small>
-      </label>
-
-      <div id="aiPreview" class="ai-preview"></div>
-
-      <div class="quality-row">
-        <label><input type="radio" name="quality" value="rapid" checked> Rapida · 1 foto</label>
-        <label><input type="radio" name="quality" value="precision"> Alta precisione · 2–4 foto</label>
+      <div class="free-ai-warning">
+        <strong>Ideale per oggetti singoli</strong>
+        <span>
+          Sedie, mobili, monitor, lampade, oggetti e simili. Persone e stanze intere possono essere provate,
+          ma il modello è progettato soprattutto per ricostruire un singolo oggetto da una foto e non crea rig/animazioni.
+        </span>
       </div>
 
-      <div class="ai-backend-config">
-        <div class="ai-backend-title">
-          <strong>BACKEND AI SICURO</strong>
-          <span>Meshy · chiavi mai nel repository</span>
+      <div class="free-flow">
+        <div class="free-step">
+          <span class="free-step-num">1</span>
+          <div>
+            <strong>Apri il generatore gratuito</strong>
+            <small>Si apre lo Space ufficiale Stable Fast 3D su Hugging Face.</small>
+          </div>
+          <button id="openFreeGenerator" class="accent free-main-btn" type="button">Apri generatore</button>
         </div>
-        <div class="ai-config-help">
-          <strong>1. URL BACKEND VERCEL</strong>
-          <span>Non inserire email o account. Deve iniziare con https:// e terminare normalmente con /api/meshy.</span>
+
+        <div class="free-step">
+          <span class="free-step-num">2</span>
+          <div>
+            <strong>Carica la foto e genera il modello</strong>
+            <small>Se richiesto, usa “Remove Background”, poi “Run”. Attendi la comparsa del modello 3D.</small>
+          </div>
         </div>
-        <div class="ai-config-grid">
-          <label class="ai-config-field">
-            <span>URL backend</span>
-            <input id="aiBackendUrl" type="url" inputmode="url" placeholder="https://nome-progetto.vercel.app/api/meshy" autocomplete="off">
-          </label>
-          <label class="ai-config-field">
-            <span>Chiave accesso FORGE3D</span>
-            <input id="aiAccessKey" type="password" placeholder="Password FORGE3D_ACCESS_KEY" autocomplete="off">
-          </label>
-          <button id="aiSaveBackend" type="button">Salva</button>
-          <button id="aiTestBackend" type="button">Test</button>
+
+        <div class="free-step">
+          <span class="free-step-num">3</span>
+          <div>
+            <strong>Scarica il file GLB</strong>
+            <small>Nel generatore salva il risultato .glb sul computer.</small>
+          </div>
         </div>
-        <div class="ai-config-example">Esempio corretto: <code>https://forge3d-backend.vercel.app/api/meshy</code></div>
-        <div id="aiBridgeMessage" class="ai-bridge-message">Prima devi pubblicare il backend su Vercel. Poi incolla qui il suo URL.</div>
+
+        <div class="free-step">
+          <span class="free-step-num">4</span>
+          <div>
+            <strong>Importalo direttamente in FORGE3D</strong>
+            <small>Seleziona il GLB appena generato: comparirà nella scena e potrai modificarlo.</small>
+          </div>
+          <button id="importFreeResult" class="free-import-btn" type="button">Importa GLB</button>
+        </div>
       </div>
 
-      <div id="aiProgressWrap" class="ai-progress-wrap hidden">
-        <div class="ai-progress-track"><div id="aiProgressBar" class="ai-progress-bar"></div></div>
-        <span id="aiProgressText" class="ai-progress-text">In attesa</span>
+      <div class="free-quota-note">
+        <strong>Quota gratuita Hugging Face</strong>
+        <span>
+          ZeroGPU è condiviso: senza login la quota giornaliera è più bassa; con un account Hugging Face gratuito
+          hai una quota maggiore. Possono esserci coda o attese quando il servizio è molto utilizzato.
+        </span>
       </div>
 
-      <div class="ai-info">
-        <strong>Foto → 3D operativo tramite backend</strong>
-        <span>Le immagini vengono ottimizzate nel browser, inviate al backend e il GLB finale viene importato automaticamente nella scena. Per una persona con una sola foto viene richiesta una A-pose.</span>
-      </div>
-
-      <div class="modal-actions">
-        <button data-action="ai-reference">Usa prima foto come riferimento</button>
-        <button class="accent" data-action="ai-generate">Genera 3D</button>
+      <div class="free-ai-links">
+        <button id="openHFAccount" type="button">Crea/Accedi account Hugging Face gratuito</button>
+        <button data-action="ai-reference" type="button">Usa una foto come riferimento nella scena</button>
       </div>
     </div>
   </div>
