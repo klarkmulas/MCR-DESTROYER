@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#0b0f14">
   <title>Forge3D Studio</title>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./ai-bridge.css">
   <script type="importmap">
   {
     "imports": {
@@ -215,9 +216,28 @@
         <label><input type="radio" name="quality" value="precision"> Alta precisione · 2–4 foto</label>
       </div>
 
+      <div class="ai-backend-config">
+        <div class="ai-backend-title">
+          <strong>BACKEND AI SICURO</strong>
+          <span>Meshy · chiavi mai nel repository</span>
+        </div>
+        <div class="ai-config-grid">
+          <input id="aiBackendUrl" type="url" placeholder="https://tuo-backend.vercel.app/api/meshy" autocomplete="off">
+          <input id="aiAccessKey" type="password" placeholder="Chiave accesso FORGE3D" autocomplete="off">
+          <button id="aiSaveBackend" type="button">Salva</button>
+          <button id="aiTestBackend" type="button">Test</button>
+        </div>
+        <div id="aiBridgeMessage" class="ai-bridge-message">Configura il backend una volta; la password resta solo nella sessione del browser.</div>
+      </div>
+
+      <div id="aiProgressWrap" class="ai-progress-wrap hidden">
+        <div class="ai-progress-track"><div id="aiProgressBar" class="ai-progress-bar"></div></div>
+        <span id="aiProgressText" class="ai-progress-text">In attesa</span>
+      </div>
+
       <div class="ai-info">
-        <strong>Stato modulo AI</strong>
-        <span>Interfaccia pronta. La generazione completa richiede un backend/API: la chiave non verrà mai salvata nel codice pubblico di GitHub Pages.</span>
+        <strong>Foto → 3D operativo tramite backend</strong>
+        <span>Le immagini vengono ottimizzate nel browser, inviate al backend e il GLB finale viene importato automaticamente nella scena. Per una persona con una sola foto viene richiesta una A-pose.</span>
       </div>
 
       <div class="modal-actions">
@@ -233,6 +253,7 @@
 
   <div id="toast" class="toast"></div>
 
+  <script src="./ai-bridge.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
