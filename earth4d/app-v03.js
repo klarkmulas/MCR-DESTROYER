@@ -36,8 +36,8 @@ const HIGHWAYS=[
 [[44.4056,8.9463],[45.4642,9.19],[45.4408,12.3155]]
 ];
 const map=L.map('map',{zoomControl:true,minZoom:5,maxZoom:18,maxBounds:[[35.0,5.0],[48.5,20.5]],maxBoundsViscosity:.8}).setView([42.7,12.5],6);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
-const sim=L.layerGroup().addTo(map), lines=L.layerGroup().addTo(map), cityLayer=L.layerGroup().addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Tiles © Esri — Sources: Esri, Maxar, Earthstar Geographics and the GIS User Community'}).addTo(map);
+const sim=L.layerGroup().addTo(map), lines=L.layerGroup().addTo(map), cityLayer=L.layerGroup().addTo(map), landscape=L.layerGroup().addTo(map);
 let selected={name:'Milano',lat:45.4642,lon:9.19}, position=360, speed=1, playing=false, playFrame=0, lastTs=0, streetBuilt=false;
 function fmtYear(y){if(y<0)return Math.abs(Math.round(y)).toLocaleString('it-IT')+' a.C.';return Math.round(y).toLocaleString('it-IT')+' d.C.'}
 function interpolate(p){
@@ -56,7 +56,18 @@ function render(){
  $('#urbanStat').textContent=Math.round(s.urban*100)+'%';$('#roadStat').textContent=Math.round(Math.max(s.roads,s.modern)*100)+'%';$('#railStat').textContent=Math.round(s.rail*100)+'%';
  $('#warning').textContent=e.kind==='future'?'Il futuro è simulato: non viene presentato come previsione.':'I layer storici della v0.3 sono un prototipo visuale: non rappresentano ancora una ricostruzione cartografica validata edificio per edificio.';
  const tint=$('#eraTint');let c='rgba(137,92,45,'+(Math.max(0,.18-s.modern*.15))+')';if(year<0)c='rgba(84,102,58,.13)';if(e.kind==='future')c='rgba(95,75,180,.11)';tint.style.background=c;
- lines.clearLayers();cityLayer.clearLayers();sim.clearLayers();
+ lines.clearLayers();cityLayer.clearLayers();sim.clearLayers();landscape.clearLayers();
+ // Simulated aerial landscape evolution: suppresses some modern visual weight in older eras
+ const oldness=Math.max(0,Math.min(1,(1900-year)/1200));
+ if(oldness>.02){
+   CITIES.forEach(c=>{
+     const km=Math.max(1.2,c.base*(.8+s.urban*1.1));
+     L.circle([c.lat,c.lon],{radius:km*1000,color:'transparent',weight:0,fillColor:year<500?'#6f845d':'#7b8762',fillOpacity:.10+.18*oldness}).addTo(landscape);
+   });
+ }
+ if(year<-2000){
+   L.rectangle([[35.0,5.0],[48.5,20.5]],{stroke:false,fillColor:'#587052',fillOpacity:.14}).addTo(landscape);
+ }
  polySet(lines,ROMAN,{color:'#e7bd7b',weight:3,dashArray:'8 7'},bell(year,-500,650,500)*s.roads);
  polySet(lines,MEDIEVAL,{color:'#d6a865',weight:2.5,dashArray:'4 6'},bell(year,800,1650,300)*.75);
  polySet(lines,RAIL,{color:'#d9e2ec',weight:2,dashArray:'2 5'},Math.min(1,s.rail));
@@ -88,14 +99,24 @@ $('#mapMode').onclick=()=>map.flyTo([42.7,12.5],6,{duration:.6});$('#cityMode').
 const THREE_URL='https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js';
 let scene,camera,renderer,clock,yaw=0,pitch=0,keys={},drag=false,lastX=0,lastY=0,streetAnim=0,objects=[];
 function loadThree(){return new Promise((resolve,reject)=>{if(window.THREE)return resolve();let s=document.createElement('script');s.src=THREE_URL;s.onload=resolve;s.onerror=reject;document.head.appendChild(s)})}
-function mat(color,rough=.85){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:.05})}
-function addBox(x,y,z,w,h,d,color){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color));m.position.set(x,y+h/2,z);scene.add(m);objects.push(m);return m}
+function facadeTexture(base,modern=false){
+ const cv=document.createElement('canvas');cv.width=256;cv.height=256;const cx=cv.getContext('2d');
+ cx.fillStyle=base;cx.fillRect(0,0,256,256);
+ for(let y=0;y<256;y+=modern?34:28){for(let x=0;x<256;x+=modern?42:36){
+   const jitter=((x+y)%17)-8;cx.fillStyle=modern?'rgba(185,220,235,.55)':'rgba(55,38,24,.32)';
+   cx.fillRect(x+8+jitter*.15,y+8,modern?22:14,modern?18:12);
+ }}
+ for(let n=0;n<900;n++){const a=Math.random()*.05;cx.fillStyle='rgba(255,255,255,'+a+')';cx.fillRect(Math.random()*256,Math.random()*256,1,1)}
+ const tx=new THREE.CanvasTexture(cv);if(THREE.SRGBColorSpace)tx.colorSpace=THREE.SRGBColorSpace;tx.wrapS=tx.wrapT=THREE.RepeatWrapping;return tx
+}
+function mat(color,rough=.85,map=null){return new THREE.MeshStandardMaterial({color,map,roughness:rough,metalness:.03})}
+function addBox(x,y,z,w,h,d,color,texture=null){let m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(color,.86,texture));m.position.set(x,y+h/2,z);m.castShadow=true;m.receiveShadow=true;scene.add(m);objects.push(m);return m}
 function clearStreet(){objects.forEach(o=>scene.remove(o));objects=[]}
 function buildStreet(){
  clearStreet();const y=interpolate(position).year,e=eraAt(position);
  scene.background=new THREE.Color(e.kind==='future'?0x0b1024:y<500?0x9eb0a4:y<1700?0x8b99a0:0xaeb9c3);
  scene.fog=new THREE.Fog(scene.background.getHex(),35,120);
- const ground=new THREE.Mesh(new THREE.PlaneGeometry(220,220),mat(y<1900?0x605447:0x35383b));ground.rotation.x=-Math.PI/2;scene.add(ground);objects.push(ground);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(220,220),mat(y<1900?0x5b594a:0x34383c,.98));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);objects.push(ground);
  const road=new THREE.Mesh(new THREE.PlaneGeometry(y<1900?8:11,210),mat(y<1900?0x796b59:0x27292c));road.rotation.x=-Math.PI/2;road.position.y=.012;scene.add(road);objects.push(road);
  for(let side of [-1,1])for(let n=-9;n<=9;n++){
    const z=n*10, dist=y<1500?6.2:y<1950?7.5:9.5, x=side*dist;
@@ -105,7 +126,7 @@ function buildStreet(){
    else if(y<1900){h=9+(Math.abs(n)%4);w=7.4;d=8;col=[0xc2ad8e,0xd2c0a4,0x9f8d78][Math.abs(n)%3]}
    else if(y<2035){h=12+(Math.abs(n)%5)*2;w=8;d=9;col=[0x9fa7ab,0xc1b8a9,0x8f969b][Math.abs(n)%3]}
    else{h=18+(Math.abs(n)%6)*3;w=8.5;d=9;col=[0x55677d,0x7482a1,0x536f72][Math.abs(n)%3]}
-   const b=addBox(x,0,z,w,h,d,col);
+   const tex=facadeTexture('#'+col.toString(16).padStart(6,'0'),y>1900);const b=addBox(x,0,z,w,h,d,col,tex);
    if(y<1700){let roof=new THREE.Mesh(new THREE.ConeGeometry(w*.72,2.1,4),mat(0x623e2d));roof.rotation.y=Math.PI/4;roof.position.set(x,h+1,z);scene.add(roof);objects.push(roof)}
    for(let f=2;f<h-1;f+=3){for(let xx of [-1.7,1.7]){let win=addBox(x+side*(-w/2-.03),f,z+xx,.08,1.2,1.0,y<1800?0x4b3a27:0xbadfff);}}
  }
@@ -115,8 +136,8 @@ function buildStreet(){
  $('#streetTitle').textContent=selected.name+' · '+fmtYear(y);$('#streetSub').textContent=e.kind==='future'?'Scenario 3D — non previsione':'Ricostruzione 3D procedurale — prototipo non fotografico';
 }
 function initThree(){
- const host=$('#threeHost');scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.1,250);renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=false;host.innerHTML='';host.appendChild(renderer.domElement);clock=new THREE.Clock();
- scene.add(new THREE.HemisphereLight(0xddeeff,0x3b2e24,2.4));let sun=new THREE.DirectionalLight(0xffffff,2.4);sun.position.set(20,35,10);scene.add(sun);
+ const host=$('#threeHost');scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(72,innerWidth/innerHeight,.1,250);renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;if(THREE.SRGBColorSpace)renderer.outputColorSpace=THREE.SRGBColorSpace;host.innerHTML='';host.appendChild(renderer.domElement);clock=new THREE.Clock();
+ scene.add(new THREE.HemisphereLight(0xdcecff,0x3f392e,1.75));let sun=new THREE.DirectionalLight(0xfff5df,3.2);sun.position.set(24,42,18);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-55;sun.shadow.camera.right=55;sun.shadow.camera.top=55;sun.shadow.camera.bottom=-55;scene.add(sun);
  const c=renderer.domElement;c.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;c.setPointerCapture?.(e.pointerId)});c.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-lastX)*.004;pitch-=(e.clientY-lastY)*.003;pitch=Math.max(-1.25,Math.min(1.25,pitch));lastX=e.clientX;lastY=e.clientY});c.addEventListener('pointerup',()=>drag=false);
  addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);buildStreet();animateStreet()
 }
@@ -127,6 +148,36 @@ function animateStreet(){
 $$('.mobilePad button').forEach(b=>{let k=b.dataset.k;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true});['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,()=>keys[k]=false))});
 async function enterStreet(){try{await loadThree();$('#street').classList.add('active');if(!streetBuilt){initThree();streetBuilt=true}else buildStreet()}catch{$('#streetSub').textContent='Il motore 3D non è riuscito a caricarsi su questo dispositivo.'}}
 $('#streetBtn').onclick=enterStreet;$('#closeStreet').onclick=()=>$('#street').classList.remove('active');
+
+function yearToPosition(y){
+ if(y<=ERAS[0].year)return ERAS[0].p;
+ if(y>=ERAS[ERAS.length-1].year)return ERAS[ERAS.length-1].p;
+ for(let k=0;k<ERAS.length-1;k++){const a=ERAS[k],b=ERAS[k+1];if(y>=a.year&&y<=b.year){const t=(y-a.year)/(b.year-a.year);return a.p+(b.p-a.p)*t}}
+ return 945
+}
+function carDate(){
+ const d=Math.max(1,Math.min(31,+$('#carDay').value||1)),m=Math.max(1,Math.min(12,+$('#carMonth').value||1)),raw=Math.max(1,+$('#carYear').value||1),bc=$('#carEra').value==='BC';
+ const y=bc?-raw:raw;return {d,m,y,label:String(d).padStart(2,'0')+' · '+String(m).padStart(2,'0')+' · '+raw+' '+(bc?'a.C.':'d.C.')}
+}
+function updateCarDisplay(){const v=carDate();$('#destDisplay').textContent=v.label}
+['carDay','carMonth','carYear','carEra'].forEach(id=>$('#'+id).addEventListener('input',updateCarDisplay));
+$('#timeCarBtn').onclick=()=>{$('#carPlace').value=selected.name;const y=Math.round(interpolate(position).year);$('#carYear').value=Math.max(1,Math.abs(y));$('#carEra').value=y<0?'BC':'AD';updateCarDisplay();$('#timeCar').classList.add('open')};
+$('#closeTimeCar').onclick=()=>$('#timeCar').classList.remove('open');
+$('#syncPlace').onclick=()=>{$('#carPlace').value=selected.name};
+$('#launchTime').onclick=()=>{
+ const target=carDate();$('#timeCar').classList.remove('open');$('#travelFx').classList.add('on');
+ let start=performance.now(),dur=3600;
+ const tick=now=>{let t=Math.min(1,(now-start)/dur),ease=t<.7?(t/.7):1;
+   const mph=Math.round(88*Math.min(1,t/.72));$('#speedValue').textContent=mph;$('#speedFill').style.width=(mph/88*100)+'%';
+   $('#travelText').textContent=t<.72?mph+' mph':t<.88?'FLUSSO TEMPORALE':'ARRIVO · '+target.label;
+   if(t<1)requestAnimationFrame(tick);else{
+      position=yearToPosition(target.y);render();map.flyTo([selected.lat,selected.lon],Math.max(11,map.getZoom()),{duration:1.2});
+      $('#travelFx').classList.remove('on');$('#speedValue').textContent='0';$('#speedFill').style.width='0';
+      setTimeout(()=>enterStreet(),900);
+   }
+ };requestAnimationFrame(tick)
+};
+
 addEventListener('resize',()=>{map.invalidateSize();if(renderer){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)}});
 const marks=$('#milestones');ERAS.forEach(e=>{let s=document.createElement('span');s.style.left=e.p/10+'%';s.textContent=e.year<0?Math.abs(e.year/1000)+'k a.C.':e.year;s.title=e.title;marks.appendChild(s)});
 position=360;render();
