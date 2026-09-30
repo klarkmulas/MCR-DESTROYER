@@ -274,3 +274,96 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   .game-hud-controls{padding-right:75px;gap:6px}
   .game-hud button{right:8px;top:8px}
 }
+
+
+/* MODELING v0.5 */
+.modeling-section{position:relative}
+.modeling-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px
+}
+.model-tool{
+  border:1px solid var(--line);
+  background:#101720;
+  color:#aebaca;
+  border-radius:9px;
+  padding:9px 7px;
+  cursor:pointer;
+  font-size:9px;
+  display:flex;
+  align-items:center;
+  gap:6px
+}
+.model-tool span{font-size:16px;color:#d7e1ed}
+.model-tool:hover{border-color:#465875;background:#16202b}
+.model-tool.active{
+  border-color:#5ecdf2;
+  background:rgba(94,205,242,.10);
+  color:#bfeeff
+}
+.pushpull-tool.active{
+  border-color:#ffbe55;
+  background:rgba(255,190,85,.10);
+  color:#ffd389
+}
+.modeling-options{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:8px;
+  flex-wrap:wrap
+}
+.model-check,.model-step{
+  color:#7e8da0;
+  font-size:8px;
+  display:flex;
+  align-items:center;
+  gap:5px
+}
+.model-step input{
+  width:58px;
+  background:#0b1016;
+  color:#dce5f0;
+  border:1px solid #273344;
+  border-radius:6px;
+  padding:4px 5px;
+  font-size:8px
+}
+.model-status{
+  margin-top:7px;
+  border:1px dashed #2b394a;
+  border-radius:8px;
+  padding:7px 8px;
+  color:#738297;
+  font-size:8px;
+  line-height:1.4
+}
+.model-status[data-state="active"]{
+  border-color:rgba(94,205,242,.32);
+  color:#91cfe4;
+  background:rgba(94,205,242,.04)
+}
+.model-status[data-state="draw"]{
+  border-color:rgba(124,92,255,.38);
+  color:#b9aff1;
+  background:rgba(124,92,255,.05)
+}
+.model-status[data-state="drag"]{
+  border-color:rgba(255,190,85,.40);
+  color:#e5c483;
+  background:rgba(255,190,85,.05)
+}
+.model-measure{
+  position:absolute;
+  z-index:15;
+  background:rgba(7,11,16,.90);
+  border:1px solid #40516a;
+  color:#e8eef6;
+  border-radius:7px;
+  padding:5px 7px;
+  font-size:9px;
+  font-variant-numeric:tabular-nums;
+  pointer-events:none;
+  box-shadow:0 8px 25px rgba(0,0,0,.28)
+}
