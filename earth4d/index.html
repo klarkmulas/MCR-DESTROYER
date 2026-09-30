@@ -3,183 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#03060a">
-<title>Italia Time Machine · Time Drive</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="./style-v05.css">
+<meta name="theme-color" content="#010308">
+<title>EARTH 4D · Cinematic Time Machine</title>
+<link rel="stylesheet" href="./style-v07.css">
 </head>
 <body>
 <div id="app">
-  <div class="car-shell">
-    <div class="roof-frame"></div>
-    <div class="a-pillar left"></div>
-    <div class="a-pillar right"></div>
+  <div id="spaceStage">
+    <div id="globeHost"></div>
+    <div class="glass-reflection"></div>
+    <div class="cinema-vignette"></div>
+    <div class="cockpit-frame top"></div>
+    <div class="cockpit-frame left"></div>
+    <div class="cockpit-frame right"></div>
 
-    <section class="windshield">
-      <div id="map"></div>
-      <div id="threeHost"></div>
-      <div id="historicalTint"></div>
-      <div class="windshield-reflection"></div>
-      <div class="windshield-vignette"></div>
-      <div class="rain-layer" id="rainLayer"></div>
-
-      <div class="rear-mirror">
-        <div class="mirror-glass"><span>ITALIA TIME MACHINE</span></div>
-      </div>
-
-      <div class="hud top-left">
-        <small>POSIZIONE</small>
-        <strong id="hudPlace">Milano</strong>
-        <span id="hudCoords">45.4642 · 9.1900</span>
-      </div>
-
-      <div class="hud top-right">
-        <small>DATA SIMULATA</small>
-        <strong id="hudDate">01 · 01 · 1200 d.C.</strong>
-        <span id="hudEra">Ricostruzione temporale</span>
-      </div>
-
-      <div class="arrival-title" id="arrivalTitle">
-        <small>ARRIVO TEMPORALE</small>
-        <strong id="arrivalMain">MILANO · 1200</strong>
-      </div>
-      <div id="historyCard" class="history-card">
-        <div class="history-card-head">
-          <span>RICOSTRUZIONE STORICA</span>
-          <b id="historyConfidence">FONTI VERIFICATE</b>
-        </div>
-        <strong id="historyTitle">Milano · 1200</strong>
-        <p id="historyText">Cinta medievale, porte e principali complessi religiosi ricostruiti sulla base di fonti storiche. Le geometrie restano indicative.</p>
-        <div id="historyFacts"></div>
-      </div>
-
-      <button id="viewToggle" class="glassBtn windshield-btn">SATELLITE</button>
-    </section>
-
-    <section class="dashboard">
-      <div class="dash-top-line"></div>
-
-      <div class="cluster left-cluster">
-        <div class="speed-gauge">
-          <div class="gauge-ring">
-            <div class="gauge-ticks"></div>
-            <div class="needle" id="needle"></div>
-            <div class="gauge-center">
-              <small>MPH</small>
-              <strong id="mph">0</strong>
-            </div>
-          </div>
-          <div class="gauge-label">TIME DRIVE</div>
-        </div>
-
-        <div class="engine-panel">
-          <div class="mini-leds">
-            <i class="red"></i><i class="amber"></i><i class="green"></i>
-          </div>
-          <span>FLUX SYSTEM</span>
-          <b id="fluxState">STANDBY</b>
-        </div>
-      </div>
-
-      <div class="time-console">
-        <div class="console-label">TIME CIRCUITS</div>
-
-        <div class="time-row destination">
-          <div class="row-led"></div>
-          <div class="row-label">DESTINATION TIME</div>
-          <div class="digital date-red" id="destReadout">01 01 1200 AD</div>
-        </div>
-
-        <div class="time-row present">
-          <div class="row-led"></div>
-          <div class="row-label">PRESENT TIME</div>
-          <div class="digital date-green" id="presentReadout">30 09 2026 AD</div>
-        </div>
-
-        <div class="time-row departed">
-          <div class="row-led"></div>
-          <div class="row-label">LAST TIME DEPARTED</div>
-          <div class="digital date-amber" id="lastReadout">-- -- ---- --</div>
-        </div>
-
-        <div class="destination-controls">
-          <label><span>GIORNO</span><input id="day" type="number" min="1" max="31" value="1"></label>
-          <label><span>MESE</span><input id="month" type="number" min="1" max="12" value="1"></label>
-          <label><span>ANNO</span><input id="year" type="number" min="1" max="12000" value="1200"></label>
-          <label><span>ERA</span><select id="era"><option value="AD">d.C.</option><option value="BC">a.C.</option></select></label>
-        </div>
-      </div>
-
-      <div class="cluster right-cluster">
-        <div class="location-panel">
-          <div class="panel-title">DESTINAZIONE</div>
-          <form id="placeForm">
-            <input id="placeInput" autocomplete="off" placeholder="Cerca un luogo in Italia…" value="Milano">
-            <button type="submit">CERCA</button>
-          </form>
-          <div id="placeResults" class="place-results hidden"></div>
-          <div class="selected-place">
-            <small>SELEZIONATO</small>
-            <strong id="selectedPlace">Milano</strong>
-          </div>
-        </div>
-
-        <button id="launch" class="launch">
-          <span class="launch-top">ATTIVA VIAGGIO</span>
-          <strong>88 MPH</strong>
-          <span class="launch-bottom">PARTI NEL TEMPO</span>
-        </button>
-      </div>
-
-      <div class="flux-capacitor">
-        <div class="flux-core">
-          <span class="flux-line a"></span>
-          <span class="flux-line b"></span>
-          <span class="flux-line c"></span>
-          <i></i>
-        </div>
-      </div>
-
-      <div class="mode-strip">
-        <button id="satBtn" class="mode active">VISTA AEREA</button>
-        <button id="streetBtn" class="mode">GUIDA NEL TEMPO</button>
-        <button id="todayBtn" class="mode">TORNA AL 2026</button>
-        <button id="sourcesBtn" class="mode">FONTI</button>
-      </div>
-
-      <div class="mobile-drive">
-        <button data-k="w">▲</button>
-        <button data-k="a">◀</button>
-        <button data-k="s">▼</button>
-        <button data-k="d">▶</button>
-      </div>
-    </section>
-  </div>
-
-  <div id="travelFx" class="travel-fx">
-    <div class="streaks"></div>
-    <div class="tunnel"></div>
-    <div class="flash"></div>
-    <div class="travel-center">
-      <small id="travelPhase">ACCELERAZIONE TEMPORALE</small>
-      <strong id="travelMph">0 MPH</strong>
-      <span id="travelDestination">MILANO · 1200</span>
+    <div class="topbar">
+      <div class="brand"><b>EARTH 4D</b><span>CINEMATIC TIME MACHINE</span></div>
+      <div class="status"><i></i><span id="statusText">TEMPORAL SYSTEM READY</span></div>
     </div>
+
+    <div class="spaceHud leftHud">
+      <small>DESTINAZIONE</small>
+      <strong id="hudPlace">Milano</strong>
+      <span id="hudCoords">45.4642° N · 9.1900° E</span>
+    </div>
+    <div class="spaceHud rightHud">
+      <small>EPOCA</small>
+      <strong id="hudTime">1200 d.C.</strong>
+      <span id="hudMode">Storia umana</span>
+    </div>
+
+    <div id="eraBanner" class="eraBanner">
+      <small id="eraKicker">ARRIVO TEMPORALE</small>
+      <strong id="eraTitle">ITALIA · 1200</strong>
+      <span id="eraSub">Ricostruzione territoriale</span>
+    </div>
+
+    <button id="resetCamera" class="floatingBtn">◎ GLOBO INTERO</button>
   </div>
 
-  <aside id="sourcesDrawer" class="sources-drawer">
-    <button id="closeSources">×</button>
-    <div class="eyebrow">TRASPARENZA</div>
-    <h2>Come viene ricostruito il passato</h2>
-    <p>Le immagini satellitari mostrano il presente. Per gli anni passati l'app applica una simulazione e, dove disponibili, potrà usare dati storici georeferenziati. La vista strada 3D è una ricostruzione procedurale: non è una fotografia reale del passato.</p>
-    <a href="https://www.lombardiabeniculturali.it/architetture/schede/1A050-00072/" target="_blank">Lombardia Beni Culturali · Mura medievali</a>
-    <a href="https://www.duomomilano.it/cultura-e-arte/larea-archeologica/" target="_blank">Duomo Milano · Area archeologica pre-Duomo</a>
+  <section class="dashboard">
+    <div class="dashSheen"></div>
+    <div class="speedCluster">
+      <div class="gauge">
+        <div class="ticks"></div>
+        <div id="needle" class="needle"></div>
+        <div class="gaugeCenter"><small>MPH</small><strong id="mph">0</strong></div>
+      </div>
+      <div class="fluxMini"><span>FLUX CORE</span><b id="fluxState">STANDBY</b></div>
+    </div>
+
+    <div class="timeConsole">
+      <div class="consoleTitle">TEMPORAL NAVIGATION</div>
+      <div class="readouts">
+        <div class="readout destination"><span>DESTINATION TIME</span><strong id="destinationReadout">1200 AD</strong></div>
+        <div class="readout present"><span>PRESENT TIME</span><strong>2026 AD</strong></div>
+      </div>
+
+      <div class="scaleTabs">
+        <button class="scaleTab active" data-scale="calendar">CALENDARIO</button>
+        <button class="scaleTab" data-scale="ma">MILIONI DI ANNI</button>
+        <button class="scaleTab" data-scale="ga">MILIARDI DI ANNI</button>
+      </div>
+
+      <div id="calendarControls" class="controlsRow">
+        <label><span>GIORNO</span><input id="day" type="number" min="1" max="31" value="30"></label>
+        <label><span>MESE</span><input id="month" type="number" min="1" max="12" value="9"></label>
+        <label><span>ANNO</span><input id="year" type="number" min="1" max="9999" value="1200"></label>
+        <label><span>ERA</span><select id="era"><option value="AD">d.C.</option><option value="BC">a.C.</option></select></label>
+      </div>
+
+      <div id="maControls" class="controlsRow hidden">
+        <label class="wide"><span>MILIONI DI ANNI FA</span><input id="ma" type="number" min="0" max="4540" step="1" value="66"></label>
+      </div>
+
+      <div id="gaControls" class="controlsRow hidden">
+        <label class="wide"><span>MILIARDI DI ANNI FA</span><input id="ga" type="number" min="4.54" max="13.8" step="0.01" value="4.54"></label>
+      </div>
+
+      <div class="presets">
+        <button data-preset="1200">1200</button>
+        <button data-preset="2026">OGGI</button>
+        <button data-preset="20k">20.000 a.f.</button>
+        <button data-preset="66m">66 Ma</button>
+        <button data-preset="250m">250 Ma</button>
+        <button data-preset="4540m">4,54 Ga</button>
+        <button data-preset="bigbang">BIG BANG</button>
+      </div>
+    </div>
+
+    <div class="destinationPanel">
+      <div class="panelTitle">COORDINATE DI ARRIVO</div>
+      <form id="placeForm">
+        <input id="placeInput" value="Milano" placeholder="Cerca un luogo in Italia…" autocomplete="off">
+        <button type="submit">CERCA</button>
+      </form>
+      <div id="placeResults" class="results hidden"></div>
+      <div class="selected">
+        <small>SELEZIONATO</small><strong id="selectedPlace">Milano</strong>
+      </div>
+      <div class="confidence">
+        <span id="confidenceDot"></span>
+        <div><small>TIPO DI VISUALIZZAZIONE</small><b id="confidenceText">Ricostruzione storica territoriale</b></div>
+      </div>
+      <button id="launch" class="launch"><span>ATTIVA VIAGGIO</span><strong>88 MPH</strong><em>PARTI NEL TEMPO</em></button>
+    </div>
+
+    <div class="fluxCore">
+      <div class="fluxY">
+        <i class="one"></i><i class="two"></i><i class="three"></i><b></b>
+      </div>
+    </div>
+  </section>
+
+  <div id="travelFx" class="travelFx">
+    <div class="warpStars"></div>
+    <div class="warpRings"></div>
+    <div class="whiteFlash"></div>
+    <div class="travelReadout"><small id="travelPhase">ACCELERAZIONE TEMPORALE</small><strong id="travelSpeed">0 MPH</strong><span id="travelTarget"></span></div>
+  </div>
+
+  <aside id="infoDrawer" class="infoDrawer">
+    <button id="closeInfo">×</button>
+    <div class="eyebrow">EARTH 4D</div>
+    <h2 id="infoTitle">Come leggere la ricostruzione</h2>
+    <p id="infoBody"></p>
+    <div class="legend">
+      <span><i class="green"></i>Dati/immagini osservate</span>
+      <span><i class="amber"></i>Ricostruzione scientifica</span>
+      <span><i class="violet"></i>Scenario/simulazione</span>
+    </div>
+    <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation-5935/" target="_blank">NASA · Blue Marble</a>
+    <a href="https://science.nasa.gov/earth/earth-observatory/earth-at-night/maps/" target="_blank">NASA · Earth at Night</a>
     <a href="https://www.openhistoricalmap.org/" target="_blank">OpenHistoricalMap</a>
-    <a href="https://www.iccd.beniculturali.it/" target="_blank">ICCD · Ministero della Cultura</a>
-    <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
   </aside>
+
+  <button id="infoBtn" class="infoBtn">ⓘ FONTI</button>
 </div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./app-v05.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="./app-v07.js"></script>
 </body>
 </html>
