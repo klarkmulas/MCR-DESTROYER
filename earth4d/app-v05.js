@@ -14,6 +14,20 @@ const CITIES=[
 {name:'Sassari',lat:40.7259,lon:8.5557,start:1100,size:9}
 ];
 
+const MILAN_1200_LANDMARKS=[
+{name:'Porta Nuova medievale',lat:45.47214,lon:9.19494,type:'gate',note:'Porta della cinta medievale ricostruita dopo il 1162.'},
+{name:'Porta Ticinese medievale',lat:45.45762,lon:9.18100,type:'gate',note:'Porta della cerchia medievale sul tracciato verso Ticinum/Pavia.'},
+{name:'Pusterla di Sant’Ambrogio',lat:45.46201,lon:9.17383,type:'gate',note:'Varco minore della cinta medievale nell’area di Sant’Ambrogio.'},
+{name:'Basilica di Sant’Ambrogio',lat:45.46250,lon:9.17583,type:'church',note:'Complesso religioso già esistente nel 1200.'},
+{name:'San Lorenzo Maggiore',lat:45.45806,lon:9.18212,type:'church',note:'Basilica paleocristiana già esistente nel 1200.'},
+{name:'Sant’Eustorgio',lat:45.45393,lon:9.18141,type:'church',note:'Basilica di origine paleocristiana, già esistente nel 1200.'},
+{name:'Santa Maria Maggiore + Santa Tecla',lat:45.46397,lon:9.19058,type:'cathedral',note:'Nell’area dell’attuale Duomo, prima della cattedrale gotica del 1386.'}
+];
+const MILAN_1200_RING=[
+[45.47214,9.19494],[45.4708,9.2022],[45.4660,9.2052],[45.4610,9.2028],[45.45762,9.18100],
+[45.46201,9.17383],[45.4685,9.1748],[45.47214,9.19494]
+];
+
 const ROUTES={
 roman:[
 [[45.4642,9.19],[44.4949,11.3426],[43.7696,11.2558],[41.9028,12.4964]],
@@ -111,6 +125,7 @@ function updateReadouts(){
  $('#hudCoords').textContent=selected.lat.toFixed(4)+' · '+selected.lon.toFixed(4);
  $('#selectedPlace').textContent=selected.name;
  $('#placeInput').value=selected.name;
+ showHistoryCard();
 }
 
 function dateFromControls(){
@@ -134,6 +149,36 @@ function syncControls(){
  });
 });
 
+function isMilanSelection(){
+ return selected.name.toLowerCase().includes('milano') || (Math.abs(selected.lat-45.4642)<.08&&Math.abs(selected.lon-9.19)<.08);
+}
+function isMilan1200(){
+ return isMilanSelection() && simulatedDate.year>=1171 && simulatedDate.year<=1250;
+}
+function showHistoryCard(){
+ const card=$('#historyCard');
+ if(isMilan1200()){
+   card.classList.add('show');
+   $('#historyTitle').textContent='Milano · '+displayYear(simulatedDate.year);
+   $('#historyText').textContent='La cinta esterna ricostruita dopo il 1162 viene mostrata in modo schematico lungo la cerchia dei Navigli. Porte e basiliche sono ancorate a posizioni note; la forma degli edifici resta ricostruttiva.';
+   $('#historyFacts').innerHTML='<span>mura: post 1162</span><span>porte in pietra: dal 1171</span><span>Duomo gotico: non ancora esistente</span><span>Santa Maria Maggiore + Santa Tecla</span>';
+ }else card.classList.remove('show');
+}
+function renderMilan1200(){
+ if(!isMilan1200())return;
+ const wall=L.polyline(MILAN_1200_RING,{color:'#ffd08a',weight:4,opacity:.95,dashArray:'10 7'}).addTo(routeLayer);
+ wall.bindTooltip('Cinta medievale · tracciato schematico',{sticky:true,className:'milan1200-label'});
+ // Fossato / cerchia d’acqua schematica
+ L.polyline(MILAN_1200_RING,{color:'#6cb7d9',weight:9,opacity:.18}).addTo(routeLayer);
+ MILAN_1200_LANDMARKS.forEach(p=>{
+   const color=p.type==='gate'?'#ffc16a':p.type==='cathedral'?'#f7df9f':'#d5e7ff';
+   const marker=L.circleMarker([p.lat,p.lon],{radius:p.type==='gate'?7:6,color,weight:2,fillColor:'#23180d',fillOpacity:.8}).addTo(routeLayer);
+   marker.bindTooltip(p.name,{permanent:true,direction:'top',className:'milan1200-label'});
+   marker.bindPopup('<b>'+p.name+'</b><br>'+p.note+'<br><small>Ricostruzione/posizione storicamente informata.</small>');
+ });
+ // emphasize urban core without claiming exact parcel geometry
+ L.circle([45.4642,9.19],{radius:1500,color:'#d7a85d',weight:1,fillColor:'#a87a3f',fillOpacity:.10}).addTo(historical);
+}
 function renderAerialEvolution(){
  const y=simulatedDate.year;
  const uf=urbanFactor(y);
@@ -177,8 +222,10 @@ function renderAerialEvolution(){
  if(highwayOpacity>0)ROUTES.highway.forEach(p=>L.polyline(p,{color:'#7ad4ff',weight:2.6,opacity:highwayOpacity*.75}).addTo(routeLayer));
 
  if(selected.name==='Milano'&&y>1050&&y<1650){
-   L.circle([45.4642,9.19],{radius:1750,color:'#ffd591',weight:3,dashArray:'7 5',fillColor:'#c89a5a',fillOpacity:.07}).addTo(routeLayer);
+   L.circle([45.4642,9.19],{radius:1750,color:'#ffd591',weight:2,dashArray:'7 5',fillColor:'#c89a5a',fillOpacity:.04}).addTo(routeLayer);
  }
+ renderMilan1200();
+ showHistoryCard();
 }
 
 $('#placeForm').addEventListener('submit',async e=>{
@@ -282,6 +329,7 @@ async function launch(){
      map.setView([selected.lat,selected.lon],13);
      fx.classList.remove('on','flash-now');flux.classList.remove('active');$('#fluxState').textContent='STABLE';setSpeed(0);
      $('#arrivalMain').textContent=selected.name.toUpperCase()+' · '+displayYear(target.year);
+ if(isMilan1200()) $('#arrivalMain').textContent='MILANO · '+displayYear(target.year)+' · CITTÀ COMUNALE';
      $('#arrivalTitle').classList.add('show');
      setTimeout(()=>$('#arrivalTitle').classList.remove('show'),2400);
      setTimeout(()=>setView('street'),650);
@@ -367,10 +415,52 @@ function roadMaterial(type){
  const t=new THREE.CanvasTexture(cv);if(THREE.SRGBColorSpace)t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,12);sceneTextures.push(t);
  return makeMat(0xffffff,t,.98);
 }
+function buildMilan1200Scene(){
+ const season=seasonTone(simulatedDate.month);
+ scene.background=new THREE.Color(0x9aa8ae);scene.fog=new THREE.FogExp2(0x9aa8ae,.011);
+ const ground=new THREE.Mesh(new THREE.PlaneGeometry(360,360),makeMat(0x665c49,null,1));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;add(ground);
+ const road=new THREE.Mesh(new THREE.PlaneGeometry(6.6,300),roadMaterial('dirt'));road.rotation.x=-Math.PI/2;road.position.y=.015;road.receiveShadow=true;add(road);
+
+ // lombard medieval street fabric — deliberately approximate
+ for(let side of [-1,1]){
+  for(let n=-17;n<=17;n++){
+   const z=n*8.5+(n%2)*.8, width=5.0+Math.random()*2.2, h=6.2+Math.random()*5.2, x=side*(4.0+width/2);
+   const palette=[0x94795d,0x805f47,0xa28767,0x6f5946],col=palette[Math.abs(n)%palette.length];
+   const tex=canvasTexture(Math.abs(n)%3===0?'brick':'stone','#'+col.toString(16).padStart(6,'0'),'rgba(90,65,45,.25)');
+   box(x,0,z,width,h,7.2,makeMat(0xffffff,tex,.95));
+   const roof=new THREE.Mesh(new THREE.ConeGeometry(width*.74,2.0,4),makeMat(0x6b3e2c,null,.98));roof.rotation.y=Math.PI/4;roof.position.set(x,h+1,z);roof.castShadow=true;add(roof);
+  }
+ }
+ // a defensive gate and wall in the distance, representing the 12th-century stone enceinte
+ const wallMat=makeMat(0x8d745b,canvasTexture('stone','#8d745b','rgba(0,0,0,.2)'),.98);
+ box(-18,0,-95,31,8,3.2,wallMat);box(18,0,-95,31,8,3.2,wallMat);
+ box(-6.6,0,-95,7.2,12,7.2,wallMat);box(6.6,0,-95,7.2,12,7.2,wallMat);
+ const gateArch=box(0,7.2,-95,6.2,4.8,3.1,wallMat);
+ // fossato/canal-like water strip outside wall (schematic)
+ const water=new THREE.Mesh(new THREE.PlaneGeometry(72,8),new THREE.MeshStandardMaterial({color:0x456d78,roughness:.18,metalness:.05,transparent:true,opacity:.75}));water.rotation.x=-Math.PI/2;water.position.set(0,.035,-106);add(water);
+
+ // basilica precinct silhouette toward city center, not exact architecture
+ const churchMat=makeMat(0xa38d70,canvasTexture('stone','#a38d70','rgba(0,0,0,.16)'),.96);
+ box(16,0,-38,11,10,22,churchMat);
+ const naveRoof=new THREE.Mesh(new THREE.ConeGeometry(8.3,4.8,4),makeMat(0x714330,null,.98));naveRoof.rotation.y=Math.PI/4;naveRoof.scale.z=1.7;naveRoof.position.set(16,12.2,-38);add(naveRoof);
+ box(23,0,-47,4.2,18,4.2,churchMat);
+
+ // market/wooden structures
+ for(let z=-55;z<30;z+=18){
+   const side=(Math.floor((z+55)/18)%2)?-1:1;
+   const x=side*3.9;
+   box(x,0,z,2.4,1.5,4.2,makeMat(0x6a472d,null,.98));
+   const awning=new THREE.Mesh(new THREE.PlaneGeometry(2.8,4.6),makeMat(side>0?0x8f5b46:0x9a8150,null,.95));awning.rotation.x=-Math.PI/2.25;awning.position.set(x-side*.8,2.2,z);add(awning);
+ }
+ for(let i=0;i<18;i++)tree((i%2?-1:1)*(9+Math.random()*18),-130+Math.random()*260,.7+Math.random()*.7,season.leaf);
+
+ camera.position.set(0,1.62,42);yaw=0;pitch=-.03;
+}
 function buildStreet(){
  if(!scene)return;
  disposeScene();
  const y=simulatedDate.year,month=simulatedDate.month,prof=streetProfile(y),season=seasonTone(month);
+ if(isMilan1200()){buildMilan1200Scene();return;}
 
  scene.background=new THREE.Color(season.sky);
  scene.fog=new THREE.FogExp2(season.sky, y<1700?.012:.007);
