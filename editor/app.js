@@ -103,6 +103,17 @@ const gameRight = new THREE.Vector3();
 const gameUp = new THREE.Vector3(0, 1, 0);
 const gameRaycaster = new THREE.Raycaster();
 
+let modelTool = null;
+let modelFirstPoint = null;
+let modelPreview = null;
+let modelPreviewType = null;
+let pushPullDragging = false;
+let pushPullRoot = null;
+let pushPullStartY = 0;
+let pushPullStartHeight = 0;
+let pushPullSnapshot = null;
+let pushPullPointerId = null;
+
 let selected = null;
 let idCounter = 1;
 let undoStack = [];
@@ -989,6 +1000,7 @@ function updatePlayButtons() {
 
 function startGame() {
   if (gameMode) return;
+  if (modelTool) cancelModelTool(true);
 
   const player = getGamePlayer();
   if (!player) return toast('Prima seleziona un personaggio e premi “Imposta come giocatore”.');
@@ -1186,6 +1198,418 @@ function updateGame(dt) {
     ((gameKeys.ShiftLeft || gameKeys.ShiftRight) ? 'Corsa' : 'Movimento') +
     (gameGrounded ? ' · a terra' : ' · in aria')
   );
+}
+
+
+function modelSnapEnabled() {
+  return document.getElementById('modelSnap')?.checked !== false;
+}
+
+function modelSnapStep() {
+  const raw = parseFloat(document.getElementById('modelSnapStep')?.value || '0.10');
+  return Number.isFinite(raw) && raw > 0 ? raw : 0.10;
+}
+
+function updateModelStatus(message, state) {
+  const el = document.getElementById('modelStatus');
+  if (!el) return;
+  el.textContent = message || 'Seleziona uno strumento di disegno.';
+  el.dataset.state = state || 'idle';
+}
+
+function showModelMeasure(text, event) {
+  const el = document.getElementById('modelMeasure');
+  if (!el) return;
+  if (!text) {
+    el.classList.add('hidden');
+    return;
+  }
+  el.textContent = text;
+  el.classList.remove('hidden');
+  if (event) {
+    const rect = viewport.getBoundingClientRect();
+    el.style.left = Math.min(rect.width - 130, Math.max(10, event.clientX - rect.left + 14)) + 'px';
+    el.style.top = Math.min(rect.height - 40, Math.max(10, event.clientY - rect.top + 14)) + 'px';
+  }
+}
+
+function snapModelPoint(point, anchor) {
+  const p = point.clone();
+  if (!modelSnapEnabled()) return p;
+
+  const step = modelSnapStep();
+  p.x = Math.round(p.x / step) * step;
+  p.z = Math.round(p.z / step) * step;
+
+  if (anchor) {
+    const threshold = step * 0.55;
+    if (Math.abs(p.x - anchor.x) < threshold) p.x = anchor.x;
+    if (Math.abs(p.z - anchor.z) < threshold) p.z = anchor.z;
+  }
+  return p;
+}
+
+function getModelPointFromEvent(event, anchor) {
+  const raw = getGroundPointFromEvent(event, null);
+  if (!raw) return null;
+  return snapModelPoint(raw, anchor);
+}
+
+function disposeModelPreview() {
+  if (!modelPreview) return;
+  scene.remove(modelPreview);
+  modelPreview.traverse?.(function (child) {
+    if (child.geometry?.dispose) child.geometry.dispose();
+    if (child.material?.dispose) child.material.dispose();
+  });
+  if (modelPreview.geometry?.dispose) modelPreview.geometry.dispose();
+  if (modelPreview.material?.dispose) modelPreview.material.dispose();
+  modelPreview = null;
+  modelPreviewType = null;
+}
+
+function makePreviewLine(points, loop) {
+  disposeModelPreview();
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color: 0x62d8ff,
+    transparent: true,
+    opacity: 0.95,
+    depthTest: false
+  });
+  modelPreview = loop ? new THREE.LineLoop(geometry, material) : new THREE.Line(geometry, material);
+  modelPreview.renderOrder = 5000;
+  scene.add(modelPreview);
+}
+
+function updateRectanglePreview(a, b) {
+  const y = Math.max(a.y, b.y) + 0.015;
+  const points = [
+    new THREE.Vector3(a.x, y, a.z),
+    new THREE.Vector3(b.x, y, a.z),
+    new THREE.Vector3(b.x, y, b.z),
+    new THREE.Vector3(a.x, y, b.z)
+  ];
+  makePreviewLine(points, true);
+  modelPreviewType = 'rectangle';
+}
+
+function updateCirclePreview(center, edge) {
+  const radius = Math.hypot(edge.x - center.x, edge.z - center.z);
+  disposeModelPreview();
+  const points = [];
+  const y = Math.max(center.y, edge.y) + 0.015;
+  for (let i = 0; i <= 64; i++) {
+    const t = (i / 64) * Math.PI * 2;
+    points.push(new THREE.Vector3(
+      center.x + Math.cos(t) * radius,
+      y,
+      center.z + Math.sin(t) * radius
+    ));
+  }
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({
+    color: 0x62d8ff,
+    transparent: true,
+    opacity: 0.95,
+    depthTest: false
+  });
+  modelPreview = new THREE.Line(geometry, material);
+  modelPreview.renderOrder = 5000;
+  scene.add(modelPreview);
+  modelPreviewType = 'circle';
+}
+
+function updateLinePreview(a, b) {
+  const y = Math.max(a.y, b.y) + 0.015;
+  makePreviewLine([
+    new THREE.Vector3(a.x, y, a.z),
+    new THREE.Vector3(b.x, y, b.z)
+  ], false);
+  modelPreviewType = 'line';
+}
+
+function createModelLine(a, b) {
+  const y = Math.max(a.y, b.y) + 0.012;
+  const geometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(a.x, y, a.z),
+    new THREE.Vector3(b.x, y, b.z)
+  ]);
+  const material = new THREE.LineBasicMaterial({ color: 0xe6edf7 });
+  const line = new THREE.Line(geometry, material);
+  line.userData.modelingType = 'line';
+  line.userData.gameCollider = false;
+  addObject(line, 'Linea');
+}
+
+function createModelRectangle(a, b) {
+  const width = Math.abs(b.x - a.x);
+  const depth = Math.abs(b.z - a.z);
+  if (width < 0.001 || depth < 0.001) return toast('Rettangolo troppo piccolo.');
+
+  const baseY = Math.max(a.y, b.y);
+  const height = 0.02;
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(width, height, depth),
+    defaultMaterial(0xcbd4df)
+  );
+  mesh.position.set((a.x + b.x) / 2, baseY + height / 2, (a.z + b.z) / 2);
+  mesh.userData.modelingType = 'rectangle';
+  mesh.userData.modelingData = { width: width, depth: depth, height: height, baseY: baseY };
+  mesh.userData.gameCollider = true;
+  addObject(mesh, 'Rettangolo');
+}
+
+function createModelCircle(center, edge) {
+  const radius = Math.hypot(edge.x - center.x, edge.z - center.z);
+  if (radius < 0.001) return toast('Cerchio troppo piccolo.');
+
+  const baseY = Math.max(center.y, edge.y);
+  const height = 0.02;
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(radius, radius, height, 64),
+    defaultMaterial(0xcbd4df)
+  );
+  mesh.position.set(center.x, baseY + height / 2, center.z);
+  mesh.userData.modelingType = 'circle';
+  mesh.userData.modelingData = { radius: radius, height: height, baseY: baseY };
+  mesh.userData.gameCollider = true;
+  addObject(mesh, 'Cerchio');
+}
+
+function setModelTool(tool) {
+  if (gameMode) return;
+
+  if (rigEditMode) stopRigEdit(true);
+  disposeModelPreview();
+  modelFirstPoint = null;
+  showModelMeasure(null);
+
+  if (modelTool === tool) {
+    modelTool = null;
+    document.querySelectorAll('[data-model-tool]').forEach(function (button) {
+      button.classList.remove('active');
+    });
+    if (selected && currentMode !== 'ground') transform.attach(selected);
+    updateModelStatus('Strumento disattivato.');
+    setStatus('Editor');
+    return;
+  }
+
+  modelTool = tool;
+  transform.detach();
+  selectionBox.visible = tool === 'pushpull' && !!selected;
+
+  document.querySelectorAll('[data-model-tool]').forEach(function (button) {
+    button.classList.toggle('active', button.dataset.modelTool === tool);
+  });
+
+  const labels = {
+    line: 'Linea · clicca il primo punto',
+    rectangle: 'Rettangolo · clicca il primo angolo',
+    circle: 'Cerchio · clicca il centro',
+    pushpull: 'Push/Pull · trascina una faccia creata con Rettangolo o Cerchio'
+  };
+  updateModelStatus(labels[tool] || 'Modellazione attiva', 'active');
+  setStatus(labels[tool] || 'Modellazione');
+}
+
+function cancelModelTool(restoreTransform) {
+  disposeModelPreview();
+  modelFirstPoint = null;
+  showModelMeasure(null);
+  modelTool = null;
+  pushPullDragging = false;
+  pushPullRoot = null;
+  orbit.enabled = true;
+
+  document.querySelectorAll('[data-model-tool]').forEach(function (button) {
+    button.classList.remove('active');
+  });
+
+  if (restoreTransform !== false && selected && currentMode !== 'ground') {
+    transform.attach(selected);
+    selectionBox.setFromObject(selected);
+    selectionBox.visible = true;
+  }
+  updateModelStatus('Seleziona uno strumento di disegno.');
+}
+
+function modelingRootFromEvent(event) {
+  setPointerFromEvent(event);
+  const meshes = [];
+  editorRoot.children.forEach(function (root) {
+    if (!root.userData?.modelingType) return;
+    root.traverse(function (child) {
+      if (child.isMesh) meshes.push(child);
+    });
+  });
+  const hits = raycaster.intersectObjects(meshes, false);
+  if (!hits.length) return null;
+  return rootEditorObject(hits[0].object);
+}
+
+function rebuildPushPullGeometry(root, height) {
+  const data = root?.userData?.modelingData;
+  if (!data) return;
+
+  height = Math.max(0.02, height);
+  const old = root.geometry;
+
+  if (root.userData.modelingType === 'rectangle') {
+    root.geometry = new THREE.BoxGeometry(data.width, height, data.depth);
+  } else if (root.userData.modelingType === 'circle') {
+    root.geometry = new THREE.CylinderGeometry(data.radius, data.radius, height, 64);
+  } else {
+    return;
+  }
+
+  if (old?.dispose) old.dispose();
+  data.height = height;
+  root.position.y = data.baseY + height / 2;
+  root.updateMatrixWorld(true);
+  selectionBox.setFromObject(root);
+  refreshInspector();
+}
+
+function beginPushPull(event) {
+  if (modelTool !== 'pushpull' || event.button !== 0 || gameMode) return;
+
+  const root = modelingRootFromEvent(event);
+  if (!root || !['rectangle', 'circle'].includes(root.userData.modelingType)) {
+    toast('Push/Pull funziona sulle facce create con Rettangolo o Cerchio.');
+    return;
+  }
+
+  selectObject(root);
+  transform.detach();
+  selectionBox.visible = true;
+
+  pushPullRoot = root;
+  pushPullStartY = event.clientY;
+  pushPullStartHeight = root.userData.modelingData?.height || 0.02;
+  pushPullSnapshot = snapshot();
+  pushPullDragging = true;
+  pushPullPointerId = event.pointerId;
+  orbit.enabled = false;
+
+  if (renderer.domElement.setPointerCapture) {
+    try { renderer.domElement.setPointerCapture(event.pointerId); } catch (error) {}
+  }
+
+  updateModelStatus('Push/Pull attivo · trascina su/giù', 'drag');
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function movePushPull(event) {
+  if (!pushPullDragging || !pushPullRoot) return;
+  const delta = (pushPullStartY - event.clientY) * 0.02;
+  const height = Math.max(0.02, pushPullStartHeight + delta);
+  rebuildPushPullGeometry(pushPullRoot, height);
+  showModelMeasure('Altezza ' + height.toFixed(2) + ' m', event);
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function endPushPull(event) {
+  if (!pushPullDragging) return;
+  if (pushPullPointerId !== null && event.pointerId !== undefined && event.pointerId !== pushPullPointerId) return;
+
+  pushPullDragging = false;
+  orbit.enabled = true;
+
+  if (pushPullSnapshot) {
+    undoStack.push(pushPullSnapshot);
+    if (undoStack.length > 50) undoStack.shift();
+    redoStack = [];
+    pushPullSnapshot = null;
+  }
+
+  if (renderer.domElement.releasePointerCapture && pushPullPointerId !== null) {
+    try { renderer.domElement.releasePointerCapture(pushPullPointerId); } catch (error) {}
+  }
+
+  pushPullPointerId = null;
+  showModelMeasure(null);
+  updateModelStatus('Push/Pull pronto · seleziona un’altra faccia', 'active');
+  setStatus('Push/Pull completato');
+}
+
+function onModelPointerDown(event) {
+  if (!modelTool || gameMode) return;
+
+  if (modelTool === 'pushpull') {
+    beginPushPull(event);
+    return;
+  }
+
+  if (event.button !== 0) return;
+  const point = getModelPointFromEvent(event, modelFirstPoint);
+  if (!point) return;
+
+  if (!modelFirstPoint) {
+    modelFirstPoint = point;
+    updateModelStatus(
+      modelTool === 'line' ? 'Linea · scegli il secondo punto' :
+      modelTool === 'rectangle' ? 'Rettangolo · scegli l’angolo opposto' :
+      'Cerchio · scegli il raggio',
+      'draw'
+    );
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
+  const a = modelFirstPoint.clone();
+  const b = point.clone();
+
+  if (modelTool === 'line') createModelLine(a, b);
+  if (modelTool === 'rectangle') createModelRectangle(a, b);
+  if (modelTool === 'circle') createModelCircle(a, b);
+
+  disposeModelPreview();
+  modelFirstPoint = null;
+  showModelMeasure(null);
+  updateModelStatus(
+    modelTool === 'line' ? 'Linea pronta · clicca un nuovo primo punto' :
+    modelTool === 'rectangle' ? 'Rettangolo pronto · disegnane un altro' :
+    'Cerchio pronto · disegnane un altro',
+    'active'
+  );
+
+  event.preventDefault();
+  event.stopPropagation();
+}
+
+function onModelPointerMove(event) {
+  if (pushPullDragging) {
+    movePushPull(event);
+    return;
+  }
+
+  if (!modelTool || !modelFirstPoint || modelTool === 'pushpull' || gameMode) return;
+  const point = getModelPointFromEvent(event, modelFirstPoint);
+  if (!point) return;
+
+  if (modelTool === 'line') {
+    updateLinePreview(modelFirstPoint, point);
+    const length = Math.hypot(point.x - modelFirstPoint.x, point.z - modelFirstPoint.z);
+    showModelMeasure(length.toFixed(2) + ' m', event);
+  }
+
+  if (modelTool === 'rectangle') {
+    updateRectanglePreview(modelFirstPoint, point);
+    const width = Math.abs(point.x - modelFirstPoint.x);
+    const depth = Math.abs(point.z - modelFirstPoint.z);
+    showModelMeasure(width.toFixed(2) + ' × ' + depth.toFixed(2) + ' m', event);
+  }
+
+  if (modelTool === 'circle') {
+    updateCirclePreview(modelFirstPoint, point);
+    const radius = Math.hypot(point.x - modelFirstPoint.x, point.z - modelFirstPoint.z);
+    showModelMeasure('R ' + radius.toFixed(2) + ' m', event);
+  }
 }
 
 function addObject(object, name, skipCheckpoint) {
@@ -1526,6 +1950,7 @@ function deleteSelected() {
 }
 
 function setMode(mode) {
+  if (modelTool) cancelModelTool(false);
   if (mode === 'ground' && rigEditMode) stopRigEdit(true);
 
   currentMode = mode;
@@ -1891,6 +2316,11 @@ function endGroundDrag(event) {
   setStatus('Oggetto appoggiato al pavimento');
 }
 
+renderer.domElement.addEventListener('pointerdown', onModelPointerDown, true);
+renderer.domElement.addEventListener('pointermove', onModelPointerMove, true);
+renderer.domElement.addEventListener('pointerup', endPushPull, true);
+renderer.domElement.addEventListener('pointercancel', endPushPull, true);
+
 renderer.domElement.addEventListener('pointerdown', onRigPointerDown, true);
 renderer.domElement.addEventListener('pointerdown', beginGroundDrag, true);
 renderer.domElement.addEventListener('pointermove', moveGroundDrag, true);
@@ -1898,7 +2328,7 @@ renderer.domElement.addEventListener('pointerup', endGroundDrag, true);
 renderer.domElement.addEventListener('pointercancel', endGroundDrag, true);
 
 function onViewportPointerDown(event) {
-  if (gameMode || rigEditMode || currentMode === 'ground' || transform.dragging) return;
+  if (modelTool || gameMode || rigEditMode || currentMode === 'ground' || transform.dragging) return;
   setPointerFromEvent(event);
 
   const meshes = [];
@@ -2030,6 +2460,13 @@ document.querySelectorAll('[data-mode]').forEach(function (button) {
   button.addEventListener('click', function () {
     if (gameMode) return;
     setMode(button.dataset.mode);
+  });
+});
+
+document.querySelectorAll('[data-model-tool]').forEach(function (button) {
+  button.addEventListener('click', function () {
+    if (gameMode) return;
+    setModelTool(button.dataset.modelTool);
   });
 });
 
@@ -2188,6 +2625,27 @@ document.addEventListener('keydown', function (event) {
     saveProject();
     return;
   }
+  if (key === 'l') {
+    event.preventDefault();
+    setModelTool('line');
+    return;
+  }
+  if (key === 'b') {
+    event.preventDefault();
+    setModelTool('rectangle');
+    return;
+  }
+  if (key === 'c') {
+    event.preventDefault();
+    setModelTool('circle');
+    return;
+  }
+  if (key === 'p') {
+    event.preventDefault();
+    setModelTool('pushpull');
+    return;
+  }
+
   if (key === 'w') setMode('translate');
   if (key === 'g') setMode('ground');
   if (key === 'e') setMode('rotate');
@@ -2198,7 +2656,8 @@ document.addEventListener('keydown', function (event) {
   }
   if (key === 'f') focusSelected();
   if (event.key === 'Escape') {
-    if (rigEditMode) stopRigEdit(true);
+    if (modelTool) cancelModelTool(true);
+    else if (rigEditMode) stopRigEdit(true);
     else selectObject(null);
     closeAiModal();
   }
@@ -2237,4 +2696,5 @@ setMode('translate');
 updateRigStatus();
 updateGameStatus();
 updatePlayButtons();
+updateModelStatus('Seleziona uno strumento di disegno.');
 setStatus('Pronto · aggiungi un oggetto o importa un GLB');
