@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b0f14">
   <title>Forge3D Studio</title>
-  <link rel="stylesheet" href="./styles.css?v=0.4.0">
-  <link rel="stylesheet" href="./ai-bridge.css?v=0.4.0">
+  <link rel="stylesheet" href="./styles.css?v=0.5.0">
+  <link rel="stylesheet" href="./ai-bridge.css?v=0.5.0">
   <script type="importmap">
   {
     "imports": {
@@ -23,7 +23,7 @@
         <div class="brand-mark">F3</div>
         <div>
           <strong>FORGE3D</strong>
-          <span>STUDIO · v0.4.0 GAME MODE</span>
+          <span>STUDIO · v0.5.0 MODELING</span>
         </div>
       </div>
 
@@ -53,6 +53,21 @@
           <button class="tool" data-add="plane"><span>▱</span>Piano</button>
           <button class="tool" data-add="torus"><span>◉</span>Toride</button>
         </div>
+      </section>
+
+      <section class="modeling-section">
+        <div class="section-title">MODELLAZIONE</div>
+        <div class="modeling-grid">
+          <button class="model-tool" data-model-tool="line" title="Linea · L"><span>╱</span>Linea</button>
+          <button class="model-tool" data-model-tool="rectangle" title="Rettangolo · B"><span>▭</span>Rettangolo</button>
+          <button class="model-tool" data-model-tool="circle" title="Cerchio · C"><span>○</span>Cerchio</button>
+          <button class="model-tool pushpull-tool" data-model-tool="pushpull" title="Push/Pull · P"><span>↥</span>Push/Pull</button>
+        </div>
+        <div class="modeling-options">
+          <label class="model-check"><input id="modelSnap" type="checkbox" checked> Snap griglia</label>
+          <label class="model-step">Passo <input id="modelSnapStep" type="number" min="0.01" max="10" step="0.01" value="0.10"> m</label>
+        </div>
+        <div id="modelStatus" class="model-status">Seleziona uno strumento di disegno.</div>
       </section>
 
       <section>
@@ -122,6 +137,8 @@
     <main class="viewport-wrap">
       <div id="viewport"></div>
 
+      <div id="modelMeasure" class="model-measure hidden">0.00 m</div>
+
       <div class="viewport-toolbar">
         <button class="mode active" data-mode="translate" title="Sposta liberamente · W">↔ <span>Sposta</span></button>
         <button class="mode ground-mode" data-mode="ground" title="Trascina sul pavimento · G">▱ <span>Pavimento</span></button>
@@ -149,7 +166,7 @@
         <button data-action="game-stop">■ TORNA ALL'EDITOR</button>
       </div>
 
-      <div class="shortcut-hint">W Sposta · G Pavimento · E Ruota · R Scala · Canc Elimina · Ctrl+D Duplica · Ctrl+Z Annulla</div>
+      <div class="shortcut-hint">W Sposta · G Pavimento · E Ruota · R Scala · L Linea · B Rettangolo · C Cerchio · P Push/Pull</div>
     </main>
 
     <aside class="rightbar panel">
@@ -309,7 +326,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="./ai-bridge.js?v=0.4.0"></script>
-  <script type="module" src="./app.js?v=0.4.0"></script>
+  <script src="./ai-bridge.js?v=0.5.0"></script>
+  <script type="module" src="./app.js?v=0.5.0"></script>
 </body>
 </html>
