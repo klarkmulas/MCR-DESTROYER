@@ -4,5 +4,38 @@
 <div id="viewSwitch" class="glass"><button id="mapMode" class="on">ITALIA</button><button id="cityMode">CITTÀ</button></div><button id="streetBtn">TIME STREET VIEW ↗</button>
 <section id="timeline" class="glass"><div class="tlTop"><button id="play" class="iconBtn">▶</button><div class="tlRead"><small>VIAGGIO NEL TEMPO</small><strong id="eraRead"></strong></div><div class="speed"><button class="on" data-s="1">×1</button><button data-s="3">×3</button><button data-s="8">×8</button></div><button id="prev" class="iconBtn">‹</button><button id="next" class="iconBtn">›</button></div><input id="slider" type="range" min="0" max="1000" step="1"><div id="milestones" class="milestones"></div></section>
 <aside id="drawer" class="glass"><button id="close" class="drawerClose">×</button><div class="eyebrow">TRASPARENZA DELLA RICOSTRUZIONE</div><h2>Cosa stai guardando</h2><p class="drawerText">Questa v0.3 rende il passaggio del tempo realmente visibile con layer e trasformazioni continue. Le geometrie storiche sono ancora prototipi visuali e non vanno considerate cartografia storica validata. La Street View è una scena 3D procedurale, non una fotografia del passato.</p><a class="drawerLink" target="_blank" href="https://www.openhistoricalmap.org/">OpenHistoricalMap</a><a class="drawerLink" target="_blank" href="https://www.openstreetmap.org/">OpenStreetMap</a><a class="drawerLink" target="_blank" href="https://www.iccd.beniculturali.it/">ICCD · Ministero della Cultura</a></aside>
+<button id="timeCarBtn" class="timeCarBtn">🚘 MACCHINA DEL TEMPO</button>
+<div id="timeCar" class="timeCar">
+  <div class="timeCarBackdrop"></div>
+  <section class="cockpit glass">
+    <div class="cockpitTop">
+      <div>
+        <div class="eyebrow">DESTINAZIONE TEMPORALE</div>
+        <h2>TIME DRIVE</h2>
+      </div>
+      <button id="closeTimeCar" class="drawerClose">×</button>
+    </div>
+    <div class="destinationGrid">
+      <label><span>LUOGO</span><input id="carPlace" readonly value="Milano"></label>
+      <label><span>GIORNO</span><input id="carDay" type="number" min="1" max="31" value="1"></label>
+      <label><span>MESE</span><input id="carMonth" type="number" min="1" max="12" value="1"></label>
+      <label><span>ANNO</span><input id="carYear" type="number" min="1" max="10000" value="1200"></label>
+      <label><span>ERA</span><select id="carEra"><option value="AD">d.C.</option><option value="BC">a.C.</option></select></label>
+    </div>
+    <div class="fluxPanel">
+      <div class="destinationDisplay"><small>DESTINATION TIME</small><strong id="destDisplay">01 · 01 · 1200 d.C.</strong></div>
+      <div class="speedometer"><small>VELOCITÀ</small><strong><span id="speedValue">0</span> mph</strong><div class="speedBar"><i id="speedFill"></i></div></div>
+    </div>
+    <div class="cockpitActions">
+      <button id="syncPlace" class="secondaryCar">USA IL LUOGO SELEZIONATO</button>
+      <button id="launchTime" class="launchCar">PARTI NEL TEMPO</button>
+    </div>
+    <p class="carNote">La data controlla la simulazione storica. Dove mancano dati reali, l'app mostra una ricostruzione dichiarata come tale.</p>
+  </section>
+</div>
+<div id="travelFx" class="travelFx">
+  <div class="travelTunnel"></div>
+  <div class="travelHud"><small>VIAGGIO TEMPORALE</small><strong id="travelText">ACCELERAZIONE</strong></div>
+</div>
 <div id="street"><div id="threeHost"></div><div class="streetHud"><div class="streetCard glass"><b id="streetTitle">Time Street View</b><small id="streetSub"></small></div><button id="closeStreet" class="backBtn">← TORNA ALLA MAPPA</button></div><div class="streetHint glass">Trascina per guardarti intorno · WASD / frecce per camminare</div><div class="mobilePad"><button class="up" data-k="w">▲</button><button class="left" data-k="a">◀</button><button class="down" data-k="s">▼</button><button class="right" data-k="d">▶</button></div></div>
 </div><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="./app-v03.js"></script></body></html>
