@@ -1201,6 +1201,292 @@ function updateGame(dt) {
 }
 
 
+
+function numberInput(id, fallback, min) {
+  const value = parseFloat(document.getElementById(id)?.value);
+  const safe = Number.isFinite(value) ? value : fallback;
+  return min == null ? safe : Math.max(min, safe);
+}
+
+function cloneEditorObject(source) {
+  const clone = source.clone(true);
+  clone.traverse(function (child) {
+    if (!child.isMesh) return;
+    if (child.geometry) child.geometry = child.geometry.clone();
+    if (child.material) {
+      child.material = Array.isArray(child.material)
+        ? child.material.map(function (material) { return material.clone(); })
+        : child.material.clone();
+    }
+  });
+  clone.userData = JSON.parse(JSON.stringify(source.userData || {}));
+  clone.userData.editorId = 'obj-' + idCounter++;
+  prepareObject(clone);
+  return clone;
+}
+
+function createQuickRoom() {
+  if (gameMode) return;
+  if (modelTool) cancelModelTool(true);
+
+  const width = numberInput('roomWidth', 5, 0.5);
+  const depth = numberInput('roomDepth', 4, 0.5);
+  const height = numberInput('roomHeight', 2.8, 0.5);
+  const thickness = Math.min(numberInput('wallThickness', 0.15, 0.02), Math.min(width, depth) * 0.45);
+  const floorThickness = 0.10;
+  const roomId = 'room-' + Date.now();
+
+  checkpoint();
+
+  function roomMesh(geometry, name, x, y, z, color) {
+    const mesh = new THREE.Mesh(geometry, defaultMaterial(color));
+    mesh.position.set(x, y, z);
+    mesh.userData.roomId = roomId;
+    mesh.userData.gameCollider = true;
+    mesh.userData.easyBuild = true;
+    return addObject(mesh, name, true);
+  }
+
+  const floor = roomMesh(
+    new THREE.BoxGeometry(width, floorThickness, depth),
+    'Pavimento stanza',
+    0, floorThickness / 2, 0,
+    0x756857
+  );
+  floor.userData.isFloor = true;
+
+  roomMesh(
+    new THREE.BoxGeometry(width, height, thickness),
+    'Muro Nord',
+    0, height / 2, -(depth / 2 - thickness / 2),
+    0xd8dde5
+  );
+  roomMesh(
+    new THREE.BoxGeometry(width, height, thickness),
+    'Muro Sud',
+    0, height / 2, depth / 2 - thickness / 2,
+    0xd8dde5
+  );
+  roomMesh(
+    new THREE.BoxGeometry(thickness, height, Math.max(0.02, depth - thickness * 2)),
+    'Muro Ovest',
+    -(width / 2 - thickness / 2), height / 2, 0,
+    0xd8dde5
+  );
+  roomMesh(
+    new THREE.BoxGeometry(thickness, height, Math.max(0.02, depth - thickness * 2)),
+    'Muro Est',
+    width / 2 - thickness / 2, height / 2, 0,
+    0xd8dde5
+  );
+
+  selectObject(floor);
+  renderTree();
+  updateCounts();
+  camera.position.set(width * 0.9, Math.max(height * 1.4, 4), depth * 1.15);
+  orbit.target.set(0, height * 0.45, 0);
+  orbit.update();
+  toast('Stanza creata · ' + width.toFixed(1) + ' × ' + depth.toFixed(1) + ' m');
+  setStatus('Easy Build · stanza completa creata');
+}
+
+function createQuickGround() {
+  if (gameMode) return;
+  checkpoint();
+  const size = 20;
+  const thickness = 0.12;
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(size, thickness, size),
+    defaultMaterial(0x68745f)
+  );
+  mesh.position.y = thickness / 2;
+  mesh.userData.isFloor = true;
+  mesh.userData.easyBuild = true;
+  mesh.userData.gameCollider = true;
+  addObject(mesh, 'Terreno 20x20', true);
+  toast('Terreno 20 × 20 m creato');
+}
+
+function createQuickStairs() {
+  if (gameMode) return;
+  checkpoint();
+
+  const steps = 10;
+  const width = 1.20;
+  const totalHeight = 2.80;
+  const run = 3.00;
+  const rise = totalHeight / steps;
+  const tread = run / steps;
+  const group = new THREE.Group();
+  group.name = uniqueName('Scala');
+  group.userData.easyBuild = true;
+  group.userData.gameCollider = true;
+
+  for (let i = 0; i < steps; i++) {
+    const stepHeight = rise * (i + 1);
+    const step = new THREE.Mesh(
+      new THREE.BoxGeometry(width, stepHeight, tread),
+      defaultMaterial(0xa9a39a)
+    );
+    step.position.set(
+      0,
+      stepHeight / 2,
+      -run / 2 + tread / 2 + i * tread
+    );
+    prepareMesh(step);
+    group.add(step);
+  }
+
+  prepareObject(group);
+  editorRoot.add(group);
+  selectObject(group);
+  renderTree();
+  updateCounts();
+  toast('Scala creata · 10 gradini · H 2,80 m');
+}
+
+function findSupportingFloorTop(object) {
+  if (!object) return 0;
+  const objectBox = getGameplayBounds(object);
+  if (objectBox.isEmpty()) return 0;
+  const center = objectBox.getCenter(new THREE.Vector3());
+
+  let best = 0;
+  editorRoot.children.forEach(function (root) {
+    if (root === object || !isFloorObject(root)) return;
+    const box = getGameplayBounds(root);
+    if (box.isEmpty()) return;
+    if (
+      center.x >= box.min.x && center.x <= box.max.x &&
+      center.z >= box.min.z && center.z <= box.max.z &&
+      box.max.y <= objectBox.min.y + 1.0
+    ) {
+      best = Math.max(best, box.max.y);
+    }
+  });
+  return best;
+}
+
+function dropSelectedToFloor() {
+  if (!selected || gameMode) return toast('Seleziona prima un oggetto.');
+  checkpoint();
+  selected.updateMatrixWorld(true);
+  const box = getGameplayBounds(selected);
+  if (box.isEmpty()) return;
+  const floorY = findSupportingFloorTop(selected);
+  selected.position.y += floorY - box.min.y;
+  selected.updateMatrixWorld(true);
+  selectionBox.setFromObject(selected);
+  refreshInspector();
+  toast('Oggetto appoggiato a terra');
+}
+
+function centerSelectedOrigin() {
+  if (!selected || gameMode) return toast('Seleziona prima un oggetto.');
+  checkpoint();
+  selected.position.x = 0;
+  selected.position.z = 0;
+  selected.updateMatrixWorld(true);
+  selectionBox.setFromObject(selected);
+  refreshInspector();
+  toast('Oggetto centrato su X/Z');
+}
+
+function resetSelectedRotation() {
+  if (!selected || gameMode) return toast('Seleziona prima un oggetto.');
+  checkpoint();
+  selected.rotation.set(0, 0, 0);
+  selected.updateMatrixWorld(true);
+  selectionBox.setFromObject(selected);
+  refreshInspector();
+  toast('Rotazione azzerata');
+}
+
+function createObjectArray(axis) {
+  if (!selected || gameMode) return toast('Seleziona prima un oggetto.');
+  if (rigEditMode) return toast('Esci da Modifica ossa prima di duplicare.');
+
+  const count = Math.round(numberInput('arrayCount', 5, 2));
+  const spacing = numberInput('arraySpacing', 1, 0.05);
+  const source = selected;
+
+  checkpoint();
+
+  let last = source;
+  for (let i = 1; i < count; i++) {
+    const clone = cloneEditorObject(source);
+    clone.name = uniqueName((source.name || 'Oggetto') + ' ' + (i + 1));
+    clone.position.copy(source.position);
+    clone.position[axis] += spacing * i;
+    editorRoot.add(clone);
+    last = clone;
+  }
+
+  selectObject(last);
+  renderTree();
+  updateCounts();
+  toast('Creati ' + count + ' elementi in serie su ' + axis.toUpperCase());
+}
+
+function createQuickWall(a, b) {
+  const dx = b.x - a.x;
+  const dz = b.z - a.z;
+  const length = Math.hypot(dx, dz);
+  if (length < 0.02) return toast('Muro troppo corto.');
+
+  const height = numberInput('quickWallHeight', 2.8, 0.2);
+  const thickness = numberInput('quickWallThickness', 0.15, 0.02);
+  const baseY = Math.max(a.y, b.y);
+
+  const wall = new THREE.Mesh(
+    new THREE.BoxGeometry(length, height, thickness),
+    defaultMaterial(0xd8dde5)
+  );
+  wall.position.set((a.x + b.x) / 2, baseY + height / 2, (a.z + b.z) / 2);
+  wall.rotation.y = -Math.atan2(dz, dx);
+  wall.userData.easyBuild = true;
+  wall.userData.gameCollider = true;
+  wall.userData.modelingType = 'wall';
+  wall.userData.modelingData = {
+    length: length,
+    height: height,
+    thickness: thickness,
+    baseY: baseY
+  };
+  addObject(wall, 'Muro');
+}
+
+function getSelectedWorldSize() {
+  if (!selected) return null;
+  const box = getGameplayBounds(selected);
+  if (box.isEmpty()) return null;
+  return box.getSize(new THREE.Vector3());
+}
+
+function bindSizeField(id, axis) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.addEventListener('change', function () {
+    if (!selected || gameMode) return;
+    const target = parseFloat(el.value);
+    if (!Number.isFinite(target) || target <= 0) return refreshInspector();
+
+    selected.updateMatrixWorld(true);
+    const size = getSelectedWorldSize();
+    if (!size) return;
+
+    const current = size[axis];
+    if (current <= 1e-8) return;
+
+    checkpoint();
+    selected.scale[axis] *= target / current;
+    selected.updateMatrixWorld(true);
+    selectionBox.setFromObject(selected);
+    refreshInspector();
+  });
+}
+
 function modelSnapEnabled() {
   return document.getElementById('modelSnap')?.checked !== false;
 }
@@ -1408,7 +1694,9 @@ function setModelTool(tool) {
     line: 'Linea · clicca il primo punto',
     rectangle: 'Rettangolo · clicca il primo angolo',
     circle: 'Cerchio · clicca il centro',
-    pushpull: 'Push/Pull · trascina una faccia creata con Rettangolo o Cerchio'
+    pushpull: 'Push/Pull · trascina una faccia creata con Rettangolo o Cerchio',
+    'wall-draw': 'Muro rapido · clicca inizio e fine del muro',
+    measure: 'Misura · clicca due punti'
   };
   updateModelStatus(labels[tool] || 'Modellazione attiva', 'active');
   setStatus(labels[tool] || 'Modellazione');
@@ -1553,7 +1841,9 @@ function onModelPointerDown(event) {
     updateModelStatus(
       modelTool === 'line' ? 'Linea · scegli il secondo punto' :
       modelTool === 'rectangle' ? 'Rettangolo · scegli l’angolo opposto' :
-      'Cerchio · scegli il raggio',
+      modelTool === 'circle' ? 'Cerchio · scegli il raggio' :
+      modelTool === 'wall-draw' ? 'Muro · scegli il punto finale' :
+      'Misura · scegli il secondo punto',
       'draw'
     );
     event.preventDefault();
@@ -1567,16 +1857,27 @@ function onModelPointerDown(event) {
   if (modelTool === 'line') createModelLine(a, b);
   if (modelTool === 'rectangle') createModelRectangle(a, b);
   if (modelTool === 'circle') createModelCircle(a, b);
+  if (modelTool === 'wall-draw') createQuickWall(a, b);
+
+  if (modelTool === 'measure') {
+    const distance = Math.hypot(b.x - a.x, b.z - a.z);
+    updateModelStatus('Misura: ' + distance.toFixed(3) + ' m · clicca per una nuova misura', 'active');
+    toast('Distanza: ' + distance.toFixed(3) + ' m');
+  }
 
   disposeModelPreview();
   modelFirstPoint = null;
   showModelMeasure(null);
-  updateModelStatus(
-    modelTool === 'line' ? 'Linea pronta · clicca un nuovo primo punto' :
-    modelTool === 'rectangle' ? 'Rettangolo pronto · disegnane un altro' :
-    'Cerchio pronto · disegnane un altro',
-    'active'
-  );
+
+  if (modelTool !== 'measure') {
+    updateModelStatus(
+      modelTool === 'line' ? 'Linea pronta · clicca un nuovo primo punto' :
+      modelTool === 'rectangle' ? 'Rettangolo pronto · disegnane un altro' :
+      modelTool === 'circle' ? 'Cerchio pronto · disegnane un altro' :
+      'Muro pronto · clicca il prossimo punto iniziale',
+      'active'
+    );
+  }
 
   event.preventDefault();
   event.stopPropagation();
@@ -1609,6 +1910,12 @@ function onModelPointerMove(event) {
     updateCirclePreview(modelFirstPoint, point);
     const radius = Math.hypot(point.x - modelFirstPoint.x, point.z - modelFirstPoint.z);
     showModelMeasure('R ' + radius.toFixed(2) + ' m', event);
+  }
+
+  if (modelTool === 'wall-draw' || modelTool === 'measure') {
+    updateLinePreview(modelFirstPoint, point);
+    const distance = Math.hypot(point.x - modelFirstPoint.x, point.z - modelFirstPoint.z);
+    showModelMeasure(distance.toFixed(2) + ' m', event);
   }
 }
 
@@ -1835,6 +2142,13 @@ function refreshInspector() {
   setNum('scaleX', selected.scale.x);
   setNum('scaleY', selected.scale.y);
   setNum('scaleZ', selected.scale.z);
+
+  const worldSize = getSelectedWorldSize();
+  if (worldSize) {
+    setNum('sizeX', worldSize.x);
+    setNum('sizeY', worldSize.y);
+    setNum('sizeZ', worldSize.z);
+  }
 
   const material = firstMaterial(selected);
   materialPanel.classList.toggle('hidden', !material);
@@ -2402,6 +2716,9 @@ bindTransformField('rotZ', 'rotation', 'z', true);
 bindTransformField('scaleX', 'scale', 'x', false);
 bindTransformField('scaleY', 'scale', 'y', false);
 bindTransformField('scaleZ', 'scale', 'z', false);
+bindSizeField('sizeX', 'x');
+bindSizeField('sizeY', 'y');
+bindSizeField('sizeZ', 'z');
 
 document.getElementById('propName').addEventListener('change', function (event) {
   if (!selected) return;
@@ -2512,6 +2829,14 @@ function handleAction(action) {
   if (action === 'camera-home') cameraHome();
   if (action === 'camera-top') cameraTop();
   if (action === 'toggle-grid') grid.visible = !grid.visible;
+  if (action === 'quick-room') createQuickRoom();
+  if (action === 'quick-ground') createQuickGround();
+  if (action === 'quick-stairs') createQuickStairs();
+  if (action === 'drop-floor') dropSelectedToFloor();
+  if (action === 'center-origin') centerSelectedOrigin();
+  if (action === 'reset-rotation') resetSelectedRotation();
+  if (action === 'array-x') createObjectArray('x');
+  if (action === 'array-z') createObjectArray('z');
   if (action === 'game-set-player') setSelectedAsPlayer();
   if (action === 'game-toggle-collider') toggleSelectedCollider();
   if (action === 'rig-add') createHumanoidRig(selected);
