@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.09.29.4';
+ const PWA_VERSION='2026.10.01.1';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -214,7 +214,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
 .homeCard{padding:clamp(22px,3vw,40px);border:1px solid #6ab8ff33;border-radius:24px;background:linear-gradient(180deg,#0c1827ed,#050a11f2);box-shadow:0 30px 90px #000a;backdrop-filter:blur(12px)}
 .homeEyebrow{font-size:11px;letter-spacing:.22em;color:#71c2ff;font-weight:900}.homeCard h1{font-size:clamp(44px,7vw,84px);line-height:.88;letter-spacing:-.055em;margin:10px 0 14px}.homeCard h1 span{display:block;color:#55bdff;text-shadow:0 0 34px #2da9ff55}.homeLead{font-size:clamp(14px,1.6vw,18px);line-height:1.5;color:#bed0df;max-width:680px}
 .homeFeatures{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:20px 0}.homeFeature{padding:11px;border-radius:12px;border:1px solid #ffffff10;background:#ffffff06}.homeFeature b{display:block;font-size:12px;color:#fff;margin-bottom:3px}.homeFeature span{font-size:10px;color:#8fa8bd;line-height:1.35}
-.homeActions{display:flex;gap:10px;flex-wrap:wrap}.homePlay{padding:15px 34px;border-radius:13px;background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}.homeSecondary{padding:14px 20px;border-radius:13px;background:#ffffff0c;border:1px solid #ffffff18;color:#dcecff;font-weight:900}
+.homeActions{display:flex;gap:10px;flex-wrap:wrap}.homePlay{padding:15px 34px;border-radius:13px;background:linear-gradient(135deg,#2588ff,#59d8ff);color:#fff;font-size:18px;font-weight:1000;letter-spacing:.08em;box-shadow:0 12px 35px #1e8fff55}.homeVr{padding:15px 24px;border-radius:13px;background:linear-gradient(135deg,#7b43ff,#37b8ff);border:1px solid #bca4ff66;color:#fff;font-size:16px;font-weight:1000;letter-spacing:.06em;box-shadow:0 12px 35px #6b43ff44}.homeVr:disabled{cursor:not-allowed;opacity:.48;filter:saturate(.35);box-shadow:none}.homeSecondary{padding:14px 20px;border-radius:13px;background:#ffffff0c;border:1px solid #ffffff18;color:#dcecff;font-weight:900}
 .viewChoice{margin:16px 0 18px}.viewChoiceLabel{font-size:10px;letter-spacing:.16em;color:#88bfe8;font-weight:900;margin-bottom:8px}.viewChoiceBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.viewChoiceBtns button{padding:12px;border-radius:12px;background:#ffffff08;border:1px solid #ffffff16;color:#d7e8f7;font-weight:900}.viewChoiceBtns button.on{background:linear-gradient(135deg,#1473c7,#269ee7);border-color:#79ceff;color:#fff;box-shadow:0 0 22px #2c9fff44}
 #viewToggle{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);z-index:26;padding:7px 11px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:9px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto}#exitHome{background:#6f2730!important;border-color:#a94a57!important;color:#fff!important}#exitHome:hover{background:#8b303c!important}
 #soundToggle{position:fixed;left:40px;top:92px;z-index:70;padding:7px 9px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:8px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto}#soundToggle.off{opacity:.72;border-color:#ff7b7b77}#homeGameBtn{position:fixed;right:40px;top:92px;z-index:80;padding:7px 10px;background:#122030aa;border:1px solid #ffffff30;color:#f5f7fb;font-size:8px;font-weight:700;letter-spacing:1px;box-shadow:none;pointer-events:auto;touch-action:manipulation}
@@ -311,6 +311,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
       </div>
       <div class="homeActions">
         <button id="play" class="homePlay">GIOCA ORA</button>
+        <button id="vrPlay" class="homeVr" disabled>🥽 VERIFICA VR…</button>
         <button id="testAudioHome" class="homeSecondary">🔊 TEST AUDIO</button>
         <button id="homeHelp" class="homeSecondary">COMANDI</button>
         <button id="downloadOffline" class="homeSecondary">⬇ SCARICA OFFLINE</button>
@@ -774,6 +775,9 @@ let adminSession=null,isAdmin=false,adminOperatorPreview=sessionStorage.getItem(
 
 const renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.92;game.appendChild(renderer.domElement);
+renderer.xr.enabled=true;
+renderer.xr.setReferenceSpaceType('local-floor');
+try{renderer.xr.setFramebufferScaleFactor(.86)}catch(e){}
 const scene=new THREE.Scene();scene.background=new THREE.Color('#78909f');scene.fog=new THREE.Fog('#7b929f',27,55);const normalSceneFog=scene.fog;
 function gameBaseFov(){return mobileDevice()?64:68}
 function thirdPersonBaseFov(){return 58}
@@ -798,6 +802,7 @@ function createBlackoutGraphics(){
  let high=!matchMedia('(pointer:coarse)').matches;
  return {
   render(dt,cam){
+   if(renderer.xr.isPresenting){renderer.render(scene,cam);return}
    if(high&&cam===camera){renderPass.camera=camera;composer.render(dt)}
    else renderer.render(scene,cam);
   },
@@ -869,7 +874,178 @@ const thirdCamRay=new THREE.Raycaster(),thirdCamDir=new THREE.Vector3(),thirdCam
 const avatar=new THREE.Group();player.add(avatar);const batPivot=new THREE.Group();batPivot.position.set(.42,1.25,.05);player.add(batPivot);
 const metalMat=new THREE.MeshStandardMaterial({color:0x545e68,roughness:.28,metalness:.8});
 const bat=new THREE.Mesh(new THREE.CylinderGeometry(.055,.085,1.18,14),metalMat);bat.rotation.z=-.55;bat.position.set(.22,.18,0);bat.castShadow=true;batPivot.rotation.z=-.55;batPivot.rotation.x=.2;batPivot.add(bat);
-scene.add(camera);
+const vrRig=new THREE.Group();vrRig.name='MCR_VR_RIG';scene.add(vrRig);vrRig.add(camera);
+let vrActive=false,vrSession=null,vrBatInputSource=null,vrLastTipValid=false,vrStrikeCooldown=0,vrTurnReady=true;
+const vrControllers=[],vrGrips=[];
+const vrForward=new THREE.Vector3(),vrRight=new THREE.Vector3(),vrMove=new THREE.Vector3(),vrTmpPos=new THREE.Vector3(),vrTipNow=new THREE.Vector3(),vrTipPrev=new THREE.Vector3(),vrHitDir=new THREE.Vector3(),vrUp=new THREE.Vector3(0,1,0);
+const vrRaycaster=new THREE.Raycaster(),vrHitBox=new THREE.Box3();
+
+const vrBatGroup=new THREE.Group();vrBatGroup.name='VR_BAT';
+const vrBatShaft=new THREE.Mesh(new THREE.CylinderGeometry(.045,.082,1.12,14),metalMat.clone());
+vrBatShaft.rotation.x=Math.PI/2;vrBatShaft.position.z=-.48;vrBatShaft.castShadow=true;vrBatGroup.add(vrBatShaft);
+const vrGripMat=new THREE.MeshStandardMaterial({color:0x15191f,roughness:.62,metalness:.18});
+const vrBatHandle=new THREE.Mesh(new THREE.CylinderGeometry(.052,.052,.28,12),vrGripMat);
+vrBatHandle.rotation.x=Math.PI/2;vrBatHandle.position.z=.16;vrBatGroup.add(vrBatHandle);
+const vrBatTip=new THREE.Object3D();vrBatTip.position.set(0,0,-1.06);vrBatGroup.add(vrBatTip);
+vrBatGroup.position.set(0,-.025,-.08);vrBatGroup.rotation.set(-.10,0,0);
+
+function vrPulse(source,strength=.7,duration=80){
+ const gp=source?.gamepad,act=gp?.hapticActuators?.[0]||gp?.vibrationActuator;
+ try{
+  if(act?.pulse){const p=act.pulse(strength,duration);p?.catch?.(()=>{})}
+  else if(act?.playEffect){const p=act.playEffect('dual-rumble',{duration,startDelay:0,strongMagnitude:strength,weakMagnitude:strength*.7});p?.catch?.(()=>{})}
+ }catch(e){}
+}
+function attachVRBat(index,inputSource){
+ const grip=vrGrips[index];if(!grip)return;
+ grip.add(vrBatGroup);vrBatInputSource=inputSource||null;vrLastTipValid=false;
+}
+function makeVRControllerVisual(){
+ const g=new THREE.Group();
+ const body=new THREE.Mesh(new THREE.CapsuleGeometry(.034,.105,4,8),new THREE.MeshStandardMaterial({color:0x202a34,roughness:.42,metalness:.35}));
+ body.rotation.x=Math.PI/2;body.position.z=.025;g.add(body);
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.045,.012,8,20),new THREE.MeshStandardMaterial({color:0x606d78,roughness:.35,metalness:.65}));
+ ring.rotation.x=Math.PI/2;ring.position.z=-.055;g.add(ring);return g;
+}
+function setupVRControllers(){
+ for(let i=0;i<2;i++){
+  const controller=renderer.xr.getController(i);controller.userData.vrIndex=i;vrRig.add(controller);vrControllers.push(controller);
+  const rayGeom=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,-2.6)]);
+  const ray=new THREE.Line(rayGeom,new THREE.LineBasicMaterial({color:0x75c8ff,transparent:true,opacity:.55}));ray.name='VR_RAY';controller.add(ray);
+  const grip=renderer.xr.getControllerGrip(i);grip.userData.vrIndex=i;grip.add(makeVRControllerVisual());vrRig.add(grip);vrGrips.push(grip);
+  controller.addEventListener('connected',ev=>{
+   controller.userData.inputSource=ev.data;
+   if(ev.data?.handedness==='right'||(!vrBatGroup.parent&&i===1))attachVRBat(i,ev.data);
+  });
+  controller.addEventListener('disconnected',()=>{
+   if(vrBatGroup.parent===grip){grip.remove(vrBatGroup);vrBatInputSource=null;vrLastTipValid=false}
+   controller.userData.inputSource=null;
+  });
+  controller.addEventListener('selectstart',()=>vrControllerHit(controller));
+ }
+}
+setupVRControllers();
+
+function vrInputStick(source){
+ const axes=source?.gamepad?.axes||[];
+ let x=0,y=0;
+ if(axes.length>=4){x=axes[2]||0;y=axes[3]||0}
+ else if(axes.length>=2){x=axes[0]||0;y=axes[1]||0}
+ if(Math.abs(x)<.14)x=0;if(Math.abs(y)<.14)y=0;
+ return {x,y};
+}
+function vrWorldDirection(object,target){
+ object.getWorldQuaternion(_vrQuat);
+ return target.set(0,0,-1).applyQuaternion(_vrQuat).normalize();
+}
+const _vrQuat=new THREE.Quaternion();
+function vrControllerHit(controller){
+ if(!vrActive||!started||editorMode)return;
+ unlockAudio();soundSwing();
+ const origin=controller.getWorldPosition(new THREE.Vector3()),dir=vrWorldDirection(controller,new THREE.Vector3());
+ vrRaycaster.set(origin,dir);vrRaycaster.near=0;vrRaycaster.far=3.8;
+ const objectTargets=destruct.filter(d=>!d.editorOnly&&!d.dead&&d.o.visible).map(d=>d.o);
+ const npcTargets=npcs.filter(n=>!n.fallen).map(n=>n.root);
+ const hits=vrRaycaster.intersectObjects([...objectTargets,...npcTargets],true);
+ for(const h of hits){
+  let node=h.object,npc=null,d=null;
+  while(node){if(node.userData?.npc){npc=node.userData.npc;break}if(node.userData?.d){d=node.userData.d;break}node=node.parent}
+  if(npc){knockDownNpc(npc,dir);vrPulse(controller.userData.inputSource,.6,70);return}
+  if(d){applyHit(d,dir);vrPulse(controller.userData.inputSource,.72,85);return}
+ }
+}
+function updateVRSwing(dt){
+ if(!vrActive||!vrBatGroup.parent)return;
+ vrBatTip.getWorldPosition(vrTipNow);
+ if(!vrLastTipValid){vrTipPrev.copy(vrTipNow);vrLastTipValid=true;return}
+ vrStrikeCooldown=Math.max(0,vrStrikeCooldown-dt);
+ const speed=vrTipNow.distanceTo(vrTipPrev)/Math.max(dt,.001);
+ vrHitDir.copy(vrTipNow).sub(vrTipPrev);
+ if(vrHitDir.lengthSq()>.00001)vrHitDir.normalize();else vrHitDir.set(0,0,-1);
+ if(speed>1.15&&vrStrikeCooldown<=0){
+  let hitDoneVR=false;
+  for(const n of npcs){
+   if(n.fallen||!n.root.visible)continue;
+   vrHitBox.setFromObject(n.root);
+   if(!vrHitBox.isEmpty()&&vrHitBox.distanceToPoint(vrTipNow)<.28){knockDownNpc(n,vrHitDir);hitDoneVR=true;break}
+  }
+  if(!hitDoneVR){
+   for(const d of destruct){
+    if(d.editorOnly||d.dead||!d.o.visible)continue;
+    vrHitBox.setFromObject(d.o);
+    if(!vrHitBox.isEmpty()&&vrHitBox.distanceToPoint(vrTipNow)<.26){applyHit(d,vrHitDir);hitDoneVR=true;break}
+   }
+  }
+  if(hitDoneVR){vrStrikeCooldown=.14;vrPulse(vrBatInputSource,Math.min(1,.45+speed*.08),90)}
+ }
+ vrTipPrev.copy(vrTipNow);
+}
+function updateVRMovement(dt){
+ const session=renderer.xr.getSession();if(!session)return;
+ let left=null,right=null,moveSource=null;
+ for(const source of session.inputSources){
+  if(source.handedness==='left')left=source;
+  else if(source.handedness==='right')right=source;
+  if(!moveSource&&source.gamepad)moveSource=source;
+ }
+ moveSource=left?.gamepad?left:moveSource;
+ const stick=vrInputStick(moveSource);
+ const xrCam=renderer.xr.getCamera(camera);
+ xrCam.getWorldDirection(vrForward);vrForward.y=0;
+ if(vrForward.lengthSq()<.001)vrForward.set(0,0,-1);else vrForward.normalize();
+ vrRight.crossVectors(vrForward,vrUp).normalize();
+ vrMove.set(0,0,0).addScaledVector(vrRight,stick.x).addScaledVector(vrForward,-stick.y);
+ if(vrMove.lengthSq()>1)vrMove.normalize();
+ if(vrMove.lengthSq()>.001){
+  const np=player.position.clone().addScaledVector(vrMove,3.0*dt);resolve(np);
+  player.position.x=np.x;player.position.z=np.z;vrRig.position.x=np.x;vrRig.position.z=np.z;
+ }
+ const turn=vrInputStick(right);
+ if(Math.abs(turn.x)<.35)vrTurnReady=true;
+ if(vrTurnReady&&Math.abs(turn.x)>.72){
+  vrTurnReady=false;
+  const a=-Math.sign(turn.x)*Math.PI/6;
+  xrCam.getWorldPosition(vrTmpPos);vrTmpPos.y=vrRig.position.y;
+  const rel=vrRig.position.clone().sub(vrTmpPos).applyAxisAngle(vrUp,a);
+  vrRig.position.copy(vrTmpPos).add(rel);vrRig.rotation.y+=a;
+  player.position.x=vrRig.position.x;player.position.z=vrRig.position.z;
+ }
+ updateVRSwing(dt);
+}
+async function initVRSupport(){
+ const b=q('#vrPlay');if(!b)return;
+ if(!window.isSecureContext||!navigator.xr){b.disabled=true;b.textContent='🥽 VR NON DISPONIBILE';return}
+ try{
+  const ok=await navigator.xr.isSessionSupported('immersive-vr');
+  b.disabled=!ok;b.textContent=ok?'🥽 ENTRA IN VR':'🥽 VR NON DISPONIBILE';
+ }catch(e){b.disabled=true;b.textContent='🥽 VR NON DISPONIBILE'}
+}
+async function enterVR(){
+ const b=q('#vrPlay');if(vrActive||!navigator.xr)return;
+ unlockAudio();
+ try{
+  b.disabled=true;b.textContent='🥽 AVVIO VR…';
+  const session=await navigator.xr.requestSession('immersive-vr',{requiredFeatures:['local-floor'],optionalFeatures:['bounded-floor','hand-tracking']});
+  vrSession=session;vrActive=true;vrTurnReady=true;vrLastTipValid=false;
+  document.exitPointerLock?.();start.classList.add('hidden');q('#objectivePopup').classList.add('hidden');
+  vrRig.position.set(player.position.x,0,player.position.z);vrRig.rotation.set(0,0,0);
+  camera.position.set(0,0,0);camera.rotation.set(0,0,0);camera.quaternion.identity();
+  await renderer.xr.setSession(session);
+  beginGameFromObjective(true);
+  avatar.visible=false;fpView.visible=false;
+  session.addEventListener('end',onVREnd,{once:true});
+  b.textContent='🥽 VR ATTIVA';
+ }catch(err){
+  console.warn('Avvio VR non riuscito',err);vrActive=false;vrSession=null;
+  b.disabled=false;b.textContent='🥽 ENTRA IN VR';show('VR NON AVVIATA');
+ }
+}
+function onVREnd(){
+ vrActive=false;vrSession=null;vrLastTipValid=false;vrStrikeCooldown=0;vrTurnReady=true;
+ vrRig.position.set(0,0,0);vrRig.rotation.set(0,0,0);
+ const b=q('#vrPlay');if(b){b.disabled=false;b.textContent='🥽 ENTRA IN VR'}
+ if(started){hud.classList.remove('hidden');setCameraMode('first',false);syncCharacterViewVisibility();show('MODALITÀ VR TERMINATA')}
+}
 const fpView=new THREE.Group();camera.add(fpView);fpView.visible=false;
 function buildFirstPersonView(){
  const skin=mat(0xc88a68,.58,0),shirt=mat(0x7f7f79,.66,.02),watchMat=mat(0x17191d,.45,.15);
@@ -3977,7 +4153,23 @@ function updateDyn(dt){for(let i=dynamics.length-1;i>=0;i--){let d=dynamics[i];i
 function updateParts(dt){for(let i=particles.length-1;i>=0;i--){let p=particles[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);particles.splice(i,1);continue}p.v.y-=7*dt;p.m.position.addScaledVector(p.v,dt);p.m.rotation.x+=p.spin.x*dt;p.m.rotation.y+=p.spin.y*dt;if(p.m.material.transparent)p.m.material.opacity=Math.min(1,p.life/.2)}}
 function updateTimer(dt){if(!countdownOn)return;countdown=Math.max(0,countdown-dt);let m=Math.floor(countdown/60),s=Math.floor(countdown%60);timerEl.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(countdown===0){countdownOn=false;show('TECNICO IN ARRIVO. SCAPPA!')}}
 let lastSessionSave=0;
-function loop(){requestAnimationFrame(loop);let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;if(started&&!editorMode&&!gameCompleted){updatePlayer(dt);updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt)}else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}updatePlayerOverlays();if(editorMode&&!topViewMode)updateEditorCamera(dt);else if(!topViewMode)updateCam(dt);blackoutGraphics.render(dt,activeCamera());if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}}loop();
+function loop(){
+ let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;
+ if(started&&!editorMode&&!gameCompleted){
+  if(vrActive)updateVRMovement(dt);else updatePlayer(dt);
+  updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt);
+ }else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}
+ updatePlayerOverlays();
+ if(vrActive){
+  avatar.visible=false;fpView.visible=false;
+  renderer.render(scene,camera);
+ }else{
+  if(editorMode&&!topViewMode)updateEditorCamera(dt);else if(!topViewMode)updateCam(dt);
+  blackoutGraphics.render(dt,activeCamera());
+ }
+ if(started&&now-lastSessionSave>2000){lastSessionSave=now;saveRuntimeSession()}
+}
+renderer.setAnimationLoop(loop);
 
 function mobileDevice(){return matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0}
 function mobileLandscape(){return mobileDevice()&&innerWidth>innerHeight}
@@ -4062,7 +4254,8 @@ function exitToHome(){
  gameCompleted=false;
  start.classList.remove('hidden');
 }
-function beginGameFromObjective(){
+function beginGameFromObjective(vrMode=false){
+ const enteringVR=vrMode===true;
  sessionStorage.removeItem('mcrStayHome');
  gameCompleted=false;q('#completePopup').classList.add('hidden');
  analyticsHeartbeat(true);
@@ -4078,7 +4271,10 @@ function beginGameFromObjective(){
  setTimeout(()=>{if(audioEnabled)soundTest()},80);
  ambientAlarmStep=0;scheduleAmbientAlarm(true);scheduleHeadEndGuy(true);
  saveRuntimeSession();
- if(mobileDevice()){
+ if(enteringVR){
+   touch.classList.add('hidden');
+   document.exitPointerLock?.();
+ }else if(mobileDevice()){
    touch.classList.remove('hidden');
    setTimeout(()=>{applyMobileOrientation();if(mobileLandscape())requestMobileFullscreen()},80);
  } else renderer.domElement.requestPointerLock?.();
@@ -4088,7 +4284,9 @@ q('#play').onclick=()=>{
  start.classList.add('hidden');
  q('#objectivePopup').classList.remove('hidden');
 };
-q('#objectiveStart').onclick=beginGameFromObjective;
+q('#objectiveStart').onclick=()=>beginGameFromObjective(false);
+q('#vrPlay').onclick=enterVR;
+initVRSupport();
 q('#objectiveBack').onclick=()=>{q('#objectivePopup').classList.add('hidden');start.classList.remove('hidden')};
 q('#reset').onclick=resetRoom;
 q('#resetQuick').onclick=resetRoom;
