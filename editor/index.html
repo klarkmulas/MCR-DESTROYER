@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0b0f14">
   <title>Forge3D Studio</title>
-  <link rel="stylesheet" href="./styles.css?v=0.5.0">
-  <link rel="stylesheet" href="./ai-bridge.css?v=0.5.0">
+  <link rel="stylesheet" href="./styles.css?v=0.6.0">
+  <link rel="stylesheet" href="./ai-bridge.css?v=0.6.0">
   <script type="importmap">
   {
     "imports": {
@@ -23,7 +23,7 @@
         <div class="brand-mark">F3</div>
         <div>
           <strong>FORGE3D</strong>
-          <span>STUDIO · v0.5.0 MODELING</span>
+          <span>STUDIO · v0.6.0 EASY BUILD</span>
         </div>
       </div>
 
@@ -43,6 +43,52 @@
     </header>
 
     <aside class="leftbar panel">
+      <section class="easy-build-section">
+        <div class="section-title">⚡ EASY BUILD</div>
+
+        <div class="quick-card">
+          <div class="quick-card-head"><strong>Stanza automatica</strong><span>4 muri + pavimento</span></div>
+          <div class="quick-fields four">
+            <label>L <input id="roomWidth" type="number" min="0.5" step="0.1" value="5"></label>
+            <label>P <input id="roomDepth" type="number" min="0.5" step="0.1" value="4"></label>
+            <label>H <input id="roomHeight" type="number" min="0.5" step="0.1" value="2.8"></label>
+            <label>Muro <input id="wallThickness" type="number" min="0.02" step="0.01" value="0.15"></label>
+          </div>
+          <button class="quick-main" data-action="quick-room">Crea stanza</button>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-card-head"><strong>Muro rapido</strong><span>2 click sul pavimento</span></div>
+          <div class="quick-fields two">
+            <label>H <input id="quickWallHeight" type="number" min="0.2" step="0.1" value="2.8"></label>
+            <label>Spess. <input id="quickWallThickness" type="number" min="0.02" step="0.01" value="0.15"></label>
+          </div>
+          <button class="quick-main tool-like" data-model-tool="wall-draw">Disegna muri</button>
+        </div>
+
+        <div class="quick-row">
+          <button class="quick-tile" data-action="quick-ground"><span>▰</span><b>Terreno</b><small>20 × 20 m</small></button>
+          <button class="quick-tile" data-action="quick-stairs"><span>▥</span><b>Scale</b><small>10 gradini</small></button>
+        </div>
+
+        <div class="quick-row">
+          <button class="quick-tile" data-model-tool="measure"><span>↔</span><b>Misura</b><small>2 punti</small></button>
+          <button class="quick-tile" data-action="drop-floor"><span>↓</span><b>A terra</b><small>Selezione</small></button>
+        </div>
+
+        <div class="quick-card compact">
+          <div class="quick-card-head"><strong>Duplica in serie</strong><span>oggetto selezionato</span></div>
+          <div class="quick-fields two">
+            <label>N° <input id="arrayCount" type="number" min="2" max="50" step="1" value="5"></label>
+            <label>Passo <input id="arraySpacing" type="number" min="0.05" step="0.05" value="1"></label>
+          </div>
+          <div class="quick-actions">
+            <button data-action="array-x">Serie X</button>
+            <button data-action="array-z">Serie Z</button>
+          </div>
+        </div>
+      </section>
+
       <section>
         <div class="section-title">AGGIUNGI</div>
         <div class="tool-grid">
@@ -62,6 +108,8 @@
           <button class="model-tool" data-model-tool="rectangle" title="Rettangolo · B"><span>▭</span>Rettangolo</button>
           <button class="model-tool" data-model-tool="circle" title="Cerchio · C"><span>○</span>Cerchio</button>
           <button class="model-tool pushpull-tool" data-model-tool="pushpull" title="Push/Pull · P"><span>↥</span>Push/Pull</button>
+          <button class="model-tool" data-model-tool="wall-draw"><span>▥</span>Muro</button>
+          <button class="model-tool" data-model-tool="measure"><span>↔</span>Misura</button>
         </div>
         <div class="modeling-options">
           <label class="model-check"><input id="modelSnap" type="checkbox" checked> Snap griglia</label>
@@ -166,7 +214,7 @@
         <button data-action="game-stop">■ TORNA ALL'EDITOR</button>
       </div>
 
-      <div class="shortcut-hint">W Sposta · G Pavimento · E Ruota · R Scala · L Linea · B Rettangolo · C Cerchio · P Push/Pull</div>
+      <div class="shortcut-hint">W Sposta · G Pavimento · E Ruota · R Scala · L Linea · B Rettangolo · C Cerchio · P Push/Pull · ESC Esci</div>
     </main>
 
     <aside class="rightbar panel">
@@ -216,6 +264,20 @@
               <label><span>X</span><input id="scaleX" type="number" step="0.01" min="0.001"></label>
               <label><span>Y</span><input id="scaleY" type="number" step="0.01" min="0.001"></label>
               <label><span>Z</span><input id="scaleZ" type="number" step="0.01" min="0.001"></label>
+            </div>
+          </div>
+
+          <div class="prop-group">
+            <div class="prop-head">DIMENSIONI REALI</div>
+            <div class="triple">
+              <label><span>L</span><input id="sizeX" type="number" step="0.01" min="0.001"></label>
+              <label><span>H</span><input id="sizeY" type="number" step="0.01" min="0.001"></label>
+              <label><span>P</span><input id="sizeZ" type="number" step="0.01" min="0.001"></label>
+            </div>
+            <div class="dimension-actions">
+              <button data-action="drop-floor">↓ Appoggia a terra</button>
+              <button data-action="center-origin">◎ Centra X/Z</button>
+              <button data-action="reset-rotation">↺ Rotazione 0</button>
             </div>
           </div>
 
@@ -326,7 +388,7 @@
 
   <div id="toast" class="toast"></div>
 
-  <script src="./ai-bridge.js?v=0.5.0"></script>
-  <script type="module" src="./app.js?v=0.5.0"></script>
+  <script src="./ai-bridge.js?v=0.6.0"></script>
+  <script type="module" src="./app.js?v=0.6.0"></script>
 </body>
 </html>
