@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.10.01.1';
+ const PWA_VERSION='2026.10.02.1';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -2754,7 +2754,7 @@ function spawnNpcs(){
  createNpc('office',[V(-5.55,6.35),V(-5.55,3.85),V(-4.55,3.85),V(-4.55,6.35)],{shirt:0x6a737d,speed:1.15});
  createNpc('office',[V(4.25,6.25),V(4.25,3.75),V(3.35,3.75),V(3.35,6.25)],{shirt:0x5b6c82,skin:0xb97855,speed:1.08});
  createNpc('office',[V(-4.35,5.35),V(2.75,5.35),V(2.75,3.65),V(-4.35,3.65)],{shirt:0x858079,speed:1.22});
- createNpc('cart',[V(-5.65,-7.45),V(-5.35,-5.55),V(-5.35,-2.15),V(-5.65,-.65)],{speed:.82,voiceProfile:{
+ createNpc('cart',[V(-5.55,-5.25),V(-5.55,-2.35),V(-5.55,.35),V(-5.45,2.45)],{speed:.82,voiceProfile:{
    lang:'ar-EG',flag:'🇪🇬',rate:.90,
    phrases:['خلي بالك، الأرض لسه مبلولة.','صباح الخير يا جماعة، الدنيا تمام؟','أنا بخلص التنضيف هنا وبعدين همشي.','يا جماعة، مين عمل كده؟'],
    hit:'إيه ده؟ خلي بالك!'
@@ -2821,21 +2821,23 @@ function npcPositionBlocked(n,pos,radius=npcRadius(n),checkCharacters=true){
 function moveNpcPhysics(n,move,dt,fallen=false){
  if(!n?.root||move.lengthSq()<1e-10)return false;
  const from=n.root.position,radius=fallen?Math.max(.24,npcRadius(n)*.85):npcRadius(n);
+ // Copia i componenti: "move" può essere uno scratch vector condiviso.
+ const mx=move.x,my=move.y,mz=move.z,moveLen=Math.hypot(mx,my,mz);
 
  // 1. Movimento diretto.
- npcCandidate.copy(from).add(move);
+ npcCandidate.copy(from);npcCandidate.x+=mx;npcCandidate.y+=my;npcCandidate.z+=mz;
  if(!npcPositionBlocked(n,npcCandidate,radius,!fallen)){
    from.copy(npcCandidate);n.blockedTime=0;return true;
  }
 
  // 2. Scorrimento sugli assi: evita l'effetto "incollato" ai muri.
- npcTryA.copy(from).add(new THREE.Vector3(move.x,0,0));
- npcTryB.copy(from).add(new THREE.Vector3(0,0,move.z));
+ npcTryA.copy(from);npcTryA.x+=mx;
+ npcTryB.copy(from);npcTryB.z+=mz;
  const freeA=!npcPositionBlocked(n,npcTryA,radius,!fallen);
  const freeB=!npcPositionBlocked(n,npcTryB,radius,!fallen);
  if(freeA||freeB){
    if(freeA&&freeB){
-     if(Math.abs(move.x)>=Math.abs(move.z))from.copy(npcTryA);else from.copy(npcTryB);
+     if(Math.abs(mx)>=Math.abs(mz))from.copy(npcTryA);else from.copy(npcTryB);
    }else from.copy(freeA?npcTryA:npcTryB);
    n.blockedTime=Math.max(0,(n.blockedTime||0)-dt*2);
    return true;
@@ -2843,9 +2845,9 @@ function moveNpcPhysics(n,move,dt,fallen=false){
 
  // 3. Deviazione laterale locale attorno all'ostacolo.
  if(!fallen){
-   npcPerp.set(-move.z,0,move.x);
+   npcPerp.set(-mz,0,mx);
    if(npcPerp.lengthSq()>.000001){
-     npcPerp.normalize().multiplyScalar(Math.max(move.length(),.045)*(n.avoidSide||1));
+     npcPerp.normalize().multiplyScalar(Math.max(moveLen,.045)*(n.avoidSide||1));
      npcTryA.copy(from).add(npcPerp);
      if(!npcPositionBlocked(n,npcTryA,radius,true)){from.copy(npcTryA);n.blockedTime=(n.blockedTime||0)+dt;return true}
      npcTryB.copy(from).addScaledVector(npcPerp,-1);
