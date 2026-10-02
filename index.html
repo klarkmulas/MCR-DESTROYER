@@ -1108,7 +1108,7 @@ function getFrostStripeBaseTexture(){
  return frostStripeBaseTexture;
 }
 function addHorizontalFrostStripes(glassMesh,opts={}){
- if(!glassMesh?.isMesh||glassMesh.userData?.frostStripeOverlay)return null;
+ if(!glassMesh?.isMesh||glassMesh.userData?.hasFrostStripeOverlay)return null;
  if(glassMesh.geometry&&!glassMesh.geometry.boundingBox)glassMesh.geometry.computeBoundingBox();
  const bb=glassMesh.geometry?.boundingBox;
  if(!bb)return null;
