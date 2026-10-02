@@ -1144,7 +1144,7 @@ function addHorizontalFrostStripes(glassMesh,opts={}){
  overlay.userData.frostStripeOverlay=true;
  overlay.userData.editorHelper=false;
  glassMesh.add(overlay);
- glassMesh.userData.frostStripeOverlay=overlay;
+ glassMesh.userData.hasFrostStripeOverlay=true;
  return overlay;
 }
 function addFrostToGlassObject(root){
