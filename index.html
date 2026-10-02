@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.10.02.2';
+ const PWA_VERSION='2026.10.02.3';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -2742,7 +2742,7 @@ function createNpc(kind='office',path=[],opts={}){
    const h1=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.72,8),metal);h1.rotation.z=Math.PI/2;h1.position.set(0,.98,.34);cart.add(h1);
    for(const x of [-.27,.27])for(const z of [-.34,.34]){const w=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.04,10),darkPants);w.rotation.z=Math.PI/2;w.position.set(x,.08,z);cart.add(w)}
  }
- const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000,materials:{skin,hair,shirt,pants,shoe},headParts,baseStyle:{skin:'#'+skin.color.getHexString(),hair:'#'+hair.color.getHexString(),shirt:'#'+shirt.color.getHexString(),pants:'#'+pants.color.getHexString(),shoes:'#'+shoe.color.getHexString(),faceUrl:null,clothingUrl:null},baseShape:{height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1},overlays:{},collisionRadius:kind==='cart'?.62:.28,avoidSide:Math.random()<.5?-1:1,blockedTime:0};
+ const npc={id:++npcIdSeed,root,body,pelvis,torso,head,lArm,rArm,lFore,rFore,lLeg,rLeg,lShin,rShin,kind,path:path.map(p=>p.clone()),target:1%Math.max(1,path.length),speed:opts.speed||(isCleaner?1.05:1.18),phase:Math.random()*6.28,gait:.88+Math.random()*.24,lookBias:(Math.random()-.5)*.35,pauseUntil:0,fallen:false,fallT:0,fallDir:1,fallPitch:0,hitVel:new THREE.Vector3(),cart,broom,voiceProfile:opts.voiceProfile||null,nextSpeakAt:performance.now()+6000+Math.random()*7000,materials:{skin,hair,shirt,pants,shoe},headParts,baseStyle:{skin:'#'+skin.color.getHexString(),hair:'#'+hair.color.getHexString(),shirt:'#'+shirt.color.getHexString(),pants:'#'+pants.color.getHexString(),shoes:'#'+shoe.color.getHexString(),faceUrl:null,clothingUrl:null},baseShape:{height:1,build:1,shoulders:1,head:1,arms:1,legs:1,torsoDepth:1},overlays:{},collisionRadius:kind==='cart'?.62:.28,avoidSide:Math.random()<.5?-1:1,blockedTime:0,navPath:[],navIndex:0,navReplanAt:0};
  captureNpcModelBase(npc);
  root.userData.npc=npc;root.traverse(ch=>ch.userData.npc=npc);
  npcs.push(npc);return npc;
@@ -2805,7 +2805,7 @@ function activateHeadEndGuy(){
  if(!headEndGuy)createHeadEndGuy();
  const n=headEndGuy;
  if(n.active){scheduleHeadEndGuy(false);return}
- n.active=true;n.specialSpoken=false;n.fallen=false;n.fallT=0;n.target=1;n.pauseUntil=0;
+ n.active=true;n.specialSpoken=false;n.fallen=false;n.fallT=0;n.target=1;n.pauseUntil=0;n.navPath=[];n.navIndex=0;n.navReplanAt=0;
  n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel.set(0,0,0);
  n.root.position.copy(n.path[0]);n.root.visible=true;
  n.nextSpeakAt=Infinity;
@@ -2849,7 +2849,7 @@ function npcObjectBlocksPosition(d,pos,radius){
  if(!d?.o?.visible||d.dead||NPC_NON_SOLID_TYPES.has(d.type))return false;
  // Gruppi architettonici complessi (soprattutto vetrate) vengono verificati
  // mesh per mesh: un unico AABB del gruppo chiuderebbe falsamente tutta la stanza.
- if(d.editorOnly&&d.o.type==='Group'){
+ if((d.editorOnly&&d.o.type==='Group')||['door','glassDoor','autoGlassDoor'].includes(d.customKind)){
    let blocked=false;
    d.o.traverse(mesh=>{
      if(blocked||!mesh.isMesh||!mesh.visible)return;
@@ -2921,13 +2921,105 @@ function moveNpcPhysics(n,move,dt,fallen=false){
  }
 
  n.blockedTime=(n.blockedTime||0)+dt;
- if(n.blockedTime>1.25&&!fallen){
-   // Se un oggetto spostato nell'editor chiude completamente la rotta,
-   // cambia waypoint invece di attraversarlo.
-   n.blockedTime=0;n.avoidSide=-(n.avoidSide||1);
-   if(n.path?.length>1)n.target=(n.target+1)%n.path.length;
- }
  return false;
+}
+
+
+const NPC_NAV_STEP=.48,NPC_NAV_MIN=-WORLD_LIMIT+.35,NPC_NAV_MAX=WORLD_LIMIT-.35;
+const npcNavPoint=new THREE.Vector3(),npcNavProbe=new THREE.Vector3();
+
+function npcNavCoord(v){
+ return THREE.MathUtils.clamp(Math.round((v-NPC_NAV_MIN)/NPC_NAV_STEP),0,Math.floor((NPC_NAV_MAX-NPC_NAV_MIN)/NPC_NAV_STEP));
+}
+function npcNavWorld(ix,iz,out=new THREE.Vector3()){
+ return out.set(NPC_NAV_MIN+ix*NPC_NAV_STEP,0,NPC_NAV_MIN+iz*NPC_NAV_STEP);
+}
+function npcNavKey(ix,iz){return ix+','+iz}
+function npcNavBlocked(n,ix,iz){
+ npcNavWorld(ix,iz,npcNavProbe);
+ return npcPositionBlocked(n,npcNavProbe,npcRadius(n)+.055,false);
+}
+function npcNearestFreeCell(n,ix,iz){
+ if(!npcNavBlocked(n,ix,iz))return [ix,iz];
+ for(let r=1;r<=5;r++){
+   for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++){
+     if(Math.abs(dx)!==r&&Math.abs(dz)!==r)continue;
+     const x=ix+dx,z=iz+dz;
+     if(x<0||z<0||x>npcNavCoord(NPC_NAV_MAX)||z>npcNavCoord(NPC_NAV_MAX))continue;
+     if(!npcNavBlocked(n,x,z))return [x,z];
+   }
+ }
+ return null;
+}
+function npcSegmentClear(n,a,b){
+ const dist=a.distanceTo(b),steps=Math.max(1,Math.ceil(dist/.28));
+ for(let i=1;i<=steps;i++){
+   npcNavProbe.lerpVectors(a,b,i/steps);npcNavProbe.y=0;
+   if(npcPositionBlocked(n,npcNavProbe,npcRadius(n)+.035,false))return false;
+ }
+ return true;
+}
+function findNpcDetour(n,goal){
+ const maxCell=npcNavCoord(NPC_NAV_MAX);
+ let sx=npcNavCoord(n.root.position.x),sz=npcNavCoord(n.root.position.z);
+ let gx=npcNavCoord(goal.x),gz=npcNavCoord(goal.z);
+ const freeGoal=npcNearestFreeCell(n,gx,gz);if(!freeGoal)return [];
+ [gx,gz]=freeGoal;
+
+ const startKey=npcNavKey(sx,sz),goalKey=npcNavKey(gx,gz);
+ const open=[startKey],openSet=new Set(open),closed=new Set();
+ const came=new Map(),gScore=new Map([[startKey,0]]),fScore=new Map();
+ const coords=new Map([[startKey,[sx,sz]]]);
+ const h=(x,z)=>Math.hypot(gx-x,gz-z);
+ fScore.set(startKey,h(sx,sz));
+ const dirs=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
+ let found=false,iterations=0;
+
+ while(open.length&&iterations++<2400){
+   let bestI=0,bestF=Infinity;
+   for(let i=0;i<open.length;i++){const f=fScore.get(open[i])??Infinity;if(f<bestF){bestF=f;bestI=i}}
+   const current=open.splice(bestI,1)[0];openSet.delete(current);
+   if(current===goalKey){found=true;break}
+   closed.add(current);
+   const [cx,cz]=coords.get(current);
+
+   for(const [dx,dz,cost] of dirs){
+     const nx=cx+dx,nz=cz+dz;
+     if(nx<0||nz<0||nx>maxCell||nz>maxCell)continue;
+     const nk=npcNavKey(nx,nz);
+     if(closed.has(nk)||npcNavBlocked(n,nx,nz))continue;
+     // Non tagliare gli angoli attraverso due ostacoli.
+     if(dx&&dz&&(npcNavBlocked(n,cx+dx,cz)||npcNavBlocked(n,cx,cz+dz)))continue;
+     const tentative=(gScore.get(current)??Infinity)+cost;
+     if(tentative<(gScore.get(nk)??Infinity)){
+       came.set(nk,current);coords.set(nk,[nx,nz]);gScore.set(nk,tentative);fScore.set(nk,tentative+h(nx,nz));
+       if(!openSet.has(nk)){open.push(nk);openSet.add(nk)}
+     }
+   }
+ }
+ if(!found)return [];
+
+ const cells=[];let k=goalKey;
+ while(k&&k!==startKey){const co=coords.get(k);if(!co)break;cells.push(co);k=came.get(k)}
+ cells.reverse();
+ const raw=cells.map(([x,z])=>npcNavWorld(x,z,new THREE.Vector3()));
+ if(!raw.length)return [];
+
+ // Riduci i punti: salta i nodi intermedi quando esiste un tratto libero.
+ const simplified=[];let anchor=n.root.position.clone(),i=0;
+ while(i<raw.length){
+   let far=i;
+   for(let j=i+1;j<raw.length;j++){
+     if(npcSegmentClear(n,anchor,raw[j]))far=j;else break;
+   }
+   simplified.push(raw[far].clone());anchor=raw[far];i=far+1;
+ }
+ return simplified;
+}
+function setNpcDetour(n,goal,now){
+ const path=findNpcDetour(n,goal);
+ n.navPath=path;n.navIndex=0;n.navReplanAt=now+650;n.blockedTime=0;
+ return path.length>0;
 }
 
 function updateNpcs(dt){
@@ -2963,9 +3055,23 @@ function updateNpcs(dt){
    }
 
    if(n.path.length<2)continue;
-   const target=n.path[n.target%n.path.length],delta=target.clone().sub(n.root.position);delta.y=0;
+   const routeTarget=n.path[n.target%n.path.length];
+
+   // Se la destinazione originale torna visibile, abbandona la deviazione e rientra subito in rotta.
+   if(n.navPath?.length&&npcSegmentClear(n,n.root.position,routeTarget)){n.navPath=[];n.navIndex=0}
+
+   let target=routeTarget,usingDetour=false;
+   if(n.navPath?.length){
+     while(n.navIndex<n.navPath.length&&n.root.position.distanceTo(n.navPath[n.navIndex])<.24)n.navIndex++;
+     if(n.navIndex>=n.navPath.length){n.navPath=[];n.navIndex=0}
+     else{target=n.navPath[n.navIndex];usingDetour=true}
+   }
+
+   const delta=target.clone().sub(n.root.position);delta.y=0;
    const d=delta.length();
-   if(d<.22){
+
+   // Solo il vero waypoint di pattuglia fa avanzare la rotta; i punti A* sono temporanei.
+   if(!usingDetour&&d<.22){
      if(n.specialHeadEnd){
        if(!n.specialSpoken&&n.target>=2){
          n.specialSpoken=true;
@@ -2973,15 +3079,15 @@ function updateNpcs(dt){
          speakNpc(n,phrase,true);
        }
        if(n.target>=n.path.length-1){
-         n.active=false;n.root.visible=false;n.target=1;
+         n.active=false;n.root.visible=false;n.target=1;n.navPath=[];n.navIndex=0;
          scheduleHeadEndGuy(false);
          continue;
        }
-       n.target++;
+       n.target++;n.navPath=[];n.navIndex=0;
        if(Math.random()<.22)n.pauseUntil=now+450+Math.random()*700;
        continue;
      }
-     n.target=(n.target+1)%n.path.length;
+     n.target=(n.target+1)%n.path.length;n.navPath=[];n.navIndex=0;
      if(Math.random()<.34)n.pauseUntil=now+650+Math.random()*1500;
      continue;
    }
@@ -2989,6 +3095,17 @@ function updateNpcs(dt){
    delta.normalize();
    npcCandidate.copy(delta).multiplyScalar(n.speed*n.gait*dt);
    const moved=moveNpcPhysics(n,npcCandidate,dt,false);
+
+   // Se sta urtando/scorrendo contro un ostacolo, pianifica un percorso alternativo
+   // verso il waypoint originale invece di fermarsi o saltarlo.
+   if((!moved||n.blockedTime>.28)&&now>=n.navReplanAt){
+     if(setNpcDetour(n,routeTarget,now)&&n.navPath.length){
+       target=n.navPath[0];
+       delta.copy(target).sub(n.root.position).setY(0);
+       if(delta.lengthSq()>.0001)delta.normalize();
+     }else n.navReplanAt=now+900;
+   }
+
    const want=Math.atan2(delta.x,delta.z),turn=Math.atan2(Math.sin(want-n.root.rotation.y),Math.cos(want-n.root.rotation.y));
    n.root.rotation.y+=turn*(1-Math.exp(-6.5*dt));
    n.phase+=dt*n.speed*n.gait*(moved?6.2:1.6);
@@ -4138,7 +4255,7 @@ function resetRoom(){
 
  moveVel.set(0,0,0);player.position.set(.5,0,5.2);jumpV=0;grounded=true;
  for(const n of npcs){
-   n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;n.blockedTime=0;n.avoidSide=n.avoidSide||1;
+   n.fallen=false;n.fallT=0;n.body.rotation.set(0,0,0);n.body.position.set(0,.04,0);n.hitVel?.set(0,0,0);n.pauseUntil=0;n.blockedTime=0;n.avoidSide=n.avoidSide||1;n.navPath=[];n.navIndex=0;n.navReplanAt=0;
    n.pelvis.rotation.set(0,0,0);n.torso.rotation.set(0,0,0);n.head.rotation.set(0,0,0);
    for(const limb of [n.lArm,n.rArm,n.lFore,n.rFore,n.lLeg,n.rLeg,n.lShin,n.rShin])limb.rotation.set(0,0,0);
    n.target=1%Math.max(1,n.path.length);n.nextSpeakAt=performance.now()+5000+Math.random()*9000;
@@ -4153,6 +4270,19 @@ function resetRoom(){
  show('SALA RIPRISTINATA')
 }
 const collisionBox=new THREE.Box3();
+
+function playerCustomDoorBlocked(d,pos,rad,minY,maxY){
+ if(!d?.o?.visible||d.dead||!['door','glassDoor','autoGlassDoor'].includes(d.customKind))return false;
+ let blocked=false;
+ d.o.traverse(mesh=>{
+   if(blocked||!mesh.isMesh||!mesh.visible)return;
+   collisionBox.setFromObject(mesh);
+   if(collisionBox.max.y<minY||collisionBox.min.y>maxY)return;
+   if(pos.x>collisionBox.min.x-rad&&pos.x<collisionBox.max.x+rad&&pos.z>collisionBox.min.z-rad&&pos.z<collisionBox.max.z+rad)blocked=true;
+ });
+ return blocked;
+}
+
 function resolve(np){
  np.x=THREE.MathUtils.clamp(np.x,-WORLD_LIMIT,WORLD_LIMIT);np.z=THREE.MathUtils.clamp(np.z,-WORLD_LIMIT,WORLD_LIMIT);
  const from=player.position,rad=.18;
@@ -4182,6 +4312,20 @@ function resolve(np){
 
    // Fallback: annulla solo questo piccolo passo.
    np.x=from.x;np.z=from.z;
+ }
+
+ // Porte custom: collisione mesh-per-mesh, così il varco diventa attraversabile davvero quando si apre.
+ for(const d of destruct){
+   if(!['door','glassDoor','autoGlassDoor'].includes(d.customKind)||!d.o.visible||d.dead)continue;
+   if(!playerCustomDoorBlocked(d,np,rad,playerMinY,playerMaxY))continue;
+   const xOnly=new THREE.Vector3(np.x,np.y,from.z),zOnly=new THREE.Vector3(from.x,np.y,np.z);
+   const freeX=!playerCustomDoorBlocked(d,xOnly,rad,playerMinY,playerMaxY);
+   const freeZ=!playerCustomDoorBlocked(d,zOnly,rad,playerMinY,playerMaxY);
+   if(freeX&&!freeZ)np.copy(xOnly);
+   else if(freeZ&&!freeX)np.copy(zOnly);
+   else if(freeX&&freeZ){
+     if(Math.abs(np.x-from.x)>=Math.abs(np.z-from.z))np.copy(xOnly);else np.copy(zOnly);
+   }else{np.x=from.x;np.z=from.z}
  }
 }
 let mobile={x:0,y:0};
@@ -4317,7 +4461,7 @@ function loop(){
  let now=performance.now(),dt=Math.min(.025,(now-last)/1000||.016);last=now;
  if(started&&!editorMode&&!gameCompleted){
   if(vrActive)updateVRMovement(dt);else updatePlayer(dt);
-  updateNpcs(dt);updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt);
+  updateDoors(dt);updateNpcs(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt);updateTimer(dt);
  }else if(started&&!gameCompleted){updateDoors(dt);updateImpactBodies(dt);updateDyn(dt);updateParts(dt)}
  updatePlayerOverlays();
  if(vrActive){
