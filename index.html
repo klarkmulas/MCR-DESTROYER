@@ -1550,12 +1550,12 @@ function doorSomeoneNear(d,radius=1.85){
 function updateDoors(dt){
  for(const d of destruct){
    if(!['door','glassDoor','autoGlassDoor'].includes(d.customKind)||!d.o.visible||d.dead)continue;
-   const open=started&&!editorMode&&doorSomeoneNear(d,d.customKind==='autoGlassDoor'?2.25:1.70);
+   const open=started&&!editorMode&&doorSomeoneNear(d,d.customKind==='autoGlassDoor'?2.65:1.85);
    const target=open?1:0;
    d.doorOpenAmount=THREE.MathUtils.lerp(d.doorOpenAmount||0,target,1-Math.exp(-(d.customKind==='autoGlassDoor'?9:7)*dt));
    if(d.customKind==='autoGlassDoor'){
-     if(d.autoDoorLeft)d.autoDoorLeft.position.x=THREE.MathUtils.lerp(-.405,-.79,d.doorOpenAmount);
-     if(d.autoDoorRight)d.autoDoorRight.position.x=THREE.MathUtils.lerp(.405,.79,d.doorOpenAmount);
+     if(d.autoDoorLeft)d.autoDoorLeft.position.x=THREE.MathUtils.lerp(-.405,-1.20,d.doorOpenAmount);
+     if(d.autoDoorRight)d.autoDoorRight.position.x=THREE.MathUtils.lerp(.405,1.20,d.doorOpenAmount);
    }else if(d.doorPivot){
      d.doorPivot.rotation.y=d.doorOpenAmount*Math.PI*.48;
    }
