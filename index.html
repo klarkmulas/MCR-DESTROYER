@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.10.02.1';
+ const PWA_VERSION='2026.10.02.2';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -520,6 +520,9 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
       <div class="editorButtonGrid3">
         <button id="addWallPro">▥ PARETE</button>
         <button id="addDoor">🚪 PORTA</button>
+        <button id="addGlassDoor">🚪 PORTA VETRO</button>
+        <button id="addAutoGlassDoor">⇆ VETRO AUTO</button>
+        <button id="addWindow">▣ FINESTRA</button>
         <button id="addFloor">▰ PAVIMENTO</button>
         <button id="addCeiling">▱ SOFFITTO</button>
         <button id="addLight">💡 LUCE</button>
@@ -1282,6 +1285,7 @@ function addCustomObstacle(d,kind){
  if(kind==='cube')addObstacle(d.o,.44,.44);
  else if(kind==='column')addObstacle(d.o,.34,.34);
  else if(kind==='wall'||kind==='roomWall')addObstacle(d.o,1.05,.08);
+ else if(kind==='glassPanel'||kind==='window')addObstacle(d.o,.95,.08);
 }
 const textureLoader=new THREE.TextureLoader();
 function editableMeshes(d){
@@ -1424,6 +1428,14 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  if(kind==='cube'){type='cube';o=box(1,1,1,mat(0x4e5965,.62,.16),p.x,.5,p.z);baseY=.5;val=900;hp=3}
  else if(kind==='column'){type='column';o=cyl(.38,.38,2.7,mat(0x69737c,.58,.18),p.x,1.35,p.z);baseY=1.35;val=2200;hp=5}
  else if(kind==='glassPanel'){type='glass';o=box(2.0,2.45,.08,glassMat.clone(),p.x,1.225,p.z);baseY=1.225;val=1600;hp=2;mode='glass'}
+ else if(kind==='window'){
+   type='window';baseY=1.45;val=1350;hp=3;mode='glass';
+   o=new THREE.Group();o.position.set(p.x,0,p.z);scene.add(o);
+   const fm=mat(0x303940,.34,.72),gm=new THREE.MeshPhysicalMaterial({color:0xb8dce8,roughness:.10,metalness:.08,transparent:true,opacity:.30,transmission:.32,thickness:.035,side:THREE.DoubleSide});
+   const frame=(x,y,w,h)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.10),fm);m.position.set(x,y,0);m.castShadow=true;m.receiveShadow=true;o.add(m);return m};
+   frame(-1.02,1.45,.10,1.55);frame(1.02,1.45,.10,1.55);frame(0,.70,2.12,.10);frame(0,2.20,2.12,.10);
+   const pane=new THREE.Mesh(new THREE.BoxGeometry(1.92,1.40,.035),gm);pane.position.set(0,1.45,0);pane.castShadow=false;pane.receiveShadow=true;o.add(pane);
+ }
  else if(kind==='wall'||kind==='roomWall'){type='wall';o=box(2.6,2.5,.16,mat(0x222b33,.72,.05),p.x,1.25,p.z);baseY=1.25;val=2600;hp=6}
  else if(kind==='panel'){type='panel';o=box(1.8,1.5,.09,mat(0x31583b,.67,.03),p.x,.75,p.z);baseY=.75;val=1200;hp=3}
  else if(kind==='floor'){type='floor';o=box(4,.12,4,mat(0x49515a,.88,.02),p.x,-.06,p.z);baseY=-.06;val=2000;hp=8}
@@ -1431,15 +1443,34 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  else if(kind==='picture'){
    type='picture';o=box(1.8,1.1,.06,mat(0xe6e6e6,.7,.01),p.x,1.4,p.z);baseY=1.4;val=600;hp=2;
  }
- else if(kind==='door'){
-   type='door';baseY=0;val=1800;hp=5;
+ else if(kind==='door'||kind==='glassDoor'){
+   type='door';baseY=0;val=kind==='glassDoor'?2300:1800;hp=5;
    o=new THREE.Group();o.position.set(p.x,0,p.z);scene.add(o);
-   const fm=mat(0x252c34,.55,.35),dm=mat(0x644832,.62,.08);
+   const fm=mat(0x252c34,.38,.55);
+   const dm=kind==='glassDoor'
+     ?new THREE.MeshPhysicalMaterial({color:0xb6dbe8,roughness:.10,metalness:.08,transparent:true,opacity:.32,transmission:.34,thickness:.04,side:THREE.DoubleSide})
+     :mat(0x644832,.62,.08);
    const lp=new THREE.Mesh(new THREE.BoxGeometry(.12,2.2,.16),fm),rp=lp.clone(),top=new THREE.Mesh(new THREE.BoxGeometry(1.32,.14,.16),fm);
    lp.position.set(-.66,1.1,0);rp.position.set(.66,1.1,0);top.position.set(0,2.18,0);o.add(lp,rp,top);
-   const pivot=new THREE.Group();pivot.position.set(-.56,0,0);o.add(pivot);
-   const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.08,2.02,.08),dm);leaf.position.set(.54,1.01,0);pivot.add(leaf);
+   const pivot=new THREE.Group();pivot.name='doorLeafPivot';pivot.position.set(-.56,0,0);o.add(pivot);
+   const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.08,2.02,.075),dm);leaf.name='doorLeaf';leaf.position.set(.54,1.01,0);pivot.add(leaf);
+   if(kind==='glassDoor'){
+     const bar=new THREE.Mesh(new THREE.BoxGeometry(.90,.055,.10),fm);bar.position.set(.54,1.02,.02);pivot.add(bar);
+   }
    o.userData.doorPivot=pivot;
+ }
+ else if(kind==='autoGlassDoor'){
+   type='door';baseY=0;val=3400;hp=6;mode='glass';
+   o=new THREE.Group();o.position.set(p.x,0,p.z);scene.add(o);
+   const fm=mat(0x29343b,.30,.72),gm=new THREE.MeshPhysicalMaterial({color:0xb9deea,roughness:.08,metalness:.08,transparent:true,opacity:.31,transmission:.36,thickness:.035,side:THREE.DoubleSide});
+   const lp=new THREE.Mesh(new THREE.BoxGeometry(.11,2.28,.16),fm),rp=lp.clone(),top=new THREE.Mesh(new THREE.BoxGeometry(1.72,.16,.17),fm);
+   lp.position.set(-.86,1.14,0);rp.position.set(.86,1.14,0);top.position.set(0,2.24,0);o.add(lp,rp,top);
+   const left=new THREE.Group();left.name='autoDoorLeft';left.position.set(-.405,0,0);o.add(left);
+   const right=new THREE.Group();right.name='autoDoorRight';right.position.set(.405,0,0);o.add(right);
+   const ll=new THREE.Mesh(new THREE.BoxGeometry(.78,2.04,.055),gm);ll.name='autoDoorLeaf';ll.position.set(0,1.04,0);left.add(ll);
+   const rr=ll.clone();right.add(rr);
+   const sensor=new THREE.Mesh(new THREE.BoxGeometry(.18,.045,.10),new THREE.MeshStandardMaterial({color:0x1d2b32,emissive:0x5ac9ff,emissiveIntensity:.65,roughness:.3}));sensor.position.set(0,2.13,.03);o.add(sensor);
+   o.userData.autoDoorLeft=left;o.userData.autoDoorRight=right;
  }
  else if(kind==='light'){
    type='light';baseY=2.6;val=900;hp=2;
@@ -1450,7 +1481,12 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  }
  else return null;
  d=reg(o,type,hp,val,mode);d.customKind=kind;d.sourceIndex=-1;d.editId=destruct.length-1;
- if(kind==='door')d.doorPivot=o.userData.doorPivot;
+ if(kind==='door'||kind==='glassDoor')d.doorPivot=o.userData.doorPivot||o.getObjectByName('doorLeafPivot');
+ if(kind==='autoGlassDoor'){
+   d.autoDoorLeft=o.userData.autoDoorLeft||o.getObjectByName('autoDoorLeft');
+   d.autoDoorRight=o.userData.autoDoorRight||o.getObjectByName('autoDoorRight');
+ }
+ if(['door','glassDoor','autoGlassDoor'].includes(kind)){d.doorOpenAmount=0;d.doorAuto=true}
  if(kind==='light')d.pointLight=o.userData.pointLight;
  if(state){
    o.position.set(Number(state.x)||0,Number.isFinite(Number(state.y))?Number(state.y):baseY,Number(state.z)||0);
@@ -1497,13 +1533,32 @@ function createRoomKit(){
  selectedEdits=new Set(created);selectedEdit=created.at(-1)||null;rebuildEditHelpers();refreshEditorFields();if(topViewMode)buildTopPlanHelpers();
  show('STANZA "'+name.toUpperCase()+'" CREATA');
 }
+const doorWorldPos=new THREE.Vector3();
+function doorSomeoneNear(d,radius=1.85){
+ d.o.getWorldPosition(doorWorldPos);
+ if(started){
+   const dx=player.position.x-doorWorldPos.x,dz=player.position.z-doorWorldPos.z;
+   if(dx*dx+dz*dz<radius*radius)return true;
+ }
+ for(const n of npcs){
+   if(!n.root?.visible||n.fallen)continue;
+   const dx=n.root.position.x-doorWorldPos.x,dz=n.root.position.z-doorWorldPos.z;
+   if(dx*dx+dz*dz<radius*radius)return true;
+ }
+ return false;
+}
 function updateDoors(dt){
  for(const d of destruct){
-   if(d.customKind!=='door'||!d.doorPivot||!d.o.visible||d.dead)continue;
-   const dx=player.position.x-d.o.position.x,dz=player.position.z-d.o.position.z;
-   const open=started&&!editorMode&&(dx*dx+dz*dz)<3.3;
-   const target=open?Math.PI*.48:0;
-   d.doorPivot.rotation.y=THREE.MathUtils.lerp(d.doorPivot.rotation.y,target,1-Math.exp(-7*dt));
+   if(!['door','glassDoor','autoGlassDoor'].includes(d.customKind)||!d.o.visible||d.dead)continue;
+   const open=started&&!editorMode&&doorSomeoneNear(d,d.customKind==='autoGlassDoor'?2.25:1.70);
+   const target=open?1:0;
+   d.doorOpenAmount=THREE.MathUtils.lerp(d.doorOpenAmount||0,target,1-Math.exp(-(d.customKind==='autoGlassDoor'?9:7)*dt));
+   if(d.customKind==='autoGlassDoor'){
+     if(d.autoDoorLeft)d.autoDoorLeft.position.x=THREE.MathUtils.lerp(-.405,-.79,d.doorOpenAmount);
+     if(d.autoDoorRight)d.autoDoorRight.position.x=THREE.MathUtils.lerp(.405,.79,d.doorOpenAmount);
+   }else if(d.doorPivot){
+     d.doorPivot.rotation.y=d.doorOpenAmount*Math.PI*.48;
+   }
  }
 }
 function addBadge(x,z,ry){const c=document.createElement('canvas');c.width=c.height=256;let g=c.getContext('2d');g.strokeStyle='#dbe4eb';g.lineWidth=7;g.beginPath();g.arc(128,128,86,0,Math.PI*2);g.stroke();g.fillStyle='#edf4fa';g.font='bold 52px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('MCR',128,128);let t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;let p=new THREE.Mesh(new THREE.PlaneGeometry(.8,.8),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false}));p.position.set(x,2.5,z);p.rotation.y=ry;scene.add(p)}
@@ -1606,7 +1661,12 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  nd.textureUrl=state?.textureUrl??source.textureUrl??null;
  nd.lightIntensity=Number.isFinite(Number(state?.lightIntensity))?Number(state.lightIntensity):(source.lightIntensity??8);
  nd.lightColor=state?.lightColor??source.lightColor??null;
- if(nd.customKind==='door'){nd.doorPivot=clone.userData.doorPivot||null}
+ if(nd.customKind==='door'||nd.customKind==='glassDoor')nd.doorPivot=clone.getObjectByName('doorLeafPivot')||null;
+ if(nd.customKind==='autoGlassDoor'){
+   nd.autoDoorLeft=clone.getObjectByName('autoDoorLeft')||null;
+   nd.autoDoorRight=clone.getObjectByName('autoDoorRight')||null;
+ }
+ if(['door','glassDoor','autoGlassDoor'].includes(nd.customKind)){nd.doorOpenAmount=0;nd.doorAuto=true}
  if(nd.customKind==='light'){nd.pointLight=clone.userData.pointLight||null}
  nd.max=source.max;nd.hp=source.max;nd.val=source.val;nd.mode=source.mode;nd.dead=false;
  clone.position.copy(source.o.position);clone.quaternion.copy(source.o.quaternion);clone.scale.copy(source.o.scale);clone.visible=true;
@@ -1621,7 +1681,11 @@ function cloneEditorObject(source,state=null,offsetX=.55,offsetZ=.55){
  }
  nd.origPos.copy(clone.position);nd.origQuat.copy(clone.quaternion);nd.origScale.copy(clone.scale);nd.startPos.copy(clone.position);nd.startQuat.copy(clone.quaternion);nd.startScale.copy(clone.scale);nd.startVis=clone.visible;
  clone.userData.d=nd;
- if(nd.customKind==='door'&&!nd.doorPivot){nd.doorPivot=clone.children.find(ch=>ch.type==='Group')||null}
+ if((nd.customKind==='door'||nd.customKind==='glassDoor')&&!nd.doorPivot)nd.doorPivot=clone.getObjectByName('doorLeafPivot')||clone.children.find(ch=>ch.type==='Group')||null;
+ if(nd.customKind==='autoGlassDoor'){
+   nd.autoDoorLeft=nd.autoDoorLeft||clone.getObjectByName('autoDoorLeft');
+   nd.autoDoorRight=nd.autoDoorRight||clone.getObjectByName('autoDoorRight');
+ }
  if(nd.customKind==='light'&&!nd.pointLight){clone.traverse(ch=>{if(!nd.pointLight&&ch.isPointLight)nd.pointLight=ch})}
  clone.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=clone});
  applyAppearanceState(nd,state||source);
@@ -1657,6 +1721,7 @@ function applyOneLayoutState(d,s){
  );
  d.o.visible=s.visible!==false;
  d.dead=false;d.hp=d.max;
+ if(['door','glassDoor','autoGlassDoor'].includes(d.customKind))d.doorAuto=s.doorAuto!==false;
  d.startVis=d.o.visible;
  d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startScale.copy(d.o.scale);
  if(d.type==='monitor'){
@@ -3054,7 +3119,7 @@ function editorSectionForObject(d){
  if(d.type==='monitor')return 'screens';
  return 'objects';
 }
-function editorLabel(d){const base=({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete',floor:'Pavimento',ceiling:'Soffitto',door:'Porta',light:'Luce',picture:'Pannello immagine'}[d?.type]||'Oggetto')+' #'+((d?.editId??0)+1);return d?.roomName?base+' · '+d.roomName:base}
+function editorLabel(d){const special=d?.customKind==='window'?'Finestra':d?.customKind==='glassDoor'?'Porta vetro':d?.customKind==='autoGlassDoor'?'Porta vetro automatica':null;const base=(special||({monitor:'Monitor',desk:'Scrivania',chair:'Sedia',keyboard:'Tastiera',phone:'Telefono',rack:'Rack',glass:'Vetro',window:'Finestra',panel:'Pannello',extinguisher:'Estintore',cube:'Cubo',column:'Colonna',wall:'Parete',floor:'Pavimento',ceiling:'Soffitto',door:'Porta',light:'Luce',picture:'Pannello immagine'}[d?.type]||'Oggetto'))+' #'+((d?.editId??0)+1);return d?.roomName?base+' · '+d.roomName:base}
 function activeCamera(){return editorMode&&topViewMode?topCamera:camera}
 function disposeEditorHelper(o){
  if(!o)return;
@@ -3306,7 +3371,7 @@ function buildTopPlanHelpers(){
  grid.position.y=.03;
  grid.material.transparent=true;grid.material.opacity=.72;grid.material.depthTest=false;grid.renderOrder=980;
  scene.add(grid);topPlanHelpers.push(grid);
- const colors={monitor:0x42c9ff,desk:0xffa43c,chair:0x54df7b,keyboard:0xffee58,phone:0xff66cc,rack:0xff5e5e,glass:0xa9edff,panel:0x58e06f,extinguisher:0xff3333,cube:0xb9c6d2,column:0xb7a8ff,wall:0x9aa7b4,floor:0x607080,ceiling:0xdde8ef,door:0xd49352,light:0xffe28c,picture:0xd36cff};
+ const colors={monitor:0x42c9ff,desk:0xffa43c,chair:0x54df7b,keyboard:0xffee58,phone:0xff66cc,rack:0xff5e5e,glass:0xa9edff,panel:0x58e06f,extinguisher:0xff3333,cube:0xb9c6d2,column:0xb7a8ff,wall:0x9aa7b4,floor:0x607080,ceiling:0xdde8ef,door:0xd49352,window:0x90dfff,light:0xffe28c,picture:0xd36cff};
  for(const d of destruct){
    if(!d.o.visible)continue;
    const h=new THREE.BoxHelper(d.o,colors[d.type]||0xffffff);
@@ -3553,7 +3618,7 @@ async function applyImageFileToSelected(file){
  }
 }
 function layoutData(){
- return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,textureRepeatX:d.textureRepeatX??1,textureRepeatY:d.textureRepeatY??1,textureRotation:d.textureRotation??0,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,rx:d.o.rotation.x,ry:d.o.rotation.y,rz:d.o.rotation.z,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
+ return {exposure:renderer.toneMappingExposure,playerModelUrl:playerModelUrl||null,characterStyles:characterStyleState,items:destruct.map(d=>({type:d.type,customKind:d.customKind||null,editorOnly:!!d.editorOnly,sourceIndex:d.sourceIndex??d.editId??0,roomName:d.roomName||null,styleColor:d.styleColor||null,materialPreset:d.materialPreset||null,textureUrl:d.textureUrl||null,textureRepeatX:d.textureRepeatX??1,textureRepeatY:d.textureRepeatY??1,textureRotation:d.textureRotation??0,lightIntensity:d.lightIntensity??null,lightColor:d.lightColor||null,doorAuto:d.doorAuto!==false,x:d.o.position.x,y:d.o.position.y,z:d.o.position.z,rx:d.o.rotation.x,ry:d.o.rotation.y,rz:d.o.rotation.z,sx:d.o.scale.x,sy:d.o.scale.y,sz:d.o.scale.z,visible:d.o.visible,screenPreset:d.screenPreset??null,screenData:d.screenData||null,screenVideoUrl:d.screenVideoUrl||null,screenVideoLoop:d.screenVideoLoop!==false,screenVideoMuted:d.screenVideoMuted!==false,screenVideoVolume:Number(d.screenVideoVolume||0)}))};
 }
 function saveLayout(){
  const data=layoutData();localStorage.setItem('mcrDestroyerLayoutV2',JSON.stringify(data));localStorage.setItem('mcrDestroyerLayoutV1',JSON.stringify(data));destruct.forEach(d=>{d.startPos.copy(d.o.position);d.startQuat.copy(d.o.quaternion);d.startVis=d.o.visible});show('COPIA LOCALE SALVATA SOLO SU QUESTO PC');
@@ -4631,6 +4696,9 @@ q('#createRoomKit').onclick=()=>runEditorHistoryAction('Creazione stanza',create
 q('#addFloor').onclick=()=>runEditorHistoryAction('Aggiunta pavimento',()=>createCustomPrimitive('floor'));
 q('#addCeiling').onclick=()=>runEditorHistoryAction('Aggiunta soffitto',()=>createCustomPrimitive('ceiling'));
 q('#addDoor').onclick=()=>runEditorHistoryAction('Aggiunta porta',()=>createCustomPrimitive('door'));
+q('#addGlassDoor').onclick=()=>runEditorHistoryAction('Aggiunta porta vetro',()=>createCustomPrimitive('glassDoor'));
+q('#addAutoGlassDoor').onclick=()=>runEditorHistoryAction('Aggiunta porta vetro automatica',()=>createCustomPrimitive('autoGlassDoor'));
+q('#addWindow').onclick=()=>runEditorHistoryAction('Aggiunta finestra',()=>createCustomPrimitive('window'));
 q('#addLight').onclick=()=>runEditorHistoryAction('Aggiunta luce',()=>createCustomPrimitive('light'));
 q('#addPicture').onclick=()=>runEditorHistoryAction('Aggiunta immagine',()=>createCustomPrimitive('picture'));
 q('#addWallPro').onclick=()=>runEditorHistoryAction('Aggiunta parete',()=>createCustomPrimitive('roomWall'));
