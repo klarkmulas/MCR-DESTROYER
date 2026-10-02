@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.10.02.3';
+ const PWA_VERSION='2026.10.02.4';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -433,7 +433,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
     <button id="editorFocusSelection">🎯 FOCUS</button>
     <button id="editorResetCamera">↺ RESET</button>
   </div>
-  <div class="editorCameraHint">3D: WASD muove · Q/E altezza · tasto destro ruota · rotella avanza · PIANTA: tasto destro trascina la mappa · rotella zoom · nessun limite della sala</div>
+  <div class="editorCameraHint">3D: WASD/FRECCE muovono secondo la vista · Q/E altezza · tasto destro ruota · rotella avanza · PIANTA: frecce/tasto destro spostano la mappa · rotella zoom</div>
 
   <div class="editorNav">
     <button class="editorNavBtn active" data-editor-open="home">⌂<span>HOME</span></button>
@@ -572,7 +572,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
       <div class="editorRow"><label>Larghezza</label><input id="editSX" type="number" min="0.001" step="0.05" value="1"><span id="editSXv" class="editorValue">1.00×</span></div>
       <div class="editorRow"><label>Altezza</label><input id="editSY" type="number" min="0.001" step="0.05" value="1"><span id="editSYv" class="editorValue">1.00×</span></div>
       <div class="editorRow"><label>Profondità</label><input id="editSZ" type="number" min="0.001" step="0.05" value="1"><span id="editSZv" class="editorValue">1.00×</span></div>
-      <div class="nudge"><button id="nudgeLeft">← X</button><button id="nudgeRight">X →</button><button id="nudgeBack">← Z</button><button id="nudgeFront">Z →</button></div>
+      <div class="nudge"><button id="nudgeLeft">← SINISTRA</button><button id="nudgeRight">DESTRA →</button><button id="nudgeBack">↓ INDIETRO</button><button id="nudgeFront">↑ AVANTI</button></div>
     </div>
 
     <div class="editorCard">
@@ -721,7 +721,7 @@ body.mobile-game-fullscreen canvas{width:100dvw!important;height:100dvh!importan
       <span>Ctrl+C / Ctrl+V · copia/incolla</span>
       <span>Ctrl+D · duplica</span>
       <span>Canc · elimina</span>
-      <span>Frecce · sposta selezione</span>
+      <span>Frecce · muovi secondo la vista · senza selezione muovono la camera</span>
       <span>F · focus · R · reset camera · T · pianta</span>
     </div>
   </section>
@@ -3450,6 +3450,31 @@ function moveSelection(dx,dy,dz){
  rebuildEditHelpers();if(topViewMode)buildTopPlanHelpers();refreshEditorFields();
  if(before)commitEditorSnapshot(before,'Spostamento');
 }
+const editorViewForward=new THREE.Vector3(),editorViewRight=new THREE.Vector3(),editorViewDelta=new THREE.Vector3();
+function editorViewMoveBasis(){
+ if(topViewMode){
+   editorViewForward.set(0,0,-1);
+   editorViewRight.set(1,0,0);
+ }else{
+   // La camera THREE guarda lungo -Z: questi segni devono seguire camera.rotation.y.
+   editorViewForward.set(-Math.sin(editorCamYaw),0,-Math.cos(editorCamYaw)).normalize();
+   editorViewRight.set(Math.cos(editorCamYaw),0,-Math.sin(editorCamYaw)).normalize();
+ }
+}
+function moveSelectionByView(sideStep,forwardStep,verticalStep=0){
+ if(!selectedEdits.size)return;
+ editorViewMoveBasis();
+ editorViewDelta.set(0,verticalStep,0)
+   .addScaledVector(editorViewRight,sideStep)
+   .addScaledVector(editorViewForward,forwardStep);
+ moveSelection(editorViewDelta.x,editorViewDelta.y,editorViewDelta.z);
+}
+function panTopViewByScreen(sideStep,forwardStep){
+ editorViewMoveBasis();
+ const scale=1/Math.max(.08,topCamera.zoom||1);
+ topCamera.position.x=THREE.MathUtils.clamp(topCamera.position.x+(editorViewRight.x*sideStep+editorViewForward.x*forwardStep)*scale,-EDITOR_LIMIT,EDITOR_LIMIT);
+ topCamera.position.z=THREE.MathUtils.clamp(topCamera.position.z+(editorViewRight.z*sideStep+editorViewForward.z*forwardStep)*scale,-EDITOR_LIMIT,EDITOR_LIMIT);
+}
 function updateSelectedFromUI(){
  if(!selectedEdit)return;
  const anchor=selectedEdit.o;
@@ -3570,12 +3595,15 @@ function resetEditorCamera(){
 function updateEditorCamera(dt){
  if(!editorMode||topViewMode)return;
  initEditorCamera();
- let mx=((keys.has('KeyD'))?1:0)-((keys.has('KeyA'))?1:0);
- let mz=((keys.has('KeyW'))?1:0)-((keys.has('KeyS'))?1:0);
+ const arrowsMoveCamera=!selectedEdits.size;
+ let mx=((keys.has('KeyD')|| (arrowsMoveCamera&&keys.has('ArrowRight')))?1:0)-((keys.has('KeyA')||(arrowsMoveCamera&&keys.has('ArrowLeft')))?1:0);
+ let mz=((keys.has('KeyW')|| (arrowsMoveCamera&&keys.has('ArrowUp')))?1:0)-((keys.has('KeyS')||(arrowsMoveCamera&&keys.has('ArrowDown')))?1:0);
  let my=((keys.has('KeyE'))?1:0)-((keys.has('KeyQ'))?1:0);
+ let len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
  const speed=(keys.has('ShiftLeft')||keys.has('ShiftRight'))?12:5.5;
- const forward=new THREE.Vector3(Math.sin(editorCamYaw),0,-Math.cos(editorCamYaw));
- const right=new THREE.Vector3(Math.cos(editorCamYaw),0,Math.sin(editorCamYaw));
+ // THREE.js camera forward = local -Z. I vecchi segni erano invertiti.
+ const forward=new THREE.Vector3(-Math.sin(editorCamYaw),0,-Math.cos(editorCamYaw));
+ const right=new THREE.Vector3(Math.cos(editorCamYaw),0,-Math.sin(editorCamYaw));
  if(mx||mz||my){
    editorCamPos.addScaledVector(right,mx*speed*dt);
    editorCamPos.addScaledVector(forward,mz*speed*dt);
@@ -4631,10 +4659,23 @@ addEventListener('keydown',e=>{
    if(e.code==='KeyR'){resetEditorCamera();e.preventDefault();return}
    if(['KeyW','KeyA','KeyS','KeyD','KeyQ','KeyE','ShiftLeft','ShiftRight'].includes(e.code)){keys.add(e.code);e.preventDefault();return}
    const step=e.shiftKey?1:.2;
-   if(e.code==='ArrowLeft'){moveSelection(-step,0,0);e.preventDefault();return}
-   if(e.code==='ArrowRight'){moveSelection(step,0,0);e.preventDefault();return}
-   if(e.code==='ArrowUp'){moveSelection(0,0,-step);e.preventDefault();return}
-   if(e.code==='ArrowDown'){moveSelection(0,0,step);e.preventDefault();return}
+   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.code)){
+     if(selectedEdits.size){
+       if(e.code==='ArrowLeft')moveSelectionByView(-step,0);
+       else if(e.code==='ArrowRight')moveSelectionByView(step,0);
+       else if(e.code==='ArrowUp')moveSelectionByView(0,step);
+       else moveSelectionByView(0,-step);
+     }else if(topViewMode){
+       const panStep=e.shiftKey?2.0:.5;
+       if(e.code==='ArrowLeft')panTopViewByScreen(-panStep,0);
+       else if(e.code==='ArrowRight')panTopViewByScreen(panStep,0);
+       else if(e.code==='ArrowUp')panTopViewByScreen(0,panStep);
+       else panTopViewByScreen(0,-panStep);
+     }else{
+       keys.add(e.code);
+     }
+     e.preventDefault();return;
+   }
    if(e.code==='PageUp'){moveSelection(0,e.shiftKey ? .5 : .1,0);e.preventDefault();return}
    if(e.code==='PageDown'){moveSelection(0,e.shiftKey?-.5:-.1,0);e.preventDefault();return}
  }
@@ -4835,7 +4876,7 @@ q('#shareLayout').onclick=async()=>{const url=location.origin+location.pathname+
  el.addEventListener('blur',commitEditorHistoryGesture);
 });
 editLight.addEventListener('input',()=>{renderer.toneMappingExposure=parseFloat(editLight.value);editLightv.textContent=parseFloat(editLight.value).toFixed(2)});
-q('#nudgeLeft').onclick=()=>moveSelection(-.2,0,0);q('#nudgeRight').onclick=()=>moveSelection(.2,0,0);q('#nudgeBack').onclick=()=>moveSelection(0,0,-.2);q('#nudgeFront').onclick=()=>moveSelection(0,0,.2);
+q('#nudgeLeft').onclick=()=>moveSelectionByView(-.2,0);q('#nudgeRight').onclick=()=>moveSelectionByView(.2,0);q('#nudgeBack').onclick=()=>moveSelectionByView(0,-.2);q('#nudgeFront').onclick=()=>moveSelectionByView(0,.2);
 q('#createRoomKit').onclick=()=>runEditorHistoryAction('Creazione stanza',createRoomKit);
 q('#addFloor').onclick=()=>runEditorHistoryAction('Aggiunta pavimento',()=>createCustomPrimitive('floor'));
 q('#addCeiling').onclick=()=>runEditorHistoryAction('Aggiunta soffitto',()=>createCustomPrimitive('ceiling'));
