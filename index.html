@@ -13,7 +13,7 @@
 <link rel="icon" href="./pwa-icon-192.svg" type="image/svg+xml">
 <script>
 (()=>{
- const PWA_VERSION='2026.10.02.4';
+ const PWA_VERSION='2026.10.02.5';
  let deferredInstallPrompt=null;
  const readyKey='mcrOfflineReady:'+PWA_VERSION;
  const primedKey='mcrOfflinePrimed:'+PWA_VERSION;
@@ -1088,6 +1088,76 @@ const dark=mat(0x707b7d,.55,.02), black=mat(0x151b22,.40,.35), steel=mat(0x929ca
 const blackoutWood=makeBlackoutWoodTexture();
 const floorMat=new THREE.MeshPhysicalMaterial({map:blackoutWood,bumpMap:blackoutWood,bumpScale:.012,roughness:.28,metalness:.08,clearcoat:.55,clearcoatRoughness:.25});
 const glassMat=new THREE.MeshPhysicalMaterial({color:0xb9d0dd,transparent:true,opacity:.13,roughness:.06,transmission:.42,thickness:.06});
+let frostStripeBaseTexture=null;
+function getFrostStripeBaseTexture(){
+ if(frostStripeBaseTexture)return frostStripeBaseTexture;
+ const cv=document.createElement('canvas');cv.width=32;cv.height=64;
+ const g=cv.getContext('2d');g.clearRect(0,0,32,64);
+ // Una fascia satinata + una fascia libera. La ripetizione viene adattata all'altezza del vetro.
+ const grad=g.createLinearGradient(0,0,0,32);
+ grad.addColorStop(0,'rgba(238,248,250,.78)');
+ grad.addColorStop(.12,'rgba(250,255,255,.92)');
+ grad.addColorStop(.82,'rgba(235,246,249,.86)');
+ grad.addColorStop(1,'rgba(218,235,240,.52)');
+ g.fillStyle=grad;g.fillRect(0,0,32,28);
+ frostStripeBaseTexture=new THREE.CanvasTexture(cv);
+ frostStripeBaseTexture.colorSpace=THREE.SRGBColorSpace;
+ frostStripeBaseTexture.wrapS=frostStripeBaseTexture.wrapT=THREE.RepeatWrapping;
+ frostStripeBaseTexture.minFilter=THREE.LinearFilter;frostStripeBaseTexture.magFilter=THREE.LinearFilter;
+ frostStripeBaseTexture.needsUpdate=true;
+ return frostStripeBaseTexture;
+}
+function addHorizontalFrostStripes(glassMesh,opts={}){
+ if(!glassMesh?.isMesh||glassMesh.userData?.frostStripeOverlay)return null;
+ if(glassMesh.geometry&&!glassMesh.geometry.boundingBox)glassMesh.geometry.computeBoundingBox();
+ const bb=glassMesh.geometry?.boundingBox;
+ if(!bb)return null;
+ const localSize=bb.getSize(new THREE.Vector3());
+ const worldW=Math.max(.01,localSize.x*Math.abs(glassMesh.scale.x||1));
+ const worldH=Math.max(.01,localSize.y*Math.abs(glassMesh.scale.y||1));
+ const stripeCycle=Math.max(.10,Number(opts.cycle)||.24);
+ const tex=getFrostStripeBaseTexture().clone();
+ tex.needsUpdate=true;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+ tex.repeat.set(Math.max(1,worldW/2.4),Math.max(2,worldH/stripeCycle));
+ tex.offset.set(0,.04);
+ const decalMat=new THREE.MeshPhysicalMaterial({
+   color:opts.color||0xe5f0f2,
+   map:tex,
+   transparent:true,
+   opacity:opts.opacity??.76,
+   roughness:opts.roughness??.92,
+   metalness:0,
+   transmission:opts.transmission??.04,
+   thickness:.012,
+   side:THREE.DoubleSide,
+   depthWrite:false,
+   polygonOffset:true,
+   polygonOffsetFactor:-2,
+   polygonOffsetUnits:-2
+ });
+ const geo=new THREE.PlaneGeometry(localSize.x*.96,localSize.y*.98);
+ const overlay=new THREE.Mesh(geo,decalMat);
+ const sz=Math.max(.0001,Math.abs(glassMesh.scale.z||1));
+ overlay.position.set((bb.min.x+bb.max.x)/2,(bb.min.y+bb.max.y)/2,bb.max.z+.0035/sz);
+ overlay.name='frostStripeOverlay';
+ overlay.renderOrder=12;
+ overlay.userData.frostStripeOverlay=true;
+ overlay.userData.editorHelper=false;
+ glassMesh.add(overlay);
+ glassMesh.userData.frostStripeOverlay=overlay;
+ return overlay;
+}
+function addFrostToGlassObject(root){
+ if(!root)return;
+ root.traverse(ch=>{
+   if(!ch.isMesh||ch.userData?.frostStripeOverlay)return;
+   const n=(ch.name||'').toLowerCase();
+   const m=Array.isArray(ch.material)?ch.material[0]:ch.material;
+   const looksGlass=n.includes('doorleaf')||n.includes('glass')||n.includes('pane')||
+     (m&&m.transparent&&('transmission' in m)&&Number(m.transmission||0)>.02);
+   if(looksGlass)addHorizontalFrostStripes(ch);
+ });
+}
 const tmp=new THREE.Vector3(), fwd=new THREE.Vector3(), up=new THREE.Vector3(0,1,0);const editRay=new THREE.Raycaster(),editMouse=new THREE.Vector2(),editPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),editPoint=new THREE.Vector3();let editorMode=false,topViewMode=false,selectedEdit=null,selectedEdits=new Set(),editHelpers=[],editDragging=false,dragStartPoint=null,dragStartPositions=new Map(),dragTargets=[],dragPointerId=null,moveAllMode=false,editorClipboard=[],pasteStep=0;
 const editorCamPos=new THREE.Vector3();let editorCamYaw=0,editorCamPitch=-.25,editorCamReady=false,editorCamRotating=false,editorCamPointerId=null,editorCamLastX=0,editorCamLastY=0;
 let topPanActive=false,topPanPointerId=null,topPanLastX=0,topPanLastY=0;
@@ -1269,7 +1339,7 @@ function addVideoWallSupport(x,z){
  reg(g,'rack',3,1800,'static');return g;
 }
 function addGlass(x,z,w){
- const o=blackoutBox(scene,x,2.0,z,w,4,.035,glassMat);regEditorSurface(o,'glass');return o;
+ const o=blackoutBox(scene,x,2.0,z,w,4,.035,glassMat.clone());addHorizontalFrostStripes(o,{cycle:.24,opacity:.76});regEditorSurface(o,'glass');return o;
 }
 
 function customSpawnPoint(){
@@ -1292,6 +1362,7 @@ function editableMeshes(d){
  const out=[];
  d?.o?.traverse(ch=>{
    if(!ch.isMesh||!ch.material)return;
+   if(ch.userData?.frostStripeOverlay)return;
    if(d.type==='monitor'&&ch===d.o.userData?.screen)return;
    if(!ch.userData.editorOriginalMaps){
      const mats=Array.isArray(ch.material)?ch.material:[ch.material];
@@ -1427,14 +1498,14 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  const p=customSpawnPoint();
  if(kind==='cube'){type='cube';o=box(1,1,1,mat(0x4e5965,.62,.16),p.x,.5,p.z);baseY=.5;val=900;hp=3}
  else if(kind==='column'){type='column';o=cyl(.38,.38,2.7,mat(0x69737c,.58,.18),p.x,1.35,p.z);baseY=1.35;val=2200;hp=5}
- else if(kind==='glassPanel'){type='glass';o=box(2.0,2.45,.08,glassMat.clone(),p.x,1.225,p.z);baseY=1.225;val=1600;hp=2;mode='glass'}
+ else if(kind==='glassPanel'){type='glass';o=box(2.0,2.45,.08,glassMat.clone(),p.x,1.225,p.z);addHorizontalFrostStripes(o);baseY=1.225;val=1600;hp=2;mode='glass'}
  else if(kind==='window'){
    type='window';baseY=1.45;val=1350;hp=3;mode='glass';
    o=new THREE.Group();o.position.set(p.x,0,p.z);scene.add(o);
    const fm=mat(0x303940,.34,.72),gm=new THREE.MeshPhysicalMaterial({color:0xb8dce8,roughness:.10,metalness:.08,transparent:true,opacity:.30,transmission:.32,thickness:.035,side:THREE.DoubleSide});
    const frame=(x,y,w,h)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,.10),fm);m.position.set(x,y,0);m.castShadow=true;m.receiveShadow=true;o.add(m);return m};
    frame(-1.02,1.45,.10,1.55);frame(1.02,1.45,.10,1.55);frame(0,.70,2.12,.10);frame(0,2.20,2.12,.10);
-   const pane=new THREE.Mesh(new THREE.BoxGeometry(1.92,1.40,.035),gm);pane.position.set(0,1.45,0);pane.castShadow=false;pane.receiveShadow=true;o.add(pane);
+   const pane=new THREE.Mesh(new THREE.BoxGeometry(1.92,1.40,.035),gm);pane.name='windowGlassPane';pane.position.set(0,1.45,0);pane.castShadow=false;pane.receiveShadow=true;o.add(pane);addHorizontalFrostStripes(pane,{cycle:.22,opacity:.80});
  }
  else if(kind==='wall'||kind==='roomWall'){type='wall';o=box(2.6,2.5,.16,mat(0x222b33,.72,.05),p.x,1.25,p.z);baseY=1.25;val=2600;hp=6}
  else if(kind==='panel'){type='panel';o=box(1.8,1.5,.09,mat(0x31583b,.67,.03),p.x,.75,p.z);baseY=.75;val=1200;hp=3}
@@ -1454,7 +1525,8 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
    lp.position.set(-.66,1.1,0);rp.position.set(.66,1.1,0);top.position.set(0,2.18,0);o.add(lp,rp,top);
    const pivot=new THREE.Group();pivot.name='doorLeafPivot';pivot.position.set(-.56,0,0);o.add(pivot);
    const leaf=new THREE.Mesh(new THREE.BoxGeometry(1.08,2.02,.075),dm);leaf.name='doorLeaf';leaf.position.set(.54,1.01,0);pivot.add(leaf);
-   if(kind==='glassDoor'){
+   if(kind==='glassDoor'){addHorizontalFrostStripes(leaf,{cycle:.22,opacity:.82});
+
      const bar=new THREE.Mesh(new THREE.BoxGeometry(.90,.055,.10),fm);bar.position.set(.54,1.02,.02);pivot.add(bar);
    }
    o.userData.doorPivot=pivot;
@@ -1467,8 +1539,8 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
    lp.position.set(-.86,1.14,0);rp.position.set(.86,1.14,0);top.position.set(0,2.24,0);o.add(lp,rp,top);
    const left=new THREE.Group();left.name='autoDoorLeft';left.position.set(-.405,0,0);o.add(left);
    const right=new THREE.Group();right.name='autoDoorRight';right.position.set(.405,0,0);o.add(right);
-   const ll=new THREE.Mesh(new THREE.BoxGeometry(.78,2.04,.055),gm);ll.name='autoDoorLeaf';ll.position.set(0,1.04,0);left.add(ll);
-   const rr=ll.clone();right.add(rr);
+   const ll=new THREE.Mesh(new THREE.BoxGeometry(.78,2.04,.055),gm);ll.name='autoDoorLeaf';ll.position.set(0,1.04,0);left.add(ll);addHorizontalFrostStripes(ll,{cycle:.22,opacity:.82});
+   const rr=new THREE.Mesh(new THREE.BoxGeometry(.78,2.04,.055),gm.clone());rr.name='autoDoorLeaf';rr.position.set(0,1.04,0);right.add(rr);addHorizontalFrostStripes(rr,{cycle:.22,opacity:.82});
    const sensor=new THREE.Mesh(new THREE.BoxGeometry(.18,.045,.10),new THREE.MeshStandardMaterial({color:0x1d2b32,emissive:0x5ac9ff,emissiveIntensity:.65,roughness:.3}));sensor.position.set(0,2.13,.03);o.add(sensor);
    o.userData.autoDoorLeft=left;o.userData.autoDoorRight=right;
  }
@@ -1497,6 +1569,7 @@ function createCustomPrimitive(kind,state=null,selectIt=true){
  applyAppearanceState(d,state||{});
  d.origPos.copy(o.position);d.origQuat.copy(o.quaternion);d.origScale.copy(o.scale);d.startPos.copy(o.position);d.startQuat.copy(o.quaternion);d.startScale.copy(o.scale);d.startVis=o.visible;
  o.userData.d=d;o.traverse(ch=>{if(ch.isMesh)ch.userData.editorRoot=o});
+ if(['glassPanel','window','glassDoor','autoGlassDoor'].includes(kind))addFrostToGlassObject(o);
  addCustomObstacle(d,kind);totalEl.textContent=activeBreakableCount();updateBlackoutHud();
  if(selectIt){selectEdit(d,false);if(topViewMode)buildTopPlanHelpers();show('AGGIUNTO '+editorLabel(d).toUpperCase())}
  return d;
@@ -1590,14 +1663,14 @@ function buildRoom(){
  const glass=new THREE.MeshPhysicalMaterial({color:0xb4d1da,metalness:.12,roughness:.19,transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false});
  const glassGroup=new THREE.Group();scene.add(glassGroup);
  for(let x=-6;x<7;x+=2){
-   blackoutBox(glassGroup,x,2,8.7,1.94,4,.035,glass);
+   const rearPane=blackoutBox(glassGroup,x,2,8.7,1.94,4,.035,glass.clone());rearPane.name='rearGlassPane';addHorizontalFrostStripes(rearPane,{cycle:.25,opacity:.72});
    blackoutBox(glassGroup,x-1,2,8.7,.035,4,.05,steel);
    blackoutBox(glassGroup,x,2.25,8.78,1.95,2.9,.03,new THREE.MeshStandardMaterial({color:0xc5d9e0,roughness:.5,metalness:.05,emissive:0x647f8b,emissiveIntensity:1.5}));
    for(let y=1;y<3.7;y+=.11)blackoutBox(glassGroup,x,y,8.73,1.93,.012,.018,mat(0xacbec1,.55,.02));
  }
  blackoutBox(glassGroup,0,.05,8.7,14,.08,.13,steel);
  for(let z=3;z<9;z+=2){
-   blackoutBox(glassGroup,5.5,2,z,.025,4,1.94,glass);
+   const sidePane=blackoutBox(glassGroup,5.5,2,z,.025,4,1.94,glass.clone());sidePane.name='sideGlassPane';addHorizontalFrostStripes(sidePane,{cycle:.25,opacity:.72});
    blackoutBox(glassGroup,5.5,2,z-1,.04,4,.04,steel);
  }
  blackoutBox(glassGroup,5.7,2,7,.3,4,.3,mat(0x853f40,.55,.08));
